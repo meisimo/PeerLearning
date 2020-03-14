@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/helper/courseModel.dart';
+import 'package:peer_programing/src/theme/theme.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key);
-
   double width;
 
   Widget _header(BuildContext context) {
@@ -14,69 +15,52 @@ class HomePage extends StatelessWidget {
       borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
       child: Container(
-          height: 200,
+          height: 120,
           width: width,
           decoration: BoxDecoration(
-            color: LightColor.purple,
+            color: LightColor.orange,
           ),
           child: Stack(
             fit: StackFit.expand,
             alignment: Alignment.center,
             children: <Widget>[
               Positioned(
-                  top: 30,
-                  right: -100,
-                  child: _circularContainer(300, LightColor.lightpurple)),
+                  top: 10,
+                  right: -120,
+                  child: _circularContainer(300, LightColor.lightOrange2)),
               Positioned(
-                  top: -100,
-                  left: -45,
-                  child: _circularContainer(width * .5, LightColor.darkpurple)),
+                  top: -60,
+                  left: -65,
+                  child: _circularContainer(width * .5, LightColor.darkOrange)),
               Positioned(
-                  top: -180,
+                  top: -230,
                   right: -30,
                   child: _circularContainer(width * .7, Colors.transparent,
                       borderColor: Colors.white38)),
               Positioned(
-                  top: 40,
+                  top: 50,
                   left: 0,
                   child: Container(
                       width: width,
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Stack(
                         children: <Widget>[
                           Icon(
                             Icons.keyboard_arrow_left,
                             color: Colors.white,
                             size: 40,
                           ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                "Search courses",
+                          Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Recomended",
                                 style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.w500),
-                              ),
-                              Icon(
-                                Icons.search,
-                                color: Colors.white,
-                                size: 30,
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Type Something...",
-                            style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500),
-                          )
+                              ))
                         ],
-                      )))
+                      ))),
             ],
           )),
     );
@@ -95,132 +79,72 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _categoryRow(
-    String title,
-    Color primary,
-    Color textColor,
-  ) {
+  Widget _categoryRow(String title) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      height: 30,
-      child: Row(
+      // margin: EdgeInsets.symmetric(horizontal: 20),
+      height: 68,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-                color: LightColor.titleTextColor, fontWeight: FontWeight.bold),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: LightColor.extraDarkPurple,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-          _chip("See all", primary)
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+              width: width,
+              height: 30,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  SizedBox(width: 20),
+                  _chip("Data Scientist", LightColor.yellow, height: 5),
+                  SizedBox(width: 10),
+                  _chip("Data Analyst", LightColor.seeBlue, height: 5),
+                  SizedBox(width: 10),
+                  _chip("Data Engineer", LightColor.orange, height: 5),
+                  SizedBox(width: 10),
+                  _chip("Data Scientist", LightColor.lightBlue, height: 5),
+                ],
+              )),
+          SizedBox(height: 10)
         ],
       ),
     );
   }
 
-  Widget _featuredRowA() {
+  Widget _courseList() {
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       child: Container(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            _card(
-                primary: LightColor.orange,
-                backWidget:
-                    _decorationContainerA(LightColor.lightOrange, 50, -30),
-                chipColor: LightColor.orange,
-                chipText1: "Find the right degree for you",
-                chipText2: "8 Cources",
-                isPrimaryCard: true,
-                imgPath:
-                    "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerB(Colors.white, 90, -40),
-                chipText1: "Become a data scientist",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://hips.hearstapps.com/esquireuk.cdnds.net/16/39/980x980/square-1475143834-david-gandy.jpg?resize=480:*"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerC(Colors.white, 50, -30),
-                chipText1: "Become a digital marketer",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://www.visafranchise.com/wp-content/uploads/2019/05/patrick-findaro-visa-franchise-square.jpg"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(LightColor.seeBlue, -50, 30,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.darkseeBlue),
-                chipText1: "Become a machine learner",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://d1mo3tzxttab3n.cloudfront.net/static/img/shop/560x580/vint0080.jpg"),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _featuredRowB() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            _card(
-                primary: LightColor.seeBlue,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(
-                    LightColor.darkseeBlue, -100, -65,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.seeBlue),
-                chipText1: "English for career development ",
-                chipText2: "8 Cources",
-                isPrimaryCard: true,
-                imgPath:
-                    "https://www.reiss.com/media/product/946/218/silk-paisley-printed-pocket-square-mens-morocco-in-pink-red-20.jpg?format=jpeg&auto=webp&quality=85&width=1200&height=1200&fit=bounds"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.lightpurple,
-                backWidget: _decorationContainerE(
-                  LightColor.lightpurple,
-                  90,
-                  -40,
-                  secondary: LightColor.lightseeBlue,
-                ),
-                chipText1: "Bussiness foundation",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://i.dailymail.co.uk/i/pix/2016/08/05/19/36E9139400000578-3725856-image-a-58_1470422921868.jpg"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerF(
-                    LightColor.lightOrange, LightColor.orange, 50, -30),
-                chipText1: "Excel skill for business",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://www.reiss.com/media/product/945/066/03-2.jpg?format=jpeg&auto=webp&quality=85&width=632&height=725&fit=bounds"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerA(
-                  Colors.white,
-                  -50,
-                  30,
-                ),
-                chipText1: "Beacame a data analyst",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://img.alicdn.com/imgextra/i4/52031722/O1CN0165X68s1OaiaYCEX6U_!!52031722.jpg"),
+            _courceInfo(CourseList.list[0],
+                _decorationContainerA(Colors.redAccent, -110, -85),
+                background: LightColor.seeBlue),
+            Divider(
+              thickness: 1,
+              endIndent: 20,
+              indent: 20,
+            ),
+            _courceInfo(CourseList.list[1], _decorationContainerB(),
+                background: LightColor.darkOrange),
+            Divider(
+              thickness: 1,
+              endIndent: 20,
+              indent: 20,
+            ),
+            _courceInfo(CourseList.list[2], _decorationContainerC(),
+                background: LightColor.lightOrange2),
           ],
         ),
       ),
@@ -228,76 +152,93 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _card(
-      {Color primary = Colors.redAccent,
+      {Color primaryColor = Colors.redAccent,
       String imgPath,
-      String chipText1 = '',
-      String chipText2 = '',
-      Widget backWidget,
-      Color chipColor = LightColor.orange,
-      bool isPrimaryCard = false}) {
+      Widget backWidget}) {
     return Container(
-        height: isPrimaryCard ? 190 : 180,
-        width: isPrimaryCard ? width * .32 : width * .32,
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        height: 190,
+        width: width * .34,
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-            color: primary.withAlpha(200),
+            color: primaryColor,
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: <BoxShadow>[
               BoxShadow(
                   offset: Offset(0, 5),
                   blurRadius: 10,
-                  color: LightColor.lightpurple.withAlpha(20))
+                  color: Color(0x12000000))
             ]),
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(20)),
-          child: Container(
-            child: Stack(
-              children: <Widget>[
-                backWidget,
-                Positioned(
-                    top: 20,
-                    left: 10,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.grey.shade300,
-                      backgroundImage: NetworkImage(imgPath),
-                    )),
-                Positioned(
-                  bottom: 10,
-                  left: 10,
-                  child: _cardInfo(chipText1, chipText2,
-                      LightColor.titleTextColor, chipColor,
-                      isPrimaryCard: isPrimaryCard),
-                )
-              ],
-            ),
-          ),
+          child: backWidget,
         ));
   }
 
-  Widget _cardInfo(String title, String courses, Color textColor, Color primary,
-      {bool isPrimaryCard = false}) {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(right: 10),
-            width: width * .32,
-            alignment: Alignment.topCenter,
-            child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: isPrimaryCard ? Colors.white : textColor),
+  Widget _courceInfo(CourseModel model, Widget decoration, {Color background}) {
+    return Container(
+        height: 170,
+        width: width - 20,
+        child: Row(
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: .7,
+              child: _card(primaryColor: background, backWidget: decoration),
             ),
-          ),
-          SizedBox(height: 5),
-          _chip(courses, primary, height: 5, isPrimaryCard: isPrimaryCard)
-        ],
-      ),
-    );
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 15),
+                Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(model.name,
+                            style: TextStyle(
+                                color: LightColor.purple,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      CircleAvatar(
+                        radius: 3,
+                        backgroundColor: background,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(model.noOfCource,
+                          style: TextStyle(
+                            color: LightColor.grey,
+                            fontSize: 14,
+                          )),
+                      SizedBox(width: 10)
+                    ],
+                  ),
+                ),
+                Text(model.university,
+                    style: AppTheme.h6Style.copyWith(
+                      fontSize: 12,
+                      color: LightColor.grey,
+                    )),
+                SizedBox(height: 15),
+                Text(model.description,
+                    style: AppTheme.h6Style.copyWith(
+                        fontSize: 12, color: LightColor.extraDarkPurple)),
+                SizedBox(height: 15),
+                Row(
+                  children: <Widget>[
+                    _chip(model.tag1, LightColor.darkOrange, height: 5),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    _chip(model.tag2, LightColor.seeBlue, height: 5),
+                  ],
+                )
+              ],
+            ))
+          ],
+        ));
   }
 
   Widget _chip(String text, Color textColor,
@@ -317,7 +258,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _decorationContainerA(Color primary, double top, double left) {
+  Widget _decorationContainerA(Color primaryColor, double top, double left) {
     return Stack(
       children: <Widget>[
         Positioned(
@@ -325,188 +266,108 @@ class HomePage extends StatelessWidget {
           left: left,
           child: CircleAvatar(
             radius: 100,
-            backgroundColor: primary.withAlpha(255),
+            backgroundColor: LightColor.darkseeBlue,
           ),
         ),
-        _smallContainer(primary, 20, 40),
+        _smallContainer(LightColor.yellow, 40, 20),
         Positioned(
-          top: 20,
-          right: -30,
+          top: -30,
+          right: -10,
           child: _circularContainer(80, Colors.transparent,
               borderColor: Colors.white),
-        )
+        ),
+        Positioned(
+          top: 110,
+          right: -50,
+          child: CircleAvatar(
+            radius: 60,
+            backgroundColor: LightColor.darkseeBlue,
+            child:
+                CircleAvatar(radius: 40, backgroundColor: LightColor.seeBlue),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _decorationContainerB(Color primary, double top, double left) {
+  Widget _decorationContainerB() {
     return Stack(
       children: <Widget>[
         Positioned(
           top: -65,
-          right: -65,
+          left: -65,
           child: CircleAvatar(
             radius: 70,
-            backgroundColor: Colors.blue.shade100,
-            child: CircleAvatar(radius: 30, backgroundColor: primary),
+            backgroundColor: LightColor.lightOrange2,
+            child: CircleAvatar(
+                radius: 30, backgroundColor: LightColor.darkOrange),
           ),
         ),
         Positioned(
-            top: 35,
+            bottom: -35,
             right: -40,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: LightColor.lightseeBlue, radius: 40)))
-      ],
-    );
-  }
-
-  Widget _decorationContainerC(Color primary, double top, double left) {
-    return Stack(
-      children: <Widget>[
+            child:
+                CircleAvatar(backgroundColor: LightColor.yellow, radius: 40)),
         Positioned(
-          top: -105,
-          left: -35,
-          child: CircleAvatar(
-            radius: 70,
-            backgroundColor: LightColor.orange.withAlpha(100),
-          ),
-        ),
-        Positioned(
-            top: 35,
-            right: -40,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: LightColor.orange, radius: 40))),
-        _smallContainer(
-          LightColor.yellow,
-          35,
-          70,
-        )
-      ],
-    );
-  }
-
-  Widget _decorationContainerD(Color primary, double top, double left,
-      {Color secondary, Color secondaryAccent}) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: top,
-          left: left,
-          child: CircleAvatar(
-            radius: 100,
-            backgroundColor: secondary,
-          ),
-        ),
-        _smallContainer(LightColor.yellow, 18, 35, radius: 12),
-        Positioned(
-          top: 130,
-          left: -50,
-          child: CircleAvatar(
-            radius: 80,
-            backgroundColor: primary,
-            child: CircleAvatar(radius: 50, backgroundColor: secondaryAccent),
-          ),
-        ),
-        Positioned(
-          top: -30,
-          right: -40,
-          child: _circularContainer(80, Colors.transparent,
+          top: 50,
+          left: -40,
+          child: _circularContainer(70, Colors.transparent,
               borderColor: Colors.white),
-        )
+        ),
       ],
     );
   }
 
-  Widget _decorationContainerE(Color primary, double top, double left,
-      {Color secondary}) {
+  Widget _decorationContainerC() {
     return Stack(
       children: <Widget>[
         Positioned(
-          top: -105,
+          bottom: -65,
           left: -35,
           child: CircleAvatar(
             radius: 70,
-            backgroundColor: primary.withAlpha(100),
+            backgroundColor: Color(0xfffeeaea),
           ),
         ),
         Positioned(
-            top: 40,
+            bottom: -30,
             right: -25,
             child: ClipRect(
                 clipper: QuadClipper(),
-                child: CircleAvatar(backgroundColor: primary, radius: 40))),
-        Positioned(
-            top: 45,
-            right: -50,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(backgroundColor: secondary, radius: 50))),
-        _smallContainer(LightColor.yellow, 15, 90, radius: 5)
-      ],
-    );
-  }
-
-  Widget _decorationContainerF(
-      Color primary, Color secondary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-            top: 25,
-            right: -20,
-            child: RotatedBox(
-              quarterTurns: 1,
-              child: ClipRect(
-                  clipper: QuadClipper(),
-                  child: CircleAvatar(
-                      backgroundColor: primary.withAlpha(100), radius: 50)),
-            )),
-        Positioned(
-            top: 34,
-            right: -8,
-            child: ClipRect(
-                clipper: QuadClipper(),
                 child: CircleAvatar(
-                    backgroundColor: secondary.withAlpha(100), radius: 40))),
-        _smallContainer(LightColor.yellow, 15, 90, radius: 5)
+                    backgroundColor: LightColor.yellow, radius: 40))),
+        _smallContainer(
+          Colors.yellow,
+          35,
+          70,
+        ),
       ],
     );
   }
 
-  Positioned _smallContainer(Color primary, double top, double left,
+  Positioned _smallContainer(Color primaryColor, double top, double left,
       {double radius = 10}) {
     return Positioned(
         top: top,
         left: left,
         child: CircleAvatar(
           radius: radius,
-          backgroundColor: primary.withAlpha(255),
+          backgroundColor: primaryColor.withAlpha(255),
         ));
-  }
-
-  BottomNavigationBarItem _bottomIcons(IconData icon) {
-    return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
   }
 
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
-      body: SingleChildScrollView(
-        child: Container(
+        body: SingleChildScrollView(
+            child: Container(
           child: Column(
             children: <Widget>[
               _header(context),
               SizedBox(height: 20),
-              _categoryRow("Featured", LightColor.orange, LightColor.orange),
-              _featuredRowA(),
-              SizedBox(height: 0),
-              _categoryRow(
-                  "Featured", LightColor.purple, LightColor.darkpurple),
-              _featuredRowB()
+              _categoryRow("Start a new career"),
+              _courseList()
             ],
           ),
         )

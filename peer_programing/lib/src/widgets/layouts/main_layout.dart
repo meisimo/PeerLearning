@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 
 class MainLayout extends StatelessWidget{
-  final routeMap = ['/','/recomended', '/list', '/user'];
+  final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/user'];
   final Widget body;
 
   MainLayout({this.body});
@@ -24,8 +24,9 @@ class MainLayout extends StatelessWidget{
           items: [
             _bottomIcons(Icons.home),
             _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.book),
-            _bottomIcons(Icons.person),
+            _bottomIcons(Icons.bookmark ),
+            _bottomIcons(Icons.dns),
+            _bottomIcons(Icons.account_circle ),
           ],
           onTap: (index) {
             Navigator.pushReplacementNamed(context, this.routeMap[index]);

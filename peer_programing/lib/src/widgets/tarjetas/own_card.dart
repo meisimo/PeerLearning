@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 
-class MiniCard extends StatelessWidget{
+class OwnCard extends StatelessWidget{
   final bool isPrimaryCard;
   final Color primary;
   final String imgPath;
@@ -14,7 +14,7 @@ class MiniCard extends StatelessWidget{
 
   double width;
 
-  MiniCard({
+  OwnCard({
     this.primary = Colors.redAccent,
     this.imgPath,
     this.chipText1 = '',

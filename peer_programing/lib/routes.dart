@@ -11,7 +11,8 @@ class Routes{
   static final routes = {
     '/': (BuildContext context) => new HomePage(),
     '/recomended': (BuildContext context) => new RecomendedPage(),
-    '/list': (BuildContext context) => new ListPage(),
+    '/list_selected': (BuildContext context) => new ListPage(),
+    '/list_proposals': (BuildContext context) => new UserPage(),
     '/user': (BuildContext context) => new UserPage(),
   };
 }
