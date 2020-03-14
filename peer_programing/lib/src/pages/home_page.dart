@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
-import 'package:peer_programing/src/pages/recomended_page.dart';
+import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 
 class HomePage extends StatelessWidget {
@@ -494,27 +494,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
-    return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedItemColor: LightColor.purple,
-          unselectedItemColor: Colors.grey.shade300,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 0,
-          items: [
-            _bottomIcons(Icons.home),
-            _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.book),
-            _bottomIcons(Icons.person),
-          ],
-          onTap: (index) {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => RecomendedPage()));
-          },
-        ),
-        body: SingleChildScrollView(
-            child: Container(
+    return MainLayout(
+      body: SingleChildScrollView(
+        child: Container(
           child: Column(
             children: <Widget>[
               _header(context),
@@ -527,6 +509,8 @@ class HomePage extends StatelessWidget {
               _featuredRowB()
             ],
           ),
-        )));
+        )
+      )
+    );
   }
 }

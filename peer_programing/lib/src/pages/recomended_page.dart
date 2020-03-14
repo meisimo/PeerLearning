@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/courseModel.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
-import 'package:peer_programing/src/pages/home_page.dart';
+import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/theme/theme.dart';
+
 
 class RecomendedPage extends StatelessWidget {
   RecomendedPage({Key key}) : super(key: key);
@@ -357,35 +358,10 @@ class RecomendedPage extends StatelessWidget {
         ));
   }
 
-  BottomNavigationBarItem _bottomIcons(IconData icon) {
-    return BottomNavigationBarItem(
-        //  backgroundColor: Colors.blue,
-        icon: Icon(icon),
-        title: Text(""));
-  }
-
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
-    return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedItemColor: LightColor.purple,
-          unselectedItemColor: Colors.grey.shade300,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 1,
-          items: [
-            _bottomIcons(Icons.home),
-            _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.book),
-            _bottomIcons(Icons.person),
-          ],
-          onTap: (index) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()));
-          },
-        ),
+    return MainLayout(
         body: SingleChildScrollView(
             child: Container(
           child: Column(
@@ -396,6 +372,8 @@ class RecomendedPage extends StatelessWidget {
               _courseList()
             ],
           ),
-        )));
+        )
+      )
+    );
   }
 }

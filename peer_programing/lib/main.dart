@@ -11,8 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Peer learning',
       theme: AppTheme.lightTheme,
-      home: HomePage(),
+      // home: HomePage(),
+      initialRoute: Routes.initialRoute,
+      routes: Routes.routes,
       debugShowCheckedModeBanner: false,
     );
   }
