@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
-import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/helper/courseModel.dart';
 import 'package:peer_programing/src/theme/theme.dart';
@@ -9,66 +8,7 @@ import 'package:peer_programing/src/theme/theme.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key);
   double width;
-/* 
-  Widget _header(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    return ClipRRect(
-      borderRadius: 
-        BorderRadius.only(
-          bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)
-        ),
-      child: Container(
-          height: 120,
-          width: width,
-          decoration: BoxDecoration(
-            color: LightColor.orange,
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            alignment: Alignment.center,
-            children: <Widget>[
-              Positioned(
-                  top: 10,
-                  right: -120,
-                  child: _circularContainer(300, LightColor.lightOrange2)),
-              Positioned(
-                  top: -60,
-                  left: -65,
-                  child: _circularContainer(width * .5, LightColor.darkOrange)),
-              Positioned(
-                  top: -230,
-                  right: -30,
-                  child: _circularContainer(width * .7, Colors.transparent,
-                      borderColor: Colors.white38)),
-              Positioned(
-                  top: 50,
-                  left: 0,
-                  child: Container(
-                      width: width,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Stack(
-                        children: <Widget>[
-                          Icon(
-                            Icons.keyboard_arrow_left,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Recomended",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w500),
-                              ))
-                        ],
-                      ))),
-            ],
-          )),
-    );
-  }
- */
+
   Widget _circularContainer(double height, Color color,
       {Color borderColor = Colors.transparent, double borderWidth = 2}) {
     return Container(
@@ -78,6 +18,32 @@ class HomePage extends StatelessWidget {
         shape: BoxShape.circle,
         color: color,
         border: Border.all(color: borderColor, width: borderWidth),
+      ),
+    );
+  }
+
+  Widget _finder(){
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "buscar...",
+                style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500),
+              ),
+              Icon(
+                Icons.search,
+                color: Colors.white,
+                size: 30,
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -363,11 +329,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
-      title: "Ofertas jejeje",
+      title: "Ofertas",
+      headerChild: this._finder(),
       body: Container(
         child: Column(
           children: <Widget>[
-            _categoryRow("Hola que tal"),
+            _categoryRow("Escoge una categoría"),
             _courseList()
           ],
         ),

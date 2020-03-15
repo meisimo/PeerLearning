@@ -448,12 +448,11 @@ class RecomendedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
+      title: "Favoritos",
       body: SingleChildScrollView(
         child: Container(
           child: Column(
             children: <Widget>[
-              _header(context),
-              SizedBox(height: 20),
               _categoryRow("Featured", LightColor.orange, LightColor.orange),
               _featuredRowA(),
               SizedBox(height: 0),
