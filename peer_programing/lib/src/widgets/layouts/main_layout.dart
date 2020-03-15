@@ -6,8 +6,9 @@ class MainLayout extends StatelessWidget{
   final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/user'];
   final Widget body;
   final String title;
+  final Widget headerChild;
 
-  MainLayout({this.body, this.title});
+  MainLayout({this.body, this.title, this.headerChild});
 
   BottomNavigationBarItem _bottomIcons(IconData icon) {
     return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
@@ -38,7 +39,11 @@ class MainLayout extends StatelessWidget{
         child: Container(
           child: Column(
            children: <Widget>[
-            MainHeader(title: this.title,),
+            MainHeader( 
+              title: this.title,
+              child: this.headerChild,
+              height: (this.headerChild == null ? 120: 150),
+            ),
             SizedBox(height: 20),
             this.body,
             ],
