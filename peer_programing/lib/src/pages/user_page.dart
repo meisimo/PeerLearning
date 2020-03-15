@@ -5,7 +5,7 @@ class UserPage extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return MainLayout(
-      body:Text("Users")
+      body:Text("aiuuda"),title: 'hahahaha',
     );
   }
 }
