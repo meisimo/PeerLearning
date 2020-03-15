@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 
 class MainLayout extends StatelessWidget{
   final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/user'];
   final Widget body;
+  final String title;
 
-  MainLayout({this.body});
+  MainLayout({this.body, this.title});
 
   BottomNavigationBarItem _bottomIcons(IconData icon) {
     return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
@@ -32,7 +34,17 @@ class MainLayout extends StatelessWidget{
             Navigator.pushReplacementNamed(context, this.routeMap[index]);
           },
       ),
-      body: this.body
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+           children: <Widget>[
+            MainHeader(title: this.title,),
+            SizedBox(height: 20),
+            this.body,
+            ],
+          ),
+        )
+      )
     );
   }
 }
