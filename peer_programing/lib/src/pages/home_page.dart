@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/helper/courseModel.dart';
 import 'package:peer_programing/src/theme/theme.dart';
@@ -8,12 +9,14 @@ import 'package:peer_programing/src/theme/theme.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key);
   double width;
-
+/* 
   Widget _header(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+      borderRadius: 
+        BorderRadius.only(
+          bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)
+        ),
       child: Container(
           height: 120,
           width: width,
@@ -65,7 +68,7 @@ class HomePage extends StatelessWidget {
           )),
     );
   }
-
+ */
   Widget _circularContainer(double height, Color color,
       {Color borderColor = Colors.transparent, double borderWidth = 2}) {
     return Container(
@@ -360,17 +363,14 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
-        body: SingleChildScrollView(
-            child: Container(
-          child: Column(
-            children: <Widget>[
-              _header(context),
-              SizedBox(height: 20),
-              _categoryRow("Start a new career"),
-              _courseList()
-            ],
-          ),
-        )
+      title: "Ofertas jejeje",
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            _categoryRow("Hola que tal"),
+            _courseList()
+          ],
+        ),
       )
     );
   }
