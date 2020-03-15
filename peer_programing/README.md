@@ -8,7 +8,7 @@ A new Flutter project.
 > >
 > > routes.dart
 > >
-> > pages/
+> > screens/
 > >
 > > > auth/
 > > >
@@ -22,7 +22,7 @@ A new Flutter project.
 > >
 > > widgets/
 > > >
-> > > layouts/
+> > > layaouts/
 > > > >
 > > > > principal.dart
 > > > >
@@ -35,6 +35,8 @@ A new Flutter project.
 > > > > tarjeta.dart
 > > > >
 > > > inputs/
+> > > >
+> > > > index.dart
 > > > >
 > > > > input.dart
 > > > > 
