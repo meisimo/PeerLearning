@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
+import 'package:peer_programing/src/theme/theme.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
-import 'package:peer_programing/src/helper/courseModel.dart';
-import 'package:peer_programing/src/theme/theme.dart';
+import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key key}) : super(key: key);
+  List<MentoringCategory> _categories;
+  List<Mentoring> _mentorings;
   double width;
+
+  HomePage({Key key}) : super(key: key) {
+    this._categories = MentoringCategoryList.all();
+    this._mentorings = MentoringList.all();
+  }
 
   Widget _circularContainer(double height, Color color,
       {Color borderColor = Colors.transparent, double borderWidth = 2}) {
@@ -48,6 +56,27 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  ListView _categoryList({Widget divider, List<MentoringCategory> categories}){
+    List<Widget> categoryList = [];
+
+    categories.forEach((category){
+      categoryList.add(divider);
+      categoryList.add(
+        TagChip(
+          category.name,
+          category.color,
+          height: 5,
+          id: category.id,
+        )
+      );  
+    });
+
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: categoryList,
+    );
+  }
+
   Widget _categoryRow(String title) {
     return Container(
       // margin: EdgeInsets.symmetric(horizontal: 20),
@@ -65,65 +94,78 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10,),
           Container(
-              width: width,
-              height: 30,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  SizedBox(width: 20),
-                  _chip("Data Scientist", LightColor.yellow, height: 5),
-                  SizedBox(width: 10),
-                  _chip("Data Analyst", LightColor.seeBlue, height: 5),
-                  SizedBox(width: 10),
-                  _chip("Data Engineer", LightColor.orange, height: 5),
-                  SizedBox(width: 10),
-                  _chip("Data Scientist", LightColor.lightBlue, height: 5),
-                ],
-              )),
+            width: width,
+            height: 30,
+            child: _categoryList(
+              divider: SizedBox(width: 20,),
+              categories: this._categories,
+            ),
+          ),
           SizedBox(height: 10)
         ],
       ),
     );
   }
 
-  Widget _courseList() {
+  Widget _mentoringList() {
+    /*
+    List<Widget> mentoringList = <Widget>[
+      _courceInfo(this._mentorings[0],
+          _decorationContainerA(Colors.redAccent, -110, -85),
+          background: LightColor.seeBlue),
+      Divider(
+        thickness: 1,
+        endIndent: 20,
+        indent: 20,
+      ),
+      _courceInfo(CourseList.list[1], _decorationContainerB(),
+          background: LightColor.darkOrange),
+      Divider(
+        thickness: 1,
+        endIndent: 20,
+        indent: 20,
+      ),
+      _courceInfo(CourseList.list[2], _decorationContainerC(),
+          background: LightColor.lightOrange2), 
+    ];
+    */
+    List<Widget> mentoringList = [];
+    
+    final Divider divider = Divider(
+      thickness: 1,
+      endIndent: 20,
+      indent: 20,
+    );
+
+    for(Mentoring mentoring in this._mentorings){
+      mentoringList.add(
+        _mentoringResume(
+          mentoring,
+          _decorationContainerA(Colors.redAccent, -110, -85),
+          background: LightColor.seeBlue
+        ),
+      );
+      mentoringList.add(divider);
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _courceInfo(CourseList.list[0],
-                _decorationContainerA(Colors.redAccent, -110, -85),
-                background: LightColor.seeBlue),
-            Divider(
-              thickness: 1,
-              endIndent: 20,
-              indent: 20,
-            ),
-            _courceInfo(CourseList.list[1], _decorationContainerB(),
-                background: LightColor.darkOrange),
-            Divider(
-              thickness: 1,
-              endIndent: 20,
-              indent: 20,
-            ),
-            _courceInfo(CourseList.list[2], _decorationContainerC(),
-                background: LightColor.lightOrange2),
-          ],
+          children: mentoringList
         ),
       ),
     );
   }
 
-  Widget _card(
-      {Color primaryColor = Colors.redAccent,
-      String imgPath,
-      Widget backWidget}) {
+  Widget _card({
+    Color primaryColor = Colors.redAccent,
+    String imgPath,
+    Widget backWidget
+  }) {
     return Container(
         height: 190,
         width: width * .34,
@@ -143,7 +185,7 @@ class HomePage extends StatelessWidget {
         ));
   }
 
-  Widget _courceInfo(CourseModel model, Widget decoration, {Color background}) {
+  Widget _mentoringResume(Mentoring mentoring, Widget decoration, {Color background}) {
     return Container(
         height: 170,
         width: width - 20,
@@ -154,16 +196,18 @@ class HomePage extends StatelessWidget {
               child: _card(primaryColor: background, backWidget: decoration),
             ),
             Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 15),
-                Container(
+              child: GestureDetector(
+                onTap: () => print("Tap"),
+                child:Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                  SizedBox(height: 15),
+                  Container(
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       Expanded(
-                        child: Text(model.name,
+                        child: Text(mentoring.name,
                             style: TextStyle(
                                 color: LightColor.purple,
                                 fontSize: 16,
@@ -176,55 +220,33 @@ class HomePage extends StatelessWidget {
                       SizedBox(
                         width: 5,
                       ),
-                      Text(model.noOfCource,
-                          style: TextStyle(
-                            color: LightColor.grey,
-                            fontSize: 14,
-                          )),
+                      Text("${mentoring.points}",
+                        style: TextStyle(
+                          color: LightColor.grey,
+                          fontSize: 14,
+                        )
+                      ),
                       SizedBox(width: 10)
                     ],
                   ),
                 ),
-                Text(model.university,
-                    style: AppTheme.h6Style.copyWith(
-                      fontSize: 12,
-                      color: LightColor.grey,
-                    )),
                 SizedBox(height: 15),
-                Text(model.description,
+                Text(mentoring.description,
                     style: AppTheme.h6Style.copyWith(
                         fontSize: 12, color: LightColor.extraDarkPurple)),
                 SizedBox(height: 15),
-                Row(
-                  children: <Widget>[
-                    _chip(model.tag1, LightColor.darkOrange, height: 5),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    _chip(model.tag2, LightColor.seeBlue, height: 5),
-                  ],
+                  Container(
+                    width: width,
+                    height: 30,
+                    child: _categoryList(
+                      divider: SizedBox(width: 10,),
+                      categories: mentoring.categories
+                  ),
                 )
               ],
-            ))
+            )))
           ],
         ));
-  }
-
-  Widget _chip(String text, Color textColor,
-      {double height = 0, bool isPrimaryCard = false}) {
-    return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: height),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-            color: isPrimaryCard ? Colors.white : textColor, fontSize: 12),
-      ),
-    );
   }
 
   Widget _decorationContainerA(Color primaryColor, double top, double left) {
@@ -335,7 +357,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             _categoryRow("Escoge una categoría"),
-            _courseList()
+            _mentoringList()
           ],
         ),
       )
