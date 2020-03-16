@@ -5,6 +5,7 @@ class TagChip extends StatelessWidget{
   final Color textColor;
   final double height;
   final bool isPrimaryCard;
+  final int id;
 
   TagChip(
     this.text, 
@@ -12,6 +13,7 @@ class TagChip extends StatelessWidget{
     {
       this.height = 0,
       this.isPrimaryCard = false,
+      this.id
     }
   );
 
