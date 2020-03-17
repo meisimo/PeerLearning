@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 
 
 class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
-
     return MainLayout(
         title: "Login",
         body: Container(
@@ -33,6 +33,11 @@ class LoginPage extends StatelessWidget {
                         //       );
                         //   }
                         // );
+
+                        Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomePage()),
+                            );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
                       
