@@ -3,8 +3,9 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 
 class MainLayout extends StatelessWidget{
-  final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/user'];
+  final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/login'];
   final Widget body;
+
   final String title;
   final Widget headerChild;
 
