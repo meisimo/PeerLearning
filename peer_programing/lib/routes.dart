@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/pages/create_form_page.dart';
 import 'package:peer_programing/src/pages/detalle.dart';
 
 import 'package:peer_programing/src/pages/home_page.dart';
@@ -13,7 +14,7 @@ class Routes{
     '/': (BuildContext context) => new HomePage(),
     '/recomended': (BuildContext context) => new RecomendedPage(),
     '/list_selected': (BuildContext context) => new ListPage(),
-    '/list_proposals': (BuildContext context) => new Detalle(),
+    '/list_proposals': (BuildContext context) => new CreateForm(),
     '/user': (BuildContext context) => new UserPage(),
   };
 }
