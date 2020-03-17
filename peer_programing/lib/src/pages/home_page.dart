@@ -6,6 +6,7 @@ import 'package:peer_programing/src/theme/theme.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
+import 'package:peer_programing/src/widgets/tarjetas/micro_card.dart';
 
 class HomePage extends StatelessWidget {
   List<MentoringCategory> _categories;
@@ -15,6 +16,13 @@ class HomePage extends StatelessWidget {
   HomePage({Key key}) : super(key: key) {
     this._categories = MentoringCategoryList.all();
     this._mentorings = MentoringList.all();
+  }
+
+  String _truncateDescription(String description){
+    final int maxLength = 90;
+    return description.length > maxLength? 
+      "${description.substring(0,maxLength)}...":
+      description;
   }
 
   Widget _circularContainer(double height, Color color,
@@ -161,39 +169,19 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _card({
-    Color primaryColor = Colors.redAccent,
-    String imgPath,
-    Widget backWidget
-  }) {
-    return Container(
-        height: 190,
-        width: width * .34,
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-            color: primaryColor,
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                  offset: Offset(0, 5),
-                  blurRadius: 10,
-                  color: Color(0x12000000))
-            ]),
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          child: backWidget,
-        ));
-  }
-
   Widget _mentoringResume(Mentoring mentoring, Widget decoration, {Color background}) {
     return Container(
-        height: 170,
+        height: 130,
         width: width - 20,
         child: Row(
           children: <Widget>[
             AspectRatio(
               aspectRatio: .7,
-              child: _card(primaryColor: background, backWidget: decoration),
+              child: MicroCard(
+                primary: background, 
+                backWidget: decoration, 
+                imgPath: mentoring.user.imgPath,
+              ),
             ),
             Expanded(
               child: GestureDetector(
@@ -226,18 +214,21 @@ class HomePage extends StatelessWidget {
                           fontSize: 14,
                         )
                       ),
-                      SizedBox(width: 10)
                     ],
                   ),
                 ),
-                SizedBox(height: 15),
-                Text(mentoring.description,
-                    style: AppTheme.h6Style.copyWith(
-                        fontSize: 12, color: LightColor.extraDarkPurple)),
-                SizedBox(height: 15),
+                SizedBox(height: 10),
+                Text(
+                  _truncateDescription(mentoring.description),
+                  style: AppTheme.h6Style.copyWith(
+                    fontSize: 12, 
+                    color: LightColor.extraDarkPurple
+                    )
+                  ),
+                SizedBox(height: 10),
                   Container(
                     width: width,
-                    height: 30,
+                    height: 21,
                     child: _categoryList(
                       divider: SizedBox(width: 10,),
                       categories: mentoring.categories

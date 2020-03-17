@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
-import 'package:peer_programing/src/widgets/tarjetas/extended_card.dart';
+import 'package:peer_programing/src/widgets/layouts/card_layout.dart';
 
 class MiniCard extends StatelessWidget{
   final bool isPrimaryCard;

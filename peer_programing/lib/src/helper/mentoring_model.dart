@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 
 
 class Mentoring {
@@ -11,6 +12,7 @@ class Mentoring {
   double points;
   List<MentoringCategory> categories;
   MentoringType mentoringType;
+  UserModel user;
 
   Mentoring({
     this.name,
@@ -18,6 +20,7 @@ class Mentoring {
     this.points,
     this.categories,
     this.mentoringType,
+    this.user,
   });
 
   @override
@@ -36,6 +39,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
       name: "Data Science",
@@ -44,6 +48,7 @@ class MentoringList {
       points: rnd.nextInt(10) * 0.5,
       categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
       mentoringType: MentoringTypeList.randGenerate(),
+      user: UserModelList.randGenerate(),
     ),
     Mentoring(
         name: "Machine Learning",
@@ -52,6 +57,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
         name: "Big Data",
@@ -60,6 +66,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
       name: "Data Science",
@@ -67,6 +74,7 @@ class MentoringList {
       points: rnd.nextInt(10) * 0.5,
       categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
       mentoringType: MentoringTypeList.randGenerate(),
+      user: UserModelList.randGenerate(),
     ),
     Mentoring(
         name: "Machine Learning",
@@ -74,6 +82,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
         name: "Big Data",
@@ -82,6 +91,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
       name: "Data Science",
@@ -90,6 +100,7 @@ class MentoringList {
       points: rnd.nextInt(10) * 0.5,
       categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
       mentoringType: MentoringTypeList.randGenerate(),
+      user: UserModelList.randGenerate(),
     ),
     Mentoring(
         name: "Machine Learning",
@@ -98,6 +109,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
     Mentoring(
         name: "Big Data",
@@ -106,6 +118,7 @@ class MentoringList {
         points: rnd.nextInt(10) * 0.5,
         categories: MentoringCategoryList.randGenerate(rnd.nextInt(4)+1),
         mentoringType: MentoringTypeList.randGenerate(),
+        user: UserModelList.randGenerate(),
       ),
   ];
 }
