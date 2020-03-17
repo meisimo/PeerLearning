@@ -116,12 +116,7 @@ class Registro extends StatelessWidget{
                         fontSize: 20
                       ),),),
                     )
-                   
-                  
-                  
-                  
                   ]
-
                   
                   ),
             )

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 
 class UserPage extends StatelessWidget{
@@ -262,7 +263,12 @@ class UserPage extends StatelessWidget{
                     child: Container(
                       child :RaisedButton(
                         color: Color(0xfff46352),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomePage()),
+                            );
+                        },
                         child: const Text(
                           'Cerrar sesión',
                           style: TextStyle(fontSize: 20)

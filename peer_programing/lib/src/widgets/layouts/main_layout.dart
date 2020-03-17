@@ -3,7 +3,7 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 
 class MainLayout extends StatelessWidget{
-  final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/login'];
+  final routeMap = ['/','/recomended', '', '/list_proposals', '/login'];
   final Widget body;
 
   final String title;
@@ -28,7 +28,7 @@ class MainLayout extends StatelessWidget{
           items: [
             _bottomIcons(Icons.home),
             _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.bookmark ),
+            _bottomIcons(Icons.do_not_disturb),
             _bottomIcons(Icons.dns),
             _bottomIcons(Icons.account_circle ),
           ],
