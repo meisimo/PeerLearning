@@ -126,45 +126,133 @@ class UserPage extends StatelessWidget{
               SizedBox(
                 height: 20.0,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text('Nombre',
-                                style: TextStyle(
-                                color: Colors.blueGrey, fontSize: 12.0)),
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text('Michelle James',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
+              
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          textDirection: TextDirection.ltr,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Nombre',
+                                  style: TextStyle(
+                                  color: Colors.blueGrey, fontSize: 12.0)),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Michelle James',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      child: Icon(
-                        Icons.edit,
-                        color: Color(0xff7178d3)
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Icon(
+                          Icons.edit,
+                          color: Color(0xff7178d3)
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            textDirection: TextDirection.ltr,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Email',
+                                  style: TextStyle(
+                                  color: Colors.blueGrey, fontSize: 12.0)),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('michelleJ@gmail.com',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Icon(
+                          Icons.edit,
+                          color: Color(0xff7178d3)
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          textDirection: TextDirection.ltr,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Contraseña',
+                                  style: TextStyle(
+                                  color: Colors.blueGrey, fontSize: 12.0)),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('*******',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        child: Icon(
+                          Icons.edit,
+                          color: Color(0xff7178d3)
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               SizedBox(
-                height: 20.0,
+                height: 40.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -172,35 +260,13 @@ class UserPage extends StatelessWidget{
                   Align(
                     alignment: Alignment.center,
                     child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child:Text(
-                                'Email',
-                                textAlign : TextAlign.justify,
-                                style: TextStyle(
-                                color: Colors.blueGrey, fontSize: 12.0)
-                                ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child:Text('michelleJames@gmail.com',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      child: Icon(
-                        Icons.edit,
-                        color: Color(0xff7178d3)
+                      child :RaisedButton(
+                        color: Color(0xfff46352),
+                        onPressed: () {},
+                        child: const Text(
+                          'Cerrar sesión',
+                          style: TextStyle(fontSize: 20)
+                        ),
                       ),
                     ),
                   ),
