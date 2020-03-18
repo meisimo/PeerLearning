@@ -96,6 +96,11 @@ class Registro extends StatelessWidget{
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
+                             Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                            );
+
                         },color: Colors.deepOrange,textColor: Colors.white, 
                       child: Text("Registrarse",style: TextStyle(
                         fontSize: 20
