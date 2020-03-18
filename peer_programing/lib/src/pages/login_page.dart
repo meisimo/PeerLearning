@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -23,18 +24,11 @@ class LoginPage extends StatelessWidget {
                     ),
                     Container(
                       width: 150,
-                      child: RaisedButton(onPressed: () {
-                        //   showDialog(
-                        //   context: context,
-                        //   builder: (BuildContext context){
-                        //       return AlertDialog(
-                        //         title: Text("Alert Dialog"),
-                        //         content: Text("Dialog Content"),
-                        //       );
-                        //   }
-                        // );
-
+                      child: RaisedButton(onPressed: () async {
+                        SharedPreferences prefs = await SharedPreferences.getInstance();    
+                        await prefs.setBool('logged', true);
                         Navigator.push(
+
                               context,
                               MaterialPageRoute(builder: (context) => HomePage()),
                             );
