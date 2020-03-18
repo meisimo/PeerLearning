@@ -27,10 +27,10 @@ class LoginPage extends StatelessWidget {
                       child: RaisedButton(onPressed: () async {
                         SharedPreferences prefs = await SharedPreferences.getInstance();    
                         await prefs.setBool('logged', true);
-                        Navigator.push(
+                        Navigator.pushReplacementNamed(
 
                               context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
+                              '/',
                             );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
@@ -47,7 +47,6 @@ class LoginPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(builder: (context) => Registro()),
                             );
-
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
                       
@@ -90,11 +89,7 @@ class Registro extends StatelessWidget{
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
-                             Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
-                            );
-
+                          Navigator.pushReplacementNamed(context,'/');
                         },color: Colors.deepOrange,textColor: Colors.white, 
                       child: Text("Registrarse",style: TextStyle(
                         fontSize: 20
@@ -103,9 +98,8 @@ class Registro extends StatelessWidget{
                        Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
-                          Navigator.push(
+                          Navigator.pop(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
                             );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
