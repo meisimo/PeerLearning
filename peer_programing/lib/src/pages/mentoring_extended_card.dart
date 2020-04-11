@@ -68,7 +68,7 @@ class MentoringExtendedCard extends StatelessWidget{
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Container(
-        height: ,
+        height: 500,
         child:CardLayout(
           height: 200,
           imgPath: "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg",
