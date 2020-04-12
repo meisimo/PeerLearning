@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/main_header.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainLayout extends StatelessWidget{
-  final routeMap = ['/','/recomended', '/list_selected', '/list_proposals', '/login'];
+  final routeMap = ['/','/recomended', '/list_proposals', '/login'];
   final Widget body;
 
   final String title;
@@ -45,12 +46,20 @@ class MainLayout extends StatelessWidget{
           items: [
             _bottomIcons(Icons.home),
             _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.bookmark ),
             _bottomIcons(Icons.dns),
             _bottomIcons(Icons.account_circle ),
           ],
-          onTap: (index) {
-            Navigator.pushReplacementNamed(context, this.routeMap[index]);
+          onTap: (index) async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();    
+            bool logged = (prefs.getBool('logged') == null ? false: prefs.getBool('logged'));
+            String ruta = this.routeMap[index];
+
+            print(logged);
+            if ( logged && ruta == '/login'){
+              ruta = '/user';
+            }
+
+            Navigator.pushReplacementNamed(context, ruta);
           },
       ),
       body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body)
