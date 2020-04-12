@@ -6,6 +6,7 @@ import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/pages/recomended_page.dart';
 import 'package:peer_programing/src/pages/lists_page.dart';
 import 'package:peer_programing/src/pages/user_page.dart';
+import 'package:peer_programing/src/pages/login_page.dart';
 
 
 class Routes{
@@ -16,5 +17,6 @@ class Routes{
     '/list_selected': (BuildContext context) => new ListPage(),
     '/list_proposals': (BuildContext context) => new CreateForm(),
     '/user': (BuildContext context) => new UserPage(),
+    '/login': (BuildContext context) => new LoginPage()
   };
 }
