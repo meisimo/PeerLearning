@@ -67,93 +67,99 @@ List<String> _items = ['Calculo', 'Fisica', 'Quimica'];
 Widget _learn() {
   List<String> categoriasEscogidas;
   //ChipRow chips;
-  return Form(
-    autovalidate: true,
-    child: Column(
-      children: <Widget>[
-        //chips.showChipRow(),
-        DropdownButtonFormField(
-          value: null,
-          items: _items.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String newValue) {
-            categoriasEscogidas.add(newValue);
-            //chips.chipTitles.add(newValue);
-          },
-          decoration: const InputDecoration(
-            hintText: 'Tematicas',
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 40),
+    child: Form(
+      autovalidate: true,
+      child: Column(
+        children: <Widget>[
+          //chips.showChipRow(),
+          DropdownButtonFormField(
+            value: null,
+            items: _items.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String newValue) {
+              categoriasEscogidas.add(newValue);
+              //chips.chipTitles.add(newValue);
+            },
+            decoration: const InputDecoration(
+              hintText: 'Tematicas',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.description),
-            hintText: 'Descripcion',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.description),
+              hintText: 'Descripcion',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.monetization_on),
-            hintText: 'Tarifa',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.monetization_on),
+              hintText: 'Tarifa',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.place),
-            hintText: 'Lugar',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.place),
+              hintText: 'Lugar',
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
 
 Widget _teach() {
- List<String> categoriasEscogidas;
+  List<String> categoriasEscogidas;
   //ChipRow chips;
-  return Form(
-    autovalidate: true,
-    child: Column(
-      children: <Widget>[
-        //chips.showChipRow(),
-        DropdownButtonFormField(
-          value: null,
-          items: _items.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (String newValue) {
-            categoriasEscogidas.add(newValue);
-            //chips.chipTitles.add(newValue);
-          },
-          decoration: const InputDecoration(
-            hintText: 'Tematicas',
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 40),
+    child: Form(
+      autovalidate: true,
+      child: Column(
+        children: <Widget>[
+          //chips.showChipRow(),
+          DropdownButtonFormField(
+            value: null,
+            items: _items.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            onChanged: (String newValue) {
+              categoriasEscogidas.add(newValue);
+              //chips.chipTitles.add(newValue);
+            },
+            decoration: const InputDecoration(
+              hintText: 'Tematicas',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.description),
-            hintText: 'Descripcion',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.description),
+              hintText: 'Descripcion',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.monetization_on),
-            hintText: 'Tarifa',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.monetization_on),
+              hintText: 'Tarifa',
+            ),
           ),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.place),
-            hintText: 'Lugar',
+          TextFormField(
+            decoration: const InputDecoration(
+              icon: Icon(Icons.place),
+              hintText: 'Lugar',
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

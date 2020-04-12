@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/ofertasTutoriasModel.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Detalle extends StatefulWidget {
   @override
@@ -8,34 +11,66 @@ class Detalle extends StatefulWidget {
 }
 
 class DetalleState extends State<Detalle> {
+  var offers;
+
+  Widget onInit() {
+    return StreamBuilder(
+      stream: Firestore.instance.collection('ofertas-tutorias').snapshots().where(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return _buildDialog(context, snapshot.data.documents);
+      },
+    );
+  }
+
+  _buildDialog(context, data) {
+    DocumentSnapshot docDetalles = data[0];
+    OfertasTutorias detalles = OfertasTutorias.fromSnapshot(docDetalles);
+    return Container(
+      width: 300,
+      height: 400,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 32),
+        child: ListView(
+          children: <Widget>[
+            _detailHeader(),
+            _chipRow(),
+            Divider(
+              height: 2,
+            ),
+            _textContainer('Descripcion:', true),
+            _textContainer(
+                detalles.descripcion, false),
+            Divider(
+              height: 2,
+            ),
+            _textContainer('Tarifa:', true),
+            _textContainer(detalles.precio.toString() + " \$/hora", false),
+            Divider(
+              height: 2,
+            ),
+            _textContainer('Lugar:', true),
+            _textContainer(detalles.lugar, false),
+            Divider(
+              height: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          _detailHeader(),
-          _chipRow(),
-          Divider(
-            height: 2,
-          ),
-          _textContainer('Descripcion:', true),
-          _textContainer(
-              '\nSe dan tutorias en calculo y algebra lineal.', false),
-          Divider(
-            height: 2,
-          ),
-          _textContainer('Tarifa:', true),
-          _textContainer('\n2000 \$/hora', false),
-          Divider(
-            height: 2,
-          ),
-          _textContainer('Lugar:', true),
-          _textContainer('\nParque Simon Bolivar', false),
-          Divider(
-            height: 2,
-          ),
-        ],
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
+      child: onInit(),
     );
   }
 
@@ -43,22 +78,43 @@ class DetalleState extends State<Detalle> {
     return Column(
       children: <Widget>[
         ListTile(
-          leading: Icon(Icons.person),
-          title: Text('Juan Erich'),
+          leading: Icon(
+            Icons.person,
+            color: LightColor.purple,
+          ),
+          title: Text(
+            'Juan Erich',
+            style: TextStyle(color: LightColor.purple),
+          ),
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Icon(Icons.star),
-            Icon(Icons.star),
-            Icon(Icons.star),
-            Icon(Icons.star),
-            Icon(Icons.star_half),
+            Icon(
+              Icons.star,
+              color: LightColor.orange,
+            ),
+            Icon(
+              Icons.star,
+              color: LightColor.orange,
+            ),
+            Icon(
+              Icons.star,
+              color: LightColor.orange,
+            ),
+            Icon(
+              Icons.star,
+              color: LightColor.orange,
+            ),
+            Icon(
+              Icons.star_half,
+              color: LightColor.orange,
+            ),
             Spacer(),
             RaisedButton(
               child: Text('Registrarse'),
-              color: Colors.green,
-              onPressed: () => { }
+              color: LightColor.purple,
+              onPressed: () => {Navigator.pop(context)},
             )
           ],
         ),
@@ -89,20 +145,27 @@ class DetalleState extends State<Detalle> {
 
   Widget _textContainer(text, big) {
     if (big) {
-      return Container(
-        alignment: Alignment.topLeft,
-        child: Text(
-          text,
-          textAlign: TextAlign.left,
-          style: TextStyle(fontSize: 30),
+      return Padding(
+        padding: EdgeInsets.only(top: 5),
+        child: Container(
+          alignment: Alignment.topLeft,
+          child: Text(
+            text,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 30, color: LightColor.purple),
+          ),
         ),
       );
     } else {
-      return Container(
-        alignment: Alignment.topLeft,
-        child: Text(
-          text,
-          textAlign: TextAlign.left,
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 15),
+        child: Container(
+          alignment: Alignment.topLeft,
+          child: Text(
+            text,
+            textAlign: TextAlign.left,
+            style: TextStyle(color: LightColor.black),
+          ),
         ),
       );
     }

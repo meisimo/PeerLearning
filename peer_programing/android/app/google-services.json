@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1022893954904",
+    "firebase_url": "https://peer-programing.firebaseio.com",
+    "project_id": "peer-programing",
+    "storage_bucket": "peer-programing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022893954904:android:6b2ff5bc1e0c471db9372d",
+        "android_client_info": {
+          "package_name": "com.example.peer_programing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022893954904-7cm0f3sk7ft62vggo3ackslmrgr56rob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC5Zz6_8ksOYv1daz66bpb4MU6PEnfuE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022893954904-7cm0f3sk7ft62vggo3ackslmrgr56rob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
