@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/pages/create_form_page.dart';
-import 'package:peer_programing/src/pages/detalle.dart';
 
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/pages/recomended_page.dart';

@@ -1,15 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/quad_clipper.dart';
+import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/theme/theme.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
-import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/tarjetas/micro_card.dart';
 import 'package:peer_programing/src/widgets/inputs/finder.dart';
+import 'package:peer_programing/src/widgets/lists/category_list.dart';
 
 class HomePage extends StatelessWidget {
   MentoringListView _mentoringListView = MentoringListView();
@@ -25,7 +24,7 @@ class HomePage extends StatelessWidget {
   Widget _finder() {
     return Finder(
       placeholder: "buscar...",
-      onChange: (String input ){
+      onChange: (String input) {
         this._mentoringListView.filerByTitle(input);
       },
       textStyle: this._textInputStyle,
@@ -59,9 +58,7 @@ class HomePage extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: 30,
             child: CategoryList(
-              divider: SizedBox(
-                width: 20,
-              ),
+              dividerWidth: 20,
               categories: this._categories,
               onTap: filterByCategories,
             ),
@@ -88,55 +85,55 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class MentoringListView extends StatefulWidget{
+class MentoringListView extends StatefulWidget {
   final _MentoringListView _mentoringListView = _MentoringListView();
-  
-  @override
-  _MentoringListView createState() =>
-    _mentoringListView;
 
-  void filerByTitle(String title)=>
-    _mentoringListView.filter(title:title);
+  @override
+  _MentoringListView createState() => _mentoringListView;
+
+  void filerByTitle(String title) => _mentoringListView.filter(title: title);
 
   void filterByCategory(List<int> categories) =>
-    _mentoringListView.filter(category: categories);
+      _mentoringListView.filter(category: categories);
 }
 
-class _MentoringListView extends State<MentoringListView>{
+class _MentoringListView extends State<MentoringListView> {
   String _titleFilter;
   List<int> _categoryFilter;
   List<Mentoring> _mentorings;
   double width;
 
-  void filter({String title, List<int> category}){
-    setState( () {
-      if (title != null && title.length == 0) 
+  void filter({String title, List<int> category}) {
+    setState(() {
+      if (title != null && title.length == 0)
         this._titleFilter = null;
-      else if (title != null)
-        this._titleFilter = title.toUpperCase();
+      else if (title != null) this._titleFilter = title.toUpperCase();
 
-      if (category!=null && category.length == 0 ) 
+      if (category != null && category.length == 0)
         this._categoryFilter = null;
-      else if (category != null)
-       this._categoryFilter = category;
+      else if (category != null) this._categoryFilter = category;
     });
   }
-    
 
-  List<Mentoring> _filterMentoringsByTitles(String title){
-    return this._mentorings.where(
-      (mentoring) => mentoring.name.toUpperCase().contains(title)
-    ).toList();
+  List<Mentoring> _filterMentoringsByTitles(String title) {
+    return this
+        ._mentorings
+        .where((mentoring) => mentoring.name.toUpperCase().contains(title))
+        .toList();
   }
 
-  List<Mentoring> _filterMentoringsByCategories(List<int> categories){
-    return this._mentorings.where( 
-      (Mentoring mentoring) => 
-        0 < mentoring.categories.where( (category) => categories.contains(category.id)).length 
-    ).toList();
+  List<Mentoring> _filterMentoringsByCategories(List<int> categories) {
+    return this
+        ._mentorings
+        .where((Mentoring mentoring) =>
+            0 <
+            mentoring.categories
+                .where((category) => categories.contains(category.id))
+                .length)
+        .toList();
   }
 
-  List<Mentoring> _getMentoringListFiltered(){
+  List<Mentoring> _getMentoringListFiltered() {
     if (this._titleFilter != null && 3 < this._titleFilter.length)
       this._mentorings = _filterMentoringsByTitles(this._titleFilter);
     if (this._categoryFilter != null)
@@ -145,7 +142,7 @@ class _MentoringListView extends State<MentoringListView>{
     return this._mentorings;
   }
 
-  Widget _mentoringList() {
+  Widget _mentoringList(BuildContext context) {
     List<Widget> mentoringList = [];
 
     final Divider divider = Divider(
@@ -156,8 +153,8 @@ class _MentoringListView extends State<MentoringListView>{
 
     for (Mentoring mentoring in this._getMentoringListFiltered()) {
       mentoringList.add(
-        _mentoringResume(
-            mentoring, _decorationContainerA(Colors.redAccent, -110, -85),
+        _mentoringResume(context, mentoring,
+            _decorationContainerA(Colors.redAccent, -110, -85),
             background: LightColor.seeBlue),
       );
       mentoringList.add(divider);
@@ -173,7 +170,19 @@ class _MentoringListView extends State<MentoringListView>{
     );
   }
 
-  Widget _mentoringResume(Mentoring mentoring, Widget decoration,
+  Function _showMentoringDetail(BuildContext context, int mentoringId) =>
+    () => showDialog(
+      context: context, 
+      child: Detalle(mentoringId,
+        actionButton: new RaisedButton(
+          child: Text('aceptar'),
+          color: LightColor.purple,
+          onPressed: () => print("Guardar esta oferta!"),
+        ) 
+    ));
+
+  Widget _mentoringResume(
+      BuildContext context, Mentoring mentoring, Widget decoration,
       {Color background}) {
     return Container(
         height: 130,
@@ -190,7 +199,7 @@ class _MentoringListView extends State<MentoringListView>{
             ),
             Expanded(
                 child: GestureDetector(
-                    onTap: () => print("Tap"),
+                    onTap: _showMentoringDetail(context, mentoring.id),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -231,9 +240,7 @@ class _MentoringListView extends State<MentoringListView>{
                           width: width,
                           height: 21,
                           child: CategoryList(
-                              divider: SizedBox(
-                                width: 10,
-                              ),
+                              dividerWidth: 10,
                               categories: mentoring.categories),
                         )
                       ],
@@ -349,7 +356,6 @@ class _MentoringListView extends State<MentoringListView>{
     );
   }
 
-
   Positioned _smallContainer(Color primaryColor, double top, double left,
       {double radius = 10}) {
     return Positioned(
@@ -362,39 +368,9 @@ class _MentoringListView extends State<MentoringListView>{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     this.width = MediaQuery.of(context).size.width;
     this._mentorings = MentoringList.all();
-    return this._mentoringList();
-  }
-
-}
-
-class CategoryList extends StatelessWidget{
-  final Widget divider;
-  final List<MentoringCategory> categories;
-  final Function onTap;
-
-  CategoryList({this.divider,this.categories,this.onTap});
-
-  @override
-  Widget build(BuildContext context){
-    List<Widget> categoryList = [];
-
-    categories.forEach((category) {
-      categoryList.add(divider);
-      categoryList.add(TagChip(
-        category.name,
-        category.color,
-        height: 5,
-        id: category.id,
-        onTap: this.onTap != null ? this.onTap(category): null,
-      ));
-    });
-
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: categoryList,
-    );
+    return this._mentoringList(context);
   }
 }
