@@ -8,11 +8,28 @@ class MainLayout extends StatelessWidget{
 
   final String title;
   final Widget headerChild;
+  final bool defaultVerticalScroll;
 
-  MainLayout({this.body, this.title, this.headerChild});
+  MainLayout({this.body, this.title, this.headerChild, this.defaultVerticalScroll=true});
 
   BottomNavigationBarItem _bottomIcons(IconData icon) {
     return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
+  }
+
+  Widget _body(Widget body){
+    return Container(
+          child: Column(
+            children: <Widget>[
+              MainHeader( 
+                title: this.title,
+                child: this.headerChild,
+                height: (this.headerChild == null ? 120: 150),
+              ),
+              SizedBox(height: 20),
+              this.body,
+            ],
+          ),
+        );
   }
 
   @override
@@ -36,21 +53,7 @@ class MainLayout extends StatelessWidget{
             Navigator.pushReplacementNamed(context, this.routeMap[index]);
           },
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-           children: <Widget>[
-            MainHeader( 
-              title: this.title,
-              child: this.headerChild,
-              height: (this.headerChild == null ? 120: 150),
-            ),
-            SizedBox(height: 20),
-            this.body,
-            ],
-          ),
-        )
-      )
+      body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body)
     );
   }
 }
