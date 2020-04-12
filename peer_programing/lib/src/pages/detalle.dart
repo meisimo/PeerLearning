@@ -15,7 +15,7 @@ class DetalleState extends State<Detalle> {
 
   Widget onInit() {
     return StreamBuilder(
-      stream: Firestore.instance.collection('ofertas-tutorias').snapshots().where(),
+      stream: Firestore.instance.collection('ofertas-tutorias').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
