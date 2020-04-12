@@ -3,6 +3,7 @@ import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -80,10 +81,10 @@ class LoginPage extends StatelessWidget {
                         //       );
                         //   }
                         // );
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                            );
+                        // Navigator.push(
+                        //       context,
+                              
+                        //     );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
                       child: Text("Entrar",style: TextStyle(
@@ -97,7 +98,6 @@ class LoginPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(builder: (context) => Registro()),
                             );
-
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
                       
@@ -200,11 +200,7 @@ class Registro extends StatelessWidget{
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
-                             Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
-                            );
-
+                          Navigator.pushReplacementNamed(context,'/');
                         },color: Colors.deepOrange,textColor: Colors.white, 
                       child: Text("Registrarse",style: TextStyle(
                         fontSize: 20
@@ -213,9 +209,8 @@ class Registro extends StatelessWidget{
                        Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
-                          Navigator.push(
+                          Navigator.pop(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
                             );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
