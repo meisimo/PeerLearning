@@ -4,14 +4,17 @@ import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainLayout extends StatelessWidget{
-  final routeMap = ['/','/recomended', '/list_proposals', '/login'];
+  final routeMap = ['/','/recomended', '/list_selected', '/login'];
   final Widget body;
+  final FloatingActionButton floatingActionButton;
 
   final String title;
   final Widget headerChild;
   final bool defaultVerticalScroll;
+  final bool withBottomNavBar;
 
-  MainLayout({this.body, this.title, this.headerChild, this.defaultVerticalScroll=true});
+  MainLayout({this.body, this.title, this.headerChild, this.defaultVerticalScroll=true, 
+    this.floatingActionButton, this.withBottomNavBar = true});
 
   BottomNavigationBarItem _bottomIcons(IconData icon) {
     return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
@@ -33,10 +36,8 @@ class MainLayout extends StatelessWidget{
         );
   }
 
-  @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
+  BottomNavigationBar _bottomNavBar(BuildContext context){
+    return BottomNavigationBar(
         showSelectedLabels: false,
           showUnselectedLabels: false,
           selectedItemColor: LightColor.purple,
@@ -61,8 +62,15 @@ class MainLayout extends StatelessWidget{
 
             Navigator.pushReplacementNamed(context, ruta);
           },
-      ),
-      body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body)
+      );
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      bottomNavigationBar: this.withBottomNavBar ? _bottomNavBar(context) : null,
+      body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body),
+      floatingActionButton: this.floatingActionButton,
     );
   }
 }
