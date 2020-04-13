@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/dummy/users.dart';
-import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 
 class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
