@@ -194,6 +194,7 @@ class Registro extends StatelessWidget{
             ),
                 //lista desplegable
                 LDropDown(),
+                
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
@@ -203,20 +204,18 @@ class Registro extends StatelessWidget{
                         fontSize: 20
                       ),),),
                     ),
-                       Container(
-                      width: 150,
-                      child: RaisedButton(onPressed: () {
-                          Navigator.pop(
-                              context,
-                            );
-                        },
-                        color: Colors.deepOrange,textColor: Colors.white,
-                      
-                      
-                      child: Text("Login",style: TextStyle(
-                        fontSize: 20
-                      ),),),
-                    )
+                    // Container(
+                    //   width: 150,
+                    //   child: RaisedButton(onPressed: () {
+                    //       Navigator.pop(
+                    //           context,
+                    //         );
+                    //     },
+                    //     color: Colors.deepOrange,textColor: Colors.white,            
+                    //   child: Text("Login",style: TextStyle(
+                    //     fontSize: 20
+                    //   ),),),
+                    // )
                   ]
                   
                   ),
