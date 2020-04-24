@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:peer_programing/src/pages/home_page.dart';
+import 'package:peer_programing/dummy/users.dart';
+import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
-
 
 class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -10,17 +10,62 @@ class LoginPage extends StatelessWidget {
         body: Container(
             child: Center(
               child: Container(
-              width: 600,
+              width: 320,
               height: 400,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                  Image.asset('images/avatar-default-icon.png',width: 200,height: 100,),
-                  InputLogin(
-                    Icon(Icons.people,color: Colors.white,), 'Usuario'),
-                    InputLogin(
-                    Icon(Icons.lock,color: Colors.white,), 'Contraseña'
-                    ),
+                  Image.asset(daticosDummy[0].avatar,width: 200,height: 100,),
+                  
+              TextFormField(
+                   
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.email,color: Colors.red,),
+                  hintText: "Email",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+
+              TextFormField(
+                obscureText: true,
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.lock,color: Colors.red,),
+                  hintText: "Contraseña",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+            InkWell(
+              child: Text("Olvidaste tu contraseña"),
+              onTap: () async{
+                showDialog(
+                context: context,
+                builder: (BuildContext context){
+                return AlertDialog(
+                title: Text("Alert Dialog"),
+                content: Text("Ejemplo"),
+                );
+              }
+              );
+              },
+            ),
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
@@ -33,15 +78,12 @@ class LoginPage extends StatelessWidget {
                         //       );
                         //   }
                         // );
-
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                            );
+                        // Navigator.push(
+                        //       context,
+                              
+                        //     );
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
-                      
-                      
                       child: Text("Entrar",style: TextStyle(
                         fontSize: 20
                       ),),),
@@ -53,7 +95,6 @@ class LoginPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(builder: (context) => Registro()),
                             );
-
                         },
                         color: Colors.deepOrange,textColor: Colors.white,
                       
@@ -62,11 +103,8 @@ class LoginPage extends StatelessWidget {
                         fontSize: 20
                       ),),),
                     ),
-
                   ]
-
-                  
-                  ),
+              ),
             )
           )
         )
@@ -82,46 +120,103 @@ class Registro extends StatelessWidget{
         body: Container(
             child: Center(
               child: Container(
-              width: 600,
+              width: 350,
               height: 520,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    InputLogin(Icon(Icons.person,color: Colors.white,),"Nombre"),
-                    InputLogin(Icon(Icons.email, color: Colors.white,),"Correo"),
-                    InputLogin(Icon(Icons.lock_open,color: Colors.white,),"Contraseña"),
-                    InputLogin(Icon(Icons.lock_open,color: Colors.white,),"Confirmar contraseña"),
-                    InputLogin(Icon(Icons.lock_open,color: Colors.white,),"Tutoria"),
-
+                     
+                TextFormField(
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.person,color: Colors.red,),
+                  hintText: "Nombre",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+                TextFormField(
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.email,color: Colors.red,),
+                  hintText: "Correo",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+                TextFormField(
+                  obscureText: true,
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.lock,color: Colors.red,),
+                  hintText: "Contraseña",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+                TextFormField(
+                  obscureText: true,
+                  decoration: new InputDecoration(
+                  icon: new Icon(Icons.lock,color: Colors.red,),
+                  hintText: "Confirmar contraseña",
+                  enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: const BorderSide(
+                  color: Colors.red,
+                 ),
+               ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                borderSide: BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+                //lista desplegable
+                LDropDown(),
+                
                     Container(
                       width: 150,
                       child: RaisedButton(onPressed: () {
+                          Navigator.pushReplacementNamed(context,'/');
                         },color: Colors.deepOrange,textColor: Colors.white, 
                       child: Text("Registrarse",style: TextStyle(
                         fontSize: 20
                       ),),),
                     ),
-                       Container(
-                      width: 150,
-                      child: RaisedButton(onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
-                            );
-                        },
-                        color: Colors.deepOrange,textColor: Colors.white,
-                      
-                      
-                      child: Text("Login",style: TextStyle(
-                        fontSize: 20
-                      ),),),
-                    )
-                   
-                  
-                  
-                  
+                    // Container(
+                    //   width: 150,
+                    //   child: RaisedButton(onPressed: () {
+                    //       Navigator.pop(
+                    //           context,
+                    //         );
+                    //     },
+                    //     color: Colors.deepOrange,textColor: Colors.white,            
+                    //   child: Text("Login",style: TextStyle(
+                    //     fontSize: 20
+                    //   ),),),
+                    // )
                   ]
-
                   
                   ),
             )
