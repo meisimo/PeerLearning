@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
@@ -28,16 +27,34 @@ class Mentoring {
     return "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n}";
   }
 
-  static void getDocsFormDb() {
-    Firestore.instance.collection("mentoring").getDocuments().then((snap) => {
-          snap.documents.forEach((doc) => {
-                print(doc.data['name']),
-                print(doc.data['points']),
-                print(doc.data['description']),
-                MentoringType.getDocsOfDoc(doc),
-                MentoringCategory.getCategoriesFromDoc(snap)
-              })
-        });
+  static getDocsFormDb() async {
+    String docName;
+    double docPonts;
+    MentoringType docType;
+    String docDesc;
+    List<MentoringCategory> docCat;
+    List<Mentoring> mentoringList = List();
+
+    await Firestore.instance
+        .collection("mentoring")
+        .getDocuments()
+        .then((snap) => {
+              snap.documents.forEach((doc) async => {
+                    docCat = await MentoringCategory.getCategoriesFromDoc(snap),
+                    docType = await MentoringType.getDocsOfDoc(doc),
+                    docName = doc.data['name'],
+                    docPonts = 0.0 + doc.data['points'],
+                    docDesc = doc.data['description'],
+                    mentoringList.add(new Mentoring(
+                        name: docName,
+                        description: docDesc,
+                        points: docPonts,
+                        mentoringType: docType,
+                        categories: docCat)),
+                    print(mentoringList)
+                  }),
+            });
+            return mentoringList;
   }
 }
 

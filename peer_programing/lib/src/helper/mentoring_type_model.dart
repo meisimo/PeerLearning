@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class MentoringType {
   final int _id;
   final String _name;
@@ -16,11 +14,17 @@ class MentoringType {
     return "{'id':$_id, 'name':$_name}";
   }
 
-  static getDocsOfDoc(doc) {
-    return doc.data['mentoringType']
-        .get()
-        .then((subDoc) => (print(subDoc.data)));
+  static getDocsOfDoc(doc) async {
+    MentoringType type;
+    await doc.data['mentoringType'].get().then((subDoc) => (
+          type = MentoringType(
+              subDoc.documentID == "VQiH1ylNHJ4roav0FAeE " ? 1 : 0,
+              subDoc.data['name'])
+    ));
+    return type;
+
   }
+  
 }
 
 class MentoringTypeList {
