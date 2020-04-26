@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/dummy/users.dart';
+import 'package:peer_programing/src/widgets/dropdown.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -126,7 +128,7 @@ class _LoginForm extends State<LoginForm> {
   _LoginForm(this._formKey) : super();
 
   Widget _loginIcon() => Image.asset(
-        'images/avatar-default-icon.png',
+        daticosDummy[0].avatar,
         width: 200,
         height: 100,
       );
@@ -159,6 +161,20 @@ class _LoginForm extends State<LoginForm> {
           requiredField: true,
         ),
       ];
+
+  Widget _forgotYourPassword() => InkWell(
+        child: Text("Olvidaste tu contraseña"),
+        onTap: () async {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Alert Dialog"),
+                  content: Text("Ejemplo"),
+                );
+              });
+        },
+      );
 
   @override
   Widget build(BuildContext context) => Form(
@@ -195,52 +211,45 @@ class _SignupForm extends State<SignupForm> {
 
   List<Widget> _signupInputs() => <Widget>[
         InputLogin(
-            Key('input-nombre'),
-            Icon(
-              Icons.person,
-              color: Colors.white,
-            ),
-            "Nombre",
-            requiredField: true,
+          Key('input-nombre'),
+          Icon(
+            Icons.person,
+            color: Colors.white,
+          ),
+          "Nombre",
+          requiredField: true,
         ),
         InputLogin(
-            Key('input-correo'),
-            Icon(
-              Icons.email,
-              color: Colors.white,
-            ),
-            "Correo",
-            requiredField: true,
-            validator: _emailValidation,
+          Key('input-correo'),
+          Icon(
+            Icons.email,
+            color: Colors.white,
           ),
+          "Correo",
+          requiredField: true,
+          validator: _emailValidation,
+        ),
         InputLogin(
-            Key('input-contraseña'),
-            Icon(
-              Icons.lock_open,
-              color: Colors.white,
-            ),
-            "Contraseña",
-            requiredField: true,
-            // TODO:
-            ),
+          Key('input-contraseña'),
+          Icon(
+            Icons.lock_open,
+            color: Colors.white,
+          ),
+          "Contraseña",
+          requiredField: true,
+          // TODO:
+        ),
         InputLogin(
-            Key('input-contraseña-compartida'),
-            Icon(
-              Icons.lock_open,
-              color: Colors.white,
-            ),
-            "Confirmar contraseña",
-            requiredField: true,
-            // TODO:
-            ),
-        InputLogin(
-            Key('input-temas'),
-            Icon(
-              Icons.lock_open,
-              color: Colors.white,
-            ),
-            "Temas de interes"
-        )
+          Key('input-contraseña-compartida'),
+          Icon(
+            Icons.lock_open,
+            color: Colors.white,
+          ),
+          "Confirmar contraseña",
+          requiredField: true,
+          // TODO:
+        ),
+        LDropDown(),
       ];
 
   @override
@@ -278,14 +287,21 @@ class InputLogin extends StatelessWidget {
     return null;
   }
 
+  InputDecoration _innerTextFieldDecorationA() => InputDecoration(
+      border: InputBorder.none,
+      hintText: hintText,
+      fillColor: Colors.white,
+      filled: true,
+      enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(40.0)),
+          borderSide: const BorderSide(
+            color: Colors.red,
+          )));
+
   Widget _input() => TextFormField(
         key: this.key,
         validator: _innerValidator,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hintText,
-            fillColor: Colors.white,
-            filled: true),
+        decoration: _innerTextFieldDecorationA(),
         style: TextStyle(fontSize: 20, color: Colors.black),
       );
 
