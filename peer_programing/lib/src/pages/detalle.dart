@@ -2,48 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/ofertasTutoriasModel.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peer_programing/src/helper/mentoring_model.dart';
+import 'package:peer_programing/src/widgets/lists/category_list.dart';
+import 'package:peer_programing/src/widgets/stars_points.dart';
 
 class Detalle extends StatefulWidget {
+  final int detalle_id;
+  final RaisedButton actionButton;
+
+  Detalle (this.detalle_id, {this.actionButton}):super();
+
   @override
-  State<StatefulWidget> createState() {
-    return DetalleState();
-  }
+  State<StatefulWidget> createState() => DetalleState(this.detalle_id, this.actionButton);
 }
 
 class DetalleState extends State<Detalle> {
+  static const int maxScore = 5;
+  final int detalleId;
+  final RaisedButton actionButton;
   var offers;
+  
+  DetalleState(this.detalleId, this.actionButton):super();
 
   Widget onInit() {
     return StreamBuilder(
+      stream: Firestore.instance.collection('ofertas-tutorias').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
             child: CircularProgressIndicator(),
           );
         }
-        return _buildDialog(context, snapshot.data.documents);
+        return _buildDialog(context, snapshot.data.documents, this.detalleId);
       },
     );
   }
 
-  _buildDialog(context, data) {
+  _buildDialog(context, data, int id) {
     DocumentSnapshot docDetalles = data[0];
-    OfertasTutorias detalles = OfertasTutorias.fromSnapshot(docDetalles);
+    // OfertasTutorias detalles = OfertasTutorias.fromSnapshot(docDetalles);
+    Mentoring detalles = MentoringList.getById(id:id);
+
     return Container(
       width: 300,
-      height: 400,
+      height: 500,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 32),
         child: ListView(
           children: <Widget>[
-            _detailHeader(),
-            _chipRow(),
+            _detailHeader(detalles),
+            Container(
+              height: 35,
+              padding: EdgeInsets.all(5),
+              child: CategoryList(dividerWidth: 10, categories: detalles.categories,),
+            ),
             Divider(
               height: 2,
             ),
             _textContainer('Descripcion:', true),
             _textContainer(
-                detalles.descripcion, false),
+                detalles.description, false),
             Divider(
               height: 2,
             ),
@@ -73,7 +91,7 @@ class DetalleState extends State<Detalle> {
     );
   }
 
-  Widget _detailHeader() {
+  Widget _detailHeader(Mentoring detalles) {
     return Column(
       children: <Widget>[
         ListTile(
@@ -82,61 +100,17 @@ class DetalleState extends State<Detalle> {
             color: LightColor.purple,
           ),
           title: Text(
-            'Juan Erich',
+            detalles.user.name,
             style: TextStyle(color: LightColor.purple),
           ),
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Icon(
-              Icons.star,
-              color: LightColor.orange,
-            ),
-            Icon(
-              Icons.star,
-              color: LightColor.orange,
-            ),
-            Icon(
-              Icons.star,
-              color: LightColor.orange,
-            ),
-            Icon(
-              Icons.star,
-              color: LightColor.orange,
-            ),
-            Icon(
-              Icons.star_half,
-              color: LightColor.orange,
-            ),
+            StartsPoints( maxScore, detalles.points),
             Spacer(),
-            RaisedButton(
-              child: Text('Registrarse'),
-              color: LightColor.purple,
-              onPressed: () => {Navigator.pop(context)},
-            )
+            this.actionButton,
           ],
-        ),
-      ],
-    );
-  }
-
-  Widget _chipRow() {
-    return Row(
-      children: <Widget>[
-        Chip(
-          label: Text(
-            'Algebra',
-            style: TextStyle(color: Colors.red[400]),
-          ),
-          backgroundColor: Colors.pink[50],
-        ),
-        Chip(
-          label: Text(
-            'Calculo',
-            style: TextStyle(color: Colors.blue[400]),
-          ),
-          backgroundColor: Colors.lightBlue[50],
         ),
       ],
     );

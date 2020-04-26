@@ -10,7 +10,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Peer learning',
       theme: AppTheme.lightTheme,
-      // home: HomePage(),
       initialRoute: Routes.initialRoute,
       routes: Routes.routes,
       debugShowCheckedModeBanner: false,

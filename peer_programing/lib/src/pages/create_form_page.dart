@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 
 class CreateForm extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return FormState();
-  }
+  State<StatefulWidget> createState() => FormState();
 }
 
 class FormState extends State<CreateForm> with SingleTickerProviderStateMixin {
+  List<String> _items = MentoringCategoryList.all().map((cat) => cat.name).toList();
   TabController _formTabPageController;
+
   @override
   void initState() {
     super.initState();
@@ -21,12 +21,7 @@ class FormState extends State<CreateForm> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: <Widget>[
-            Icon(Icons.arrow_back),
-            Text('   Crear publicacion'),
-          ],
-        ),
+        title: Text('Crear publicación'),
         bottom: TabBar(
           controller: _formTabPageController,
           tabs: <Widget>[
@@ -45,121 +40,102 @@ class FormState extends State<CreateForm> with SingleTickerProviderStateMixin {
       ),
     );
   }
-}
 
-List<String> _items = ['Calculo', 'Fisica', 'Quimica'];
-
-/*class ChipRow {
-  List<String> chipTitles;
-
-  showChipRow() {
-    return Row(
-      children: <Widget>[
-        ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: chipTitles.length,
-            itemBuilder: (context, i) => new Chip(label: Text(chipTitles[i])))
-      ],
+  Widget _learn() {
+    List<String> categoriasEscogidas;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: Form(
+        autovalidate: true,
+        child: Column(
+          children: <Widget>[
+            DropdownButtonFormField(
+              value: null,
+              items: _items.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String newValue) {
+                categoriasEscogidas.add(newValue);
+                //chips.chipTitles.add(newValue);
+              },
+              decoration: const InputDecoration(
+                hintText: 'Tematicas',
+              ),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.description),
+                hintText: 'Descripcion',
+              ),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.monetization_on),
+                hintText: 'Tarifa',
+              ),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.place),
+                hintText: 'Lugar',
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
-}*/
 
-Widget _learn() {
-  List<String> categoriasEscogidas;
-  //ChipRow chips;
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 40),
-    child: Form(
-      autovalidate: true,
-      child: Column(
-        children: <Widget>[
-          //chips.showChipRow(),
-          DropdownButtonFormField(
-            value: null,
-            items: _items.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String newValue) {
-              categoriasEscogidas.add(newValue);
-              //chips.chipTitles.add(newValue);
-            },
-            decoration: const InputDecoration(
-              hintText: 'Tematicas',
+  Widget _teach() {
+    List<String> categoriasEscogidas;
+    //ChipRow chips;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: Form(
+        autovalidate: true,
+        child: Column(
+          children: <Widget>[
+            //chips.showChipRow(),
+            DropdownButtonFormField(
+              value: null,
+              items: _items.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String newValue) {
+                categoriasEscogidas.add(newValue);
+                //chips.chipTitles.add(newValue);
+              },
+              decoration: const InputDecoration(
+                hintText: 'Tematicas',
+              ),
             ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.description),
-              hintText: 'Descripcion',
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.description),
+                hintText: 'Descripcion',
+              ),
             ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.monetization_on),
-              hintText: 'Tarifa',
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.monetization_on),
+                hintText: 'Tarifa',
+              ),
             ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.place),
-              hintText: 'Lugar',
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.place),
+                hintText: 'Lugar',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-Widget _teach() {
-  List<String> categoriasEscogidas;
-  //ChipRow chips;
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 40),
-    child: Form(
-      autovalidate: true,
-      child: Column(
-        children: <Widget>[
-          //chips.showChipRow(),
-          DropdownButtonFormField(
-            value: null,
-            items: _items.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String newValue) {
-              categoriasEscogidas.add(newValue);
-              //chips.chipTitles.add(newValue);
-            },
-            decoration: const InputDecoration(
-              hintText: 'Tematicas',
-            ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.description),
-              hintText: 'Descripcion',
-            ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.monetization_on),
-              hintText: 'Tarifa',
-            ),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.place),
-              hintText: 'Lugar',
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }
