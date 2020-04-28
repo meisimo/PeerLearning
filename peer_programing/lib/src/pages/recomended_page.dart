@@ -1,100 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:peer_programing/src/helper/quad_clipper.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/tarjetas/mini_card.dart';
+import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
 
 class RecomendedPage extends StatelessWidget {
   RecomendedPage({Key key}) : super(key: key);
   double width;
 
-  Widget _header(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
-      child: Container(
-          height: 200,
-          width: width,
-          decoration: BoxDecoration(
-            color: LightColor.purple,
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            alignment: Alignment.center,
-            children: <Widget>[
-              Positioned(
-                  top: 30,
-                  right: -100,
-                  child: _circularContainer(300, LightColor.lightpurple)),
-              Positioned(
-                  top: -100,
-                  left: -45,
-                  child: _circularContainer(width * .5, LightColor.darkpurple)),
-              Positioned(
-                  top: -180,
-                  right: -30,
-                  child: _circularContainer(width * .7, Colors.transparent,
-                      borderColor: Colors.white38)),
-              Positioned(
-                  top: 40,
-                  left: 0,
-                  child: Container(
-                      width: width,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.keyboard_arrow_left,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                "Search courses",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Icon(
-                                Icons.search,
-                                color: Colors.white,
-                                size: 30,
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Type Something...",
-                            style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w500),
-                          )
-                        ],
-                      )))
-            ],
-          )),
+  @override
+  Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    return MainLayout(
+      title: "Favoritos",
+      body: Expanded(
+          child: RecomendedMentorByCategoryList(),
+        ),
+      defaultVerticalScroll: false,
     );
+  }
+}
+
+class RecomendedMentorByCategoryList extends StatefulWidget{
+  @override
+  _RecomendedMentorByCategoryList createState() =>
+    _RecomendedMentorByCategoryList();
+
+}
+
+class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryList>{
+  
+  @override
+  Widget build(BuildContext context){
+    return  ListView(
+      children: <Widget>[
+        _categoryRow(
+          "Tutores recomendados", LightColor.orange, LightColor.orange),
+        _featuredRowA(),
+        SizedBox(height: 0),
+        _categoryRow(
+          "Temas recomendados", LightColor.purple, LightColor.darkpurple),
+        _featuredRowB()
+    ],);
   }
 
-  Widget _circularContainer(double height, Color color,
-      {Color borderColor = Colors.transparent, double borderWidth = 2}) {
-    return Container(
-      height: height,
-      width: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        border: Border.all(color: borderColor, width: borderWidth),
-      ),
-    );
-  }
 
   Widget _categoryRow(
     String title,
@@ -112,7 +62,7 @@ class RecomendedPage extends StatelessWidget {
             style: TextStyle(
                 color: LightColor.titleTextColor, fontWeight: FontWeight.bold),
           ),
-          TagChip("See all", primary)
+          TagChip("See all", primary, onTap: () => print("See all"),)
         ],
       ),
     );
@@ -128,8 +78,7 @@ class RecomendedPage extends StatelessWidget {
           children: <Widget>[
             MiniCard(
                 primary: LightColor.orange,
-                backWidget:
-                    _decorationContainerA(LightColor.lightOrange, 50, -30),
+                backWidget: Decorator.generateDecoration(),
                 chipColor: LightColor.orange,
                 chipText1: "Find the right degree for you",
                 chipText2: "8 Cources",
@@ -139,7 +88,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerB(Colors.white, 90, -40),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Become a data scientist",
                 chipText2: "8 Cources",
                 imgPath:
@@ -147,7 +96,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerC(Colors.white, 50, -30),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Become a digital marketer",
                 chipText2: "8 Cources",
                 imgPath:
@@ -155,9 +104,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(LightColor.seeBlue, -50, 30,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.darkseeBlue),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Become a machine learner",
                 chipText2: "8 Cources",
                 imgPath:
@@ -179,10 +126,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: LightColor.seeBlue,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(
-                    LightColor.darkseeBlue, -100, -65,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.seeBlue),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "English for career development ",
                 chipText2: "8 Cources",
                 isPrimaryCard: true,
@@ -191,12 +135,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.lightpurple,
-                backWidget: _decorationContainerE(
-                  LightColor.lightpurple,
-                  90,
-                  -40,
-                  secondary: LightColor.lightseeBlue,
-                ),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Bussiness foundation",
                 chipText2: "8 Cources",
                 imgPath:
@@ -204,8 +143,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerF(
-                    LightColor.lightOrange, LightColor.orange, 50, -30),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Excel skill for business",
                 chipText2: "8 Cources",
                 imgPath:
@@ -213,11 +151,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerA(
-                  Colors.white,
-                  -50,
-                  30,
-                ),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Beacame a data analyst",
                 chipText2: "8 Cources",
                 imgPath:
@@ -225,10 +159,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: LightColor.seeBlue,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(
-                    LightColor.darkseeBlue, -100, -65,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.seeBlue),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "English for career development ",
                 chipText2: "8 Cources",
                 isPrimaryCard: true,
@@ -237,12 +168,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.lightpurple,
-                backWidget: _decorationContainerE(
-                  LightColor.lightpurple,
-                  90,
-                  -40,
-                  secondary: LightColor.lightseeBlue,
-                ),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Bussiness foundation",
                 chipText2: "8 Cources",
                 imgPath:
@@ -250,8 +176,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerF(
-                    LightColor.lightOrange, LightColor.orange, 50, -30),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Excel skill for business",
                 chipText2: "8 Cources",
                 imgPath:
@@ -259,11 +184,7 @@ class RecomendedPage extends StatelessWidget {
             MiniCard(
                 primary: Colors.white,
                 chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerA(
-                  Colors.white,
-                  -50,
-                  30,
-                ),
+                backWidget: Decorator.generateDecoration(),
                 chipText1: "Beacame a data analyst",
                 chipText2: "8 Cources",
                 imgPath:
@@ -274,195 +195,4 @@ class RecomendedPage extends StatelessWidget {
     );
   }
 
-  Widget _decorationContainerA(Color primary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: top,
-          left: left,
-          child: CircleAvatar(
-            radius: 100,
-            backgroundColor: primary.withAlpha(255),
-          ),
-        ),
-        _smallContainer(primary, 20, 40),
-        Positioned(
-          top: 20,
-          right: -30,
-          child: _circularContainer(80, Colors.transparent,
-              borderColor: Colors.white),
-        )
-      ],
-    );
-  }
-
-  Widget _decorationContainerB(Color primary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: -65,
-          right: -65,
-          child: CircleAvatar(
-            radius: 70,
-            backgroundColor: Colors.blue.shade100,
-            child: CircleAvatar(radius: 30, backgroundColor: primary),
-          ),
-        ),
-        Positioned(
-            top: 35,
-            right: -40,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: LightColor.lightseeBlue, radius: 40)))
-      ],
-    );
-  }
-
-  Widget _decorationContainerC(Color primary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: -105,
-          left: -35,
-          child: CircleAvatar(
-            radius: 70,
-            backgroundColor: LightColor.orange.withAlpha(100),
-          ),
-        ),
-        Positioned(
-            top: 35,
-            right: -40,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: LightColor.orange, radius: 40))),
-        _smallContainer(
-          LightColor.yellow,
-          35,
-          70,
-        )
-      ],
-    );
-  }
-
-  Widget _decorationContainerD(Color primary, double top, double left,
-      {Color secondary, Color secondaryAccent}) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: top,
-          left: left,
-          child: CircleAvatar(
-            radius: 100,
-            backgroundColor: secondary,
-          ),
-        ),
-        _smallContainer(LightColor.yellow, 18, 35, radius: 12),
-        Positioned(
-          top: 130,
-          left: -50,
-          child: CircleAvatar(
-            radius: 80,
-            backgroundColor: primary,
-            child: CircleAvatar(radius: 50, backgroundColor: secondaryAccent),
-          ),
-        ),
-        Positioned(
-          top: -30,
-          right: -40,
-          child: _circularContainer(80, Colors.transparent,
-              borderColor: Colors.white),
-        )
-      ],
-    );
-  }
-
-  Widget _decorationContainerE(Color primary, double top, double left,
-      {Color secondary}) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          top: -105,
-          left: -35,
-          child: CircleAvatar(
-            radius: 70,
-            backgroundColor: primary.withAlpha(100),
-          ),
-        ),
-        Positioned(
-            top: 40,
-            right: -25,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(backgroundColor: primary, radius: 40))),
-        Positioned(
-            top: 45,
-            right: -50,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(backgroundColor: secondary, radius: 50))),
-        _smallContainer(LightColor.yellow, 15, 90, radius: 5)
-      ],
-    );
-  }
-
-  Widget _decorationContainerF(
-      Color primary, Color secondary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-            top: 25,
-            right: -20,
-            child: RotatedBox(
-              quarterTurns: 1,
-              child: ClipRect(
-                  clipper: QuadClipper(),
-                  child: CircleAvatar(
-                      backgroundColor: primary.withAlpha(100), radius: 50)),
-            )),
-        Positioned(
-            top: 34,
-            right: -8,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: secondary.withAlpha(100), radius: 40))),
-        _smallContainer(LightColor.yellow, 15, 90, radius: 5)
-      ],
-    );
-  }
-
-  Positioned _smallContainer(Color primary, double top, double left,
-      {double radius = 10}) {
-    return Positioned(
-        top: top,
-        left: left,
-        child: CircleAvatar(
-          radius: radius,
-          backgroundColor: primary.withAlpha(255),
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    width = MediaQuery.of(context).size.width;
-    return MainLayout(
-      title: "Favoritos",
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: <Widget>[
-              _categoryRow("Featured", LightColor.orange, LightColor.orange),
-              _featuredRowA(),
-              SizedBox(height: 0),
-              _categoryRow(
-                  "Featured", LightColor.purple, LightColor.darkpurple),
-              _featuredRowB()
-            ],
-          ),
-        )
-      )
-    );
-  }
 }

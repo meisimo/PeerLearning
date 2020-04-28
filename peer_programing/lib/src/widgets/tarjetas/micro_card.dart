@@ -46,13 +46,13 @@ class MicroCard extends StatelessWidget{
   Widget build(BuildContext context){
     width = MediaQuery.of(context).size.width;
     return GestureDetector(
-      onTap: () => Navigator.push(
+      /* onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => 
             MentoringExtendedCard(id: this.mentoringId)
         )
-      ),
+      ), */
       child: CardLayout(
         height: 100,
         imgPath: this.imgPath,
