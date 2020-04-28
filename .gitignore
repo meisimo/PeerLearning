@@ -1,0 +1,40 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+peer_programing/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+peer_programing/.dart_tool
+peer_programing/.flutter-plugins
+peer_programing/.flutter-plugins-dependencies
+peer_programing/.packages
+peer_programing/.pub-cache/
+peer_programing/.pub/
+peer_programing/build/
+peer_programing/pubspec.lock
+
+# Web related
+peer_programing/lib/generated_plugin_registrant.dart
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+peer_programing/android/key.properties
