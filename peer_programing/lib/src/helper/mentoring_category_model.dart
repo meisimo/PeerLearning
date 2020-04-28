@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 

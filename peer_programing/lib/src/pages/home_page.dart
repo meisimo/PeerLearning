@@ -10,8 +10,7 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 
 class HomePage extends StatelessWidget {
-  MentoringListView _mentoringListView =
-      MentoringListView(onResumeTap: _showMentoringDetail);
+  final MentoringListView _mentoringListView;
   final List<MentoringCategory> _categories = MentoringCategoryList.all();
   final _textInputStyle = TextStyle(
     color: Colors.white54,
@@ -19,7 +18,9 @@ class HomePage extends StatelessWidget {
     fontWeight: FontWeight.w500,
   );
 
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key key}) : 
+    _mentoringListView = MentoringListView(onResumeTap: _showMentoringDetail, mentoringSnapshot: Mentoring.snapshots()),
+    super(key: key);
 
   static Function _showMentoringDetail(BuildContext context, int mentoringId) =>
       () => showDialog(

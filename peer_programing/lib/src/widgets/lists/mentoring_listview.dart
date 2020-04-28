@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
 import 'package:peer_programing/src/theme/theme.dart';
@@ -8,11 +9,11 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 
 class MentoringListView extends StatefulWidget {
-  final _MentoringListView _mentoringListView = _MentoringListView();
+  final _MentoringListView _mentoringListView;
 
-  MentoringListView({Function onResumeTap}) : super(){
-    _mentoringListView.onResumeTap = onResumeTap;
-  }
+  MentoringListView({Function onResumeTap,Stream<QuerySnapshot> mentoringSnapshot})
+    : assert(mentoringSnapshot!=null),
+      _mentoringListView = _MentoringListView(onResumeTap:onResumeTap, mentoringSnapshot:mentoringSnapshot);
 
   @override
   _MentoringListView createState() => _mentoringListView;
@@ -28,9 +29,10 @@ class _MentoringListView extends State<MentoringListView> {
   List<int> _categoryFilter;
   List<Mentoring> _mentorings;
   double width;
-  Function onResumeTap;
+  final Function onResumeTap;
+  final Stream<QuerySnapshot> mentoringSnapshot;
 
-  _MentoringListView({this.onResumeTap}) : super();
+  _MentoringListView({this.onResumeTap, this.mentoringSnapshot}) : _mentorings = [], super();
 
   void filter({String title, List<int> category}) {
     setState(() {
@@ -179,19 +181,15 @@ class _MentoringListView extends State<MentoringListView> {
   @override
   Widget build(BuildContext context) => 
     StreamBuilder<QuerySnapshot>(
-      stream: Mentoring.snapshots(),
+      stream: mentoringSnapshot,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-        
         if (snapshot.hasError)
-          return new Text('Error: ${snapshot.error}');
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting: 
-            return new Text('Loading...');
-          default:
-            print(Mentoring.listFromSnapshot(snapshot.data.documents));
-            this._mentorings = [];
-            return this._mentoringList(context);
-        }
+          return new Text('Error: ${snapshot.error}');        
+        if ( snapshot.connectionState == ConnectionState.waiting)
+          return new Text('Loading...');
+        if (this._mentorings.isEmpty)
+          Future.wait(Mentoring.listFromSnapshot(snapshot.data.documents)).then( (mentorings) => setState(() => this._mentorings = mentorings.map((m) => cast<Mentoring>(m)).toList()));
+        return this._mentoringList(context);
       },
     );
 }
