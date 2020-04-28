@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 
 class SelectedMentorings extends StatelessWidget {
-  MentoringListView _mentoringListView =
+  final MentoringListView _mentoringListView =
       MentoringListView(onResumeTap: _showMentoringDetail);
 
   SelectedMentorings({Key key}) : super(key: key);

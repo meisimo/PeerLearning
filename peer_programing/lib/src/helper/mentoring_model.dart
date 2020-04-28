@@ -5,7 +5,68 @@ import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Mentoring {
+class Mentoring{
+  final id = 0;
+  final String name;
+  final String description;
+  final double points;
+  final List<MentoringCategory> categories;
+  final MentoringType mentoringType;
+  final UserModel user;
+  final String lugar = "CAR #43-161-53, Bogotá, Bogotá";
+  final int precio = 5000;
+  final DocumentReference reference;
+
+  Mentoring({
+    this.name,
+    this.description,
+    this.points,
+    this.categories,
+    this.mentoringType,
+    this.user,
+    this.reference
+  });
+
+
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) =>
+    snapshots.map((snap) async {
+      MentoringType mentoringType = MentoringType.fromSnapshot(await snap.data['mentoringType'].get());
+      List<MentoringCategory> categories = [];
+
+      for (DocumentReference category in snap.data['categories']){
+        categories.add(new MentoringCategory.fromSnapshot(await category.get()));
+      }
+
+      print(mentoringType);
+      print(categories);
+      print("despues");
+      
+      return new Mentoring.fromSnapshot(snap);
+    }).toList();
+    
+
+  static Stream<QuerySnapshot> snapshots() => Firestore.instance.collection("mentoring").snapshots();
+
+  Mentoring.fromMap(Map<String, dynamic> map, {this.reference})
+    : assert( map['name'] != null),
+      assert( map['description'] != null),
+      assert( map['points'] != null),
+      assert( map['categories'] != null),
+      assert( map['mentoringType'] != null),
+      name = map['name'],
+      description = map['description'],
+      points = map['points'],
+      categories = MentoringCategoryList.randGenerate(3),
+      mentoringType = MentoringTypeList.randGenerate(),
+      user = UserModelList.randGenerate();
+
+  Mentoring.fromSnapshot(DocumentSnapshot snapshot)
+    :this.fromMap(snapshot.data, reference: snapshot.reference){
+
+    }
+}
+
+class Mentoring2 {
   final int id;
   final String name;
   final String description;
@@ -16,7 +77,7 @@ class Mentoring {
   final String lugar = "CAR #43-161-53, Bogotá, Bogotá";
   final int precio = 5000;
 
-  Mentoring({
+  Mentoring2({
     this.id,
     this.name,
     this.description,
@@ -39,32 +100,37 @@ class Mentoring {
     List<MentoringCategory> docCat;
     List<Mentoring> mentoringList = List();
 
-    await Firestore.instance
-        .collection("mentoring")
-        .getDocuments()
-        .then((snap) => {
-              snap.documents.forEach((doc) async => {
-                    docCat = await MentoringCategory.getCategoriesFromDoc(snap),
-                    docType = await MentoringType.getDocsOfDoc(doc),
-                    docName = doc.data['name'],
-                    docPonts = 0.0 + doc.data['points'],
-                    docDesc = doc.data['description'],
-                    mentoringList.add(new Mentoring(
-                        name: docName,
-                        description: docDesc,
-                        points: docPonts,
-                        mentoringType: docType,
-                        categories: docCat)),
-                    print(mentoringList)
-                  }),
-            });
-            return mentoringList;
+    await Firestore.instance.collection("mentoring").getDocuments().then(
+          (snap) => snap.documents.forEach((doc) async => {
+                docCat = await MentoringCategory.getCategoriesFromDoc(snap),
+                docType = await MentoringType.getDocsOfDoc(doc),
+                docName = doc.data['name'],
+                docPonts = 0.0 + doc.data['points'],
+                docDesc = doc.data['description'],
+                mentoringList.add(new Mentoring(
+                    name: docName,
+                    description: docDesc,
+                    points: docPonts,
+                    mentoringType: docType,
+                    categories: docCat)),
+              }),
+        );
+    return mentoringList;
+  }
+
+  static Future<List<Mentoring>> all() async {
+    List<Mentoring> mentoringList = [];
+    var mentorings = Firestore.instance.collection("mentoring").snapshots().forEach( (m) => print(m));
+
+    print(mentorings);
+    
+    return mentoringList;
   }
 }
 
 class MentoringList {
   static Random rnd = Random();
-  static List<Mentoring> all() => [
+/*   static List<Mentoring> all() => [
         Mentoring(
           id: 1,
           name: "Data Science",
@@ -166,8 +232,9 @@ class MentoringList {
           user: UserModelList.randGenerate(),
         ),
       ];
-  
+ */
+  static List<Mentoring> all() => [];
+
   static Mentoring getById({int id}) =>
-    MentoringList.all().where( (Mentoring m) => m.id == id).toList()[0];
-  
+      MentoringList.all().where((Mentoring m) => m.id == id).toList()[0];
 }

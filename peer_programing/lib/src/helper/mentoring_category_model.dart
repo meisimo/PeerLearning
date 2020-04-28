@@ -1,15 +1,30 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 
 class MentoringCategory {
-  int id;
-  String name;
-  Color color;
+  final int id;
+  final String name;
+  final Color color;
+  final DocumentReference reference;
 
-  MentoringCategory({this.id, this.name, this.color});
+  MentoringCategory({this.id, this.name, this.color, this.reference});
+
+  MentoringCategory.fromMap(Map<String, dynamic> map, {this.reference})
+    : assert(map['name'] != null),
+      assert(map['color'] != null),
+      id = 0,
+      name = map['name'],
+      color = MentoringCategory.generateColor(map['color']);
+
+  MentoringCategory.fromSnapshot(DocumentSnapshot snapshot):
+    this.fromMap(snapshot.data, reference: snapshot.reference);
+
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) => 
+    snapshots.map((snapshot) => new MentoringCategory.fromSnapshot(snapshot)).toList();
 
   @override
   String toString() {

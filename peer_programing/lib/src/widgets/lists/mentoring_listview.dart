@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
@@ -176,10 +177,21 @@ class _MentoringListView extends State<MentoringListView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    this.width = MediaQuery.of(context).size.width;
-    Mentoring.getDocsFormDb();
-    this._mentorings = MentoringList.all();
-    return this._mentoringList(context);
-  }
+  Widget build(BuildContext context) => 
+    StreamBuilder<QuerySnapshot>(
+      stream: Mentoring.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+        
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting: 
+            return new Text('Loading...');
+          default:
+            print(Mentoring.listFromSnapshot(snapshot.data.documents));
+            this._mentorings = [];
+            return this._mentoringList(context);
+        }
+      },
+    );
 }

@@ -1,13 +1,24 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MentoringType {
   final int _id;
   final String _name;
+  final DocumentReference reference;
 
   int get id => this._id;
   String get name => this._name;
 
-  MentoringType(this._id, this._name);
+  MentoringType(this._id, this._name, {this.reference});
+
+  MentoringType.fromMap(Map<String, dynamic> map, {this.reference})
+    :assert(map['name'] != null),
+    _id = 0,
+    _name = map['name'];
+
+  MentoringType.fromSnapshot(DocumentSnapshot snapshot):
+    this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
   String toString() {

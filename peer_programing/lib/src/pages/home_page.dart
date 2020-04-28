@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/helper/mentoring_model.dart';
 
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
@@ -9,7 +10,8 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 
 class HomePage extends StatelessWidget {
-  MentoringListView _mentoringListView = MentoringListView(onResumeTap: _showMentoringDetail);
+  MentoringListView _mentoringListView =
+      MentoringListView(onResumeTap: _showMentoringDetail);
   final List<MentoringCategory> _categories = MentoringCategoryList.all();
   final _textInputStyle = TextStyle(
     color: Colors.white54,
