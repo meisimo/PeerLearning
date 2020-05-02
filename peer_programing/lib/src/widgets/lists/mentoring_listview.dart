@@ -178,6 +178,7 @@ class _MentoringListView extends State<MentoringListView> {
   @override
   Widget build(BuildContext context) {
     this.width = MediaQuery.of(context).size.width;
+    Mentoring.getDocsFormDb();
     this._mentorings = MentoringList.all();
     return this._mentoringList(context);
   }

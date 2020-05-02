@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022893954904:android:6b2ff5bc1e0c471db9372d",
+        "mobilesdk_app_id": "1:1022893954904:android:70570fc53dbcded6b9372d",
         "android_client_info": {
-          "package_name": "com.example.peer_programing"
+          "package_name": "co.edu.konradlorenz.peer_programing"
         }
       },
       "oauth_client": [
