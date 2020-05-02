@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peer_programing/models/user.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
@@ -189,6 +191,7 @@ class _MentoringListView extends State<MentoringListView> {
           return new Text('Loading...');
         if (this._mentorings.isEmpty)
           Future.wait(Mentoring.listFromSnapshot(snapshot.data.documents)).then( (mentorings) => setState(() => this._mentorings = mentorings.map((m) => cast<Mentoring>(m)).toList()));
+        
         return this._mentoringList(context);
       },
     );

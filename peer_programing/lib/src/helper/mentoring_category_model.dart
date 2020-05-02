@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 
+const MENTORING_CATEGORY_COLLECTION_NAME = "mentoring-category";
+
 class MentoringCategory {
   final int id;
   final String name;
@@ -13,22 +15,18 @@ class MentoringCategory {
   MentoringCategory({this.id, this.name, this.color, this.reference});
 
   MentoringCategory.fromMap(Map<String, dynamic> map, {this.reference})
-    : assert(map['name'] != null),
-      assert(map['color'] != null),
-      id = 0,
-      name = map['name'],
-      color = MentoringCategory.generateColor(map['color']);
+      : assert(map['name'] != null),
+        assert(map['color'] != null),
+        id = 0,
+        name = map['name'],
+        color = MentoringCategory.generateColor(map['color']);
 
-  MentoringCategory.fromSnapshot(DocumentSnapshot snapshot):
-    this.fromMap(snapshot.data, reference: snapshot.reference);
+  MentoringCategory.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
 
-  static listFromSnapshot(List<DocumentSnapshot> snapshots) => 
-    snapshots.map((snapshot) => new MentoringCategory.fromSnapshot(snapshot)).toList();
-
-  @override
-  String toString() {
-    return "{'id':$id, 'name':$name, 'color':$color, }";
-  }
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) => snapshots
+      .map((snapshot) => new MentoringCategory.fromSnapshot(snapshot))
+      .toList();
 
   static getCategoriesFromDoc(snap) async {
     List<MentoringCategory> categories = List();
@@ -37,13 +35,14 @@ class MentoringCategory {
     await snap.documents.forEach((doc) => ((doc.data['categories']
         .forEach((categorie) => categorie.get().then((subDoc) => {
               docColor = generateColor(subDoc.data['color']),
-              cat = MentoringCategory(name: subDoc.data['name'], color: docColor),
+              cat =
+                  MentoringCategory(name: subDoc.data['name'], color: docColor),
               categories.add(cat),
             })))));
     return categories;
   }
 
-  static generateColor(colorString){
+  static generateColor(colorString) {
     switch (colorString) {
       case "yellow":
         return LightColor.yellow;
@@ -51,14 +50,26 @@ class MentoringCategory {
         return LightColor.lightBlue;
       case "lightseeBlue":
         return LightColor.lightseeBlue;
-      case"darkPurple":
+      case "darkPurple":
         return LightColor.darkpurple;
       case "orange":
         return LightColor.orange;
-      case"grey":
+      case "grey":
         return LightColor.grey;
     }
-  }  
+  }
+
+  static Stream<QuerySnapshot> snapshots() => Firestore.instance
+      .collection(MENTORING_CATEGORY_COLLECTION_NAME)
+      .snapshots();
+
+  static Future<List<MentoringCategory>> all() async =>
+      (await Firestore.instance.collection(MENTORING_CATEGORY_COLLECTION_NAME).getDocuments()).documents.map( (DocumentSnapshot category) => new MentoringCategory.fromSnapshot(category)).toList();
+
+  @override
+  String toString() {
+    return "{'id':$id, 'name':$name, 'color':$color, }";
+  }
 }
 
 class MentoringCategoryList {

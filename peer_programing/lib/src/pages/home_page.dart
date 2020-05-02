@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
+import 'package:peer_programing/src/helper/mentoring_type_model.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
