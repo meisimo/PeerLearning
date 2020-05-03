@@ -34,7 +34,10 @@ void main() {
       await tester.pumpWidget(MyWidget(title: 'T', message: 'M'));
       expect(find.text('T'), findsOneWidget);
       expect(find.text('M'), findsOneWidget);
-      find.
+<<<<<<< HEAD
+=======
+      // find.
+>>>>>>> development
     });
     testWidgets('.Counter key', (WidgetTester tester) async {
       final testKey = Key('test');

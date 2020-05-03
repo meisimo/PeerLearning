@@ -1,70 +1,146 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 
-class Mentoring {
-  final int id;
+const MENTORING_COLLECTION_NAME = "mentoring";
+
+class Mentoring{
+  //TODO: load the categories to store it in cache
+  final id = 0;
   final String name;
   final String description;
   final double points;
-  final List<MentoringCategory> categories;
-  final MentoringType mentoringType;
-  final UserModel user;
-  final String lugar = "CAR #43-161-53, Bogotá, Bogotá";
-  final int precio = 5000;
+  final List<dynamic> categoriesReference;
+  List<MentoringCategory> categories;
+  final DocumentReference mentoringTypeReference;
+  MentoringType mentoringType;
+  final DocumentReference userReference;
+  UserModel user;
+  DocumentReference selectedByReference;
+  UserModel selectedBy;
+  String lugar;
+  int precio;
+  final DocumentReference reference;
 
   Mentoring({
-    this.id,
     this.name,
     this.description,
     this.points,
     this.categories,
-    this.mentoringType,
-    this.user,
+    this.reference,
+    this.userReference,
+    this.categoriesReference,
+    this.mentoringTypeReference,
+    this.lugar,
+    this.precio,
   });
 
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) =>
+    snapshots.map((snap) async =>  ( await (new Mentoring.fromSnapshot(snap)).populate() ) ).toList();
+    
+  static Stream<QuerySnapshot> snapshots() => Firestore.instance.collection(MENTORING_COLLECTION_NAME).snapshots();
+
+  Mentoring.fromMap(Map<String, dynamic> map, {this.reference})
+    : assert( map['name'] != null),
+      assert( map['description'] != null),
+      assert( map['points'] != null),
+      assert( map['categories'] != null),
+      assert( map['mentoringType'] != null),
+      assert( map['precio'] != null),
+      assert( map['lugar'] != null),
+      name = map['name'],
+      description = map['description'],
+      points = map['points'],
+      categoriesReference = map['categories'].map( (cat) => cast<DocumentReference>(cat)).toList(),
+      mentoringTypeReference = map['mentoringType'],
+      userReference = map['user'],
+      precio = map['precio'],
+      lugar = map['lugar'];
+
+  Mentoring.fromSnapshot(DocumentSnapshot snapshot)
+    :this.fromMap(snapshot.data, reference: snapshot.reference);
+
+
+  static CollectionReference collection() => 
+    Firestore.instance.collection(MENTORING_COLLECTION_NAME);
+
+  static Query _whereOfAvilable(MentoringType mentoringType, UserModel user) => 
+    collection().where('selectedBy', isNull: true).where('mentoringType', isEqualTo: mentoringType.reference);
+
+  static Future<QuerySnapshot> whereOfAvilable(MentoringType mentoringType, UserModel user) async =>
+    await _whereOfAvilable(mentoringType, user).getDocuments();
+
+  static Future<QuerySnapshot> whereOfSelectedBy(UserModel user) async => 
+    await collection().where('selectedBy', isEqualTo: user.reference).getDocuments();
+
+  static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
+    await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
+
+  static Future<List<Mentoring>> filterByTitle(MentoringType mentoringType, UserModel user, String title) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user).where('name', isGreaterThanOrEqualTo: title  ).where('name', isLessThan: title+'z'  ).getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterByCategory(MentoringType mentoringType, UserModel user, List<MentoringCategory> categories) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user).where('categories', arrayContainsAny: categories.map((cat)=>cat.reference).toList()).getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterByTitleAndCategory(MentoringType mentoringType, UserModel user, {String title, List<MentoringCategory> categories}) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user)
+      .where('name', isGreaterThanOrEqualTo: title  )
+      .where('name', isLessThan: title+'z'  )
+      .where('categories', arrayContainsAny: categories.map((cat)=>cat.reference).toList())
+      .getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterBySelectedBy(UserModel user) async =>
+    await Future.wait( listFromSnapshot((await whereOfSelectedBy(user)).documents));
+
+
+
+  Future<Mentoring> populate() async{
+    this.mentoringType = MentoringType.fromSnapshot(await mentoringTypeReference.get());
+    this.user = UserModel.fromSnapshot(await userReference.get() );
+    this.categories = [];
+    for (DocumentReference category in categoriesReference){
+      categories.add(new MentoringCategory.fromSnapshot(await category.get()));
+    }
+    return this;
+  }
+
+  Future<Mentoring> save() async{
+    await Firestore.instance.collection(MENTORING_COLLECTION_NAME).add(this._toMap());
+    return this;
+  }
+
+  Future<void> selectBy(UserModel user) async  =>
+    await this.reference.updateData({'selectedBy': user.reference});
+
+  Future<void> unselect() async => 
+    await this.reference.updateData({'selectedBy': null});
+
+  Map<String, dynamic> _toMap() => 
+    {
+      "name": this.name,
+      "points": 1.1,
+      "description": this.description,
+      "mentoringType": this.mentoringTypeReference,
+      "categories": this.categoriesReference,
+      "lugar": this.lugar,
+      "precio": this.precio,
+      "user": this.userReference,
+      "selectedBy": null
+    };
+
   @override
-  String toString() {
-    return "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n}";
-  }
+  String toString() =>
+    "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n\t'user': $user, \n\t'precio': $precio, \n\t'lugar': $lugar \n}";
 
-  static getDocsFormDb() async {
-    String docName;
-    double docPonts;
-    MentoringType docType;
-    String docDesc;
-    List<MentoringCategory> docCat;
-    List<Mentoring> mentoringList = List();
-
-    await Firestore.instance
-        .collection("mentoring")
-        .getDocuments()
-        .then((snap) => {
-              snap.documents.forEach((doc) async => {
-                    docCat = await MentoringCategory.getCategoriesFromDoc(snap),
-                    docType = await MentoringType.getDocsOfDoc(doc),
-                    docName = doc.data['name'],
-                    docPonts = 0.0 + doc.data['points'],
-                    docDesc = doc.data['description'],
-                    mentoringList.add(new Mentoring(
-                        name: docName,
-                        description: docDesc,
-                        points: docPonts,
-                        mentoringType: docType,
-                        categories: docCat)),
-                    print(mentoringList)
-                  }),
-            });
-            return mentoringList;
-  }
 }
-
 class MentoringList {
   static Random rnd = Random();
-  static List<Mentoring> all() => [
+/*   static List<Mentoring> all() => [
         Mentoring(
           id: 1,
           name: "Data Science",
@@ -166,8 +242,9 @@ class MentoringList {
           user: UserModelList.randGenerate(),
         ),
       ];
-  
+ */
+  static List<Mentoring> all() => [];
+
   static Mentoring getById({int id}) =>
-    MentoringList.all().where( (Mentoring m) => m.id == id).toList()[0];
-  
+      MentoringList.all().where((Mentoring m) => m.id == id).toList()[0];
 }
