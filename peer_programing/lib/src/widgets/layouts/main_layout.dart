@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/main_header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:peer_programing/src/widgets/navigation/main_navigation_bar.dart';
 
 class MainLayout extends StatelessWidget{
   final routeMap = ['/','/recomended', '/list_selected', '/login'];
@@ -68,7 +69,7 @@ class MainLayout extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      bottomNavigationBar: this.withBottomNavBar ? _bottomNavBar(context) : null,
+      bottomNavigationBar: this.withBottomNavBar ? MainNavigationBar() : null,
       body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body),
       floatingActionButton: this.floatingActionButton,
     );
