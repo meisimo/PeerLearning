@@ -35,7 +35,8 @@ class _LoginPage extends State<LoginPage> {
     Navigator.pushReplacementNamed(context, '/');
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
-    auth.signUp(email, pass);
+    String name = _SignupForm(this._signUpKey).getNameField();
+    auth.signUp(name, email, pass);
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -205,11 +206,10 @@ class _LoginForm extends State<LoginForm> {
 
 TextEditingController _emailSignUpField = TextEditingController();
 TextEditingController _passwordSignUpField = TextEditingController();
+TextEditingController _nameField = TextEditingController();
 
 class SignupForm extends StatefulWidget {
   final _formKey;
-  getEmailField() => _emailSignUpField.text;
-  getPasswordField() => _passwordSignUpField.text;
   final _signUpDataWrapper = <_SignupForm>[null];
 
   SignupForm(this._formKey) : super();
@@ -223,6 +223,7 @@ class _SignupForm extends State<SignupForm> {
   final _formKey;
   getEmailField() => _emailSignUpField.text;
   getPasswordField() => _passwordSignUpField.text;
+  getNameField() => _nameField.text;
 
   _SignupForm(this._formKey) : super();
 
@@ -236,6 +237,7 @@ class _SignupForm extends State<SignupForm> {
           "Nombre",
           pasword: false,
           requiredField: true,
+          controller: _nameField,
         ),
         InputLogin(
           Key('input-correo'),
