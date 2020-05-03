@@ -11,6 +11,7 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/finder.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
+import 'package:peer_programing/src/widgets/loading.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -19,22 +20,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  MentoringListView _mentoringListView;
-  Map<String, MentoringType> _mentoringTypes;
   bool _loading = true;
-  String _searchText;
-  List<MentoringCategory> _selectedCaterogies = [];
-  List<MentoringCategory> _categories;
+  MentoringListView _mentoringListView, _requestListView;
+  Map<String, MentoringType> _mentoringTypes;
+  String _searchText, _title;
+  List<MentoringCategory> _selectedCaterogies = [], _categories;
+  PageController _pageController;
   final _textInputStyle = TextStyle(
     color: Colors.white54,
     fontSize: 30,
     fontWeight: FontWeight.w500,
   );
   static UserModel _user;
-  
-  MentoringType _selectedType(){
-    return _mentoringTypes['teach'];
+
+  String _selectedType(){
+    if (_pageController.page ==0)
+      return 'teach';
+    else 
+      return 'learn';
   }
+
+  void _setTitle() => 
+    setState(() =>
+      _title = _selectedType() == 'teach'? 'Tutorías' : 'Solicitudes'
+    );
 
   Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
       () => showDialog(
@@ -58,16 +67,22 @@ class _HomePage extends State<HomePage> {
 
   void _refreshMentorings() =>
     Mentoring
-      .getAvilables(_selectedType(), _user)
+      .getAvilables(_mentoringTypes[_selectedType()], _user)
       .then((List<Mentoring> mentorings) => 
-        setState(()=>
-          this._mentoringListView.refreshList(mentorings)
+        setState((){
+          if(_selectedType() == 'teach')
+            this._mentoringListView.refreshList(mentorings);
+          else 
+            this._requestListView.refreshList(mentorings);
+        }
         )
       )
       .catchError( (error)=> print(error) );
 
-  void _filterMentorings() =>
+  void _filterMentorings(){
     this._mentoringListView.filter(title: _searchText, categories: _selectedCaterogies);
+    this._requestListView.filter(title: _searchText, categories: _selectedCaterogies);
+  }
 
   Widget _finder() =>
     Finder(
@@ -134,6 +149,13 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     _loading = true;
+    _pageController = PageController(initialPage: 0);
+    _pageController.addListener(() { 
+      if( _pageController.page.ceilToDouble() == _pageController.page)
+        _setTitle();
+      });
+    _title = 'Tutorías';
+
     Future
       .wait( <Future>[MentoringType.all(), MentoringCategory.all(), UserModel.getOne()] )
       .then((result){
@@ -143,34 +165,43 @@ class _HomePage extends State<HomePage> {
           _user = result[2];
           _mentoringListView = MentoringListView(
             onResumeTap: _showMentoringDetail,
-            mentoringSnapshot: Stream.fromFuture(Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user)),
+            mentorigQuery: Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user),
             filter: _filter(_mentoringTypes['teach'], _user),
+          );
+          _requestListView = MentoringListView(
+            onResumeTap: _showMentoringDetail,
+            mentorigQuery: Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
+            filter: _filter(_mentoringTypes['learn'], _user),
           );
           _loading = false;  
         });
       });
   }
 
-  Widget _showLoading() => new CircularProgressIndicator();
-
-  Widget _homeInfo() => 
-   Container(
-        child: Column(
-          children: <Widget>[
-            _categoryRow(context, "Escoge una categoría"),
-            this._mentoringListView,
-          ],
+  Widget _homeInfo(BuildContext context) => 
+  Container(
+    height: MediaQuery.of(context).size.height ,
+    child: Column(
+      children: <Widget>[
+        _categoryRow(context, "Escoge una categoría"),
+        Expanded( 
+          child:PageView(
+            controller: _pageController,
+            children: <Widget>[
+              this._mentoringListView,
+              this._requestListView])
         ),
-      );
+      ],
+    )
+  )
+  ;
   
   @override
   Widget build(BuildContext context) {
-    // if (!_loading)
-    //   Mentoring.filterByTitle(_mentoringTypes['teach'], _user, 'Test').then((r) => print(r));
     return MainLayout(
-      title: "Ofertas",
+      title: _title,
       headerChild: this._finder(),
-      body: (this._loading ? _showLoading(): _homeInfo()),
+      body: (this._loading ? Loading() : _homeInfo(context)),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/create_mentoring'),
         child: Icon(Icons.add),

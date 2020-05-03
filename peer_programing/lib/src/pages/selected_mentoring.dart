@@ -65,7 +65,7 @@ class _SelectedMentorings extends State<SelectedMentorings> {
           _user = result;
           _mentoringListView = MentoringListView(
             onResumeTap: _showMentoringDetail,
-            mentoringSnapshot: Stream.fromFuture(Mentoring.whereOfSelectedBy(_user)),
+            mentorigQuery: Mentoring.whereOfSelectedBy(_user),
           );
           _loading = false;
         });
