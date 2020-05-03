@@ -31,12 +31,12 @@ class _HomePage extends State<HomePage> {
     fontWeight: FontWeight.w500,
   );
   static UserModel _user;
-
-  _HomePage(){
-    UserModel.getOne().then((user) => _user = user);
-  }
   
-  static Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
+  MentoringType _selectedType(){
+    return _mentoringTypes['teach'];
+  }
+
+  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
       () => showDialog(
           context: context,
           child: Detalle(mentoring,
@@ -46,16 +46,31 @@ class _HomePage extends State<HomePage> {
                 onPressed: _selectMentoring(mentoring, context),
               )));
 
-  static Function _selectMentoring(Mentoring mentoring, BuildContext context) => () async {
-    await mentoring.selectBy(_user);
-    Navigator.pop(context);
-  };
+  Function _selectMentoring(Mentoring mentoring, BuildContext context) => 
+    ()=>
+    mentoring
+      .selectBy(_user)
+      .then((_){
+        _refreshMentorings();
+        Navigator.pop(context);
+      })
+      .catchError((error) => print(error));
+
+  void _refreshMentorings() =>
+    Mentoring
+      .getAvilables(_selectedType(), _user)
+      .then((List<Mentoring> mentorings) => 
+        setState(()=>
+          this._mentoringListView.refreshList(mentorings)
+        )
+      )
+      .catchError( (error)=> print(error) );
 
   void _filterMentorings() =>
     this._mentoringListView.filter(title: _searchText, categories: _selectedCaterogies);
 
-  Widget _finder() {
-    return Finder(
+  Widget _finder() =>
+    Finder(
       placeholder: "buscar...",
       onChange: (String input) {
         _searchText = input;
@@ -63,14 +78,12 @@ class _HomePage extends State<HomePage> {
       },
       textStyle: this._textInputStyle,
     );
-  }
 
-  Function _filterByCategories(MentoringCategory category) {
-    return (){
+  Function _filterByCategories(MentoringCategory category) =>
+    (){
       this._selectedCaterogies.add(category);
       _filterMentorings();
     };
-  }
 
   Widget _categoryRow(BuildContext context, String title) {
     return Container(
@@ -122,11 +135,12 @@ class _HomePage extends State<HomePage> {
   void initState() {
     _loading = true;
     Future
-      .wait( <Future>[MentoringType.all(), MentoringCategory.all()] )
+      .wait( <Future>[MentoringType.all(), MentoringCategory.all(), UserModel.getOne()] )
       .then((result){
         setState(() {  
           _mentoringTypes = MentoringType.mapMentoringTypes(result[0]);
           _categories = result[1];
+          _user = result[2];
           _mentoringListView = MentoringListView(
             onResumeTap: _showMentoringDetail,
             mentoringSnapshot: Stream.fromFuture(Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user)),
@@ -137,7 +151,7 @@ class _HomePage extends State<HomePage> {
       });
   }
 
-  Widget _loadingView() => Text("Loaging");
+  Widget _showLoading() => new CircularProgressIndicator();
 
   Widget _homeInfo() => 
    Container(
@@ -156,7 +170,7 @@ class _HomePage extends State<HomePage> {
     return MainLayout(
       title: "Ofertas",
       headerChild: this._finder(),
-      body: (this._loading ? _loadingView(): _homeInfo()),
+      body: (this._loading ? _showLoading(): _homeInfo()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/create_mentoring'),
         child: Icon(Icons.add),

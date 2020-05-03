@@ -75,6 +75,9 @@ class Mentoring{
   static Future<QuerySnapshot> whereOfAvilable(MentoringType mentoringType, UserModel user) async =>
     await _whereOfAvilable(mentoringType, user).getDocuments();
 
+  static Future<QuerySnapshot> whereOfSelectedBy(UserModel user) async => 
+    await collection().where('selectedBy', isEqualTo: user.reference).getDocuments();
+
   static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
     await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
 
@@ -90,6 +93,10 @@ class Mentoring{
       .where('name', isLessThan: title+'z'  )
       .where('categories', arrayContainsAny: categories.map((cat)=>cat.reference).toList())
       .getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterBySelectedBy(UserModel user) async =>
+    await Future.wait( listFromSnapshot((await whereOfSelectedBy(user)).documents));
+
 
 
   Future<Mentoring> populate() async{
@@ -109,6 +116,9 @@ class Mentoring{
 
   Future<void> selectBy(UserModel user) async  =>
     await this.reference.updateData({'selectedBy': user.reference});
+
+  Future<void> unselect() async => 
+    await this.reference.updateData({'selectedBy': null});
 
   Map<String, dynamic> _toMap() => 
     {

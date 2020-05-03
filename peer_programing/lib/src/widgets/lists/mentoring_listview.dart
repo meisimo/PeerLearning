@@ -28,6 +28,8 @@ class MentoringListView extends StatefulWidget {
   @override
   _MentoringListView createState() => _mentoringListView;
 
+  void refreshList(List<Mentoring> mentorings) => _mentoringListView.refreshList(mentorings);
+
   void filter({String title, List<MentoringCategory> categories}) => 
     _mentoringListView.filter(title: title, categories: categories);
 
@@ -191,6 +193,11 @@ class _MentoringListView extends State<MentoringListView> {
 
   Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) => 
     Future.wait(Mentoring.listFromSnapshot(snapshot.data.documents)).then( (mentorings) => setState(() => this._mentorings = mentorings.map((m) => cast<Mentoring>(m)).toList()));
+
+  void refreshList(List<Mentoring> mentorings) =>
+    setState(() {
+      this._mentorings = mentorings;
+    });
 
   @override
   Widget build(BuildContext context) => 
