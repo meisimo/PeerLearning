@@ -145,7 +145,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');        
         if ( snapshot.connectionState == ConnectionState.waiting)
-          return new Text('Loading...');
+          return CircularProgressIndicator();
 
         if (this._mentoringTypes == null || this._mentoringTypes.isEmpty) _setMentoringTypes(snapshot);
         if (this._categories == null || this._categories.isEmpty) _setCategories();

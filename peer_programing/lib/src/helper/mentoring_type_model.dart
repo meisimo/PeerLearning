@@ -19,8 +19,11 @@ class MentoringType {
   MentoringType.fromSnapshot(DocumentSnapshot snapshot):
     this.fromMap(snapshot.data, reference: snapshot.reference);
 
+  static CollectionReference collection() => 
+    Firestore.instance.collection(MENTORING_TYPE_COLLECTION_NAME);
+
   static Stream<QuerySnapshot> snapshot() =>
-    Firestore.instance.collection(MENTORING_TYPE_COLLECTION_NAME).snapshots();
+    collection().snapshots();
 
   @override
   String toString() {
@@ -35,6 +38,10 @@ class MentoringType {
       'learn': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == 'solicitud')],
       'teach': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == 'tutoría')],
     };
+
+  static all() async =>
+    listFromSnapshot((await collection().getDocuments()).documents);
+  
 
   // static getDocsOfDoc(doc) async {
   //   MentoringType type;

@@ -13,7 +13,6 @@ class CategoryList extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> categoryList = [];
     Widget divider = SizedBox(width: dividerWidth,);
-
     categories.forEach((category) {
       categoryList.add(divider);
       categoryList.add(TagChip(

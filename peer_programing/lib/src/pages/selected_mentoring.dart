@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
@@ -9,10 +10,10 @@ class SelectedMentorings extends StatelessWidget {
 
   SelectedMentorings({Key key}) : super(key: key);
 
-  static Function _showMentoringDetail(BuildContext context, int mentoringId) =>
+  static Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
       () => showDialog(
           context: context,
-          child: Detalle(mentoringId,
+          child: Detalle(mentoring,
               actionButton: new RaisedButton(
                 child: Text('Cancelar'),
                 color: Colors.red,

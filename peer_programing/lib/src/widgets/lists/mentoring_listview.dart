@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/models/user.dart';
-import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
@@ -13,47 +13,65 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 class MentoringListView extends StatefulWidget {
   final _MentoringListView _mentoringListView;
 
-  MentoringListView({Function onResumeTap,Stream<QuerySnapshot> mentoringSnapshot})
+  MentoringListView({
+    Function onResumeTap,
+    Stream<QuerySnapshot> mentoringSnapshot,
+    filter({String title, List<MentoringCategory> categories})
+  })
     : assert(mentoringSnapshot!=null),
-      _mentoringListView = _MentoringListView(onResumeTap:onResumeTap, mentoringSnapshot:mentoringSnapshot);
+      _mentoringListView = _MentoringListView(
+        onResumeTap:onResumeTap,
+        mentoringSnapshot:mentoringSnapshot,
+        filter: filter
+      );
 
   @override
   _MentoringListView createState() => _mentoringListView;
 
-  void filerByTitle(String title) => _mentoringListView.filter(title: title);
+  void filter({String title, List<MentoringCategory> categories}) => 
+    _mentoringListView.filter(title: title, categories: categories);
 
-  void filterByCategory(List<int> categories) =>
-      _mentoringListView.filter(category: categories);
 }
 
 class _MentoringListView extends State<MentoringListView> {
-  String _titleFilter;
-  List<int> _categoryFilter;
   List<Mentoring> _mentorings;
   double width;
+  bool _searching = false;
   final Function onResumeTap;
   final Stream<QuerySnapshot> mentoringSnapshot;
+  final Function _filter;
 
-  _MentoringListView({this.onResumeTap, this.mentoringSnapshot}) : _mentorings = [], super();
+  _MentoringListView({
+    this.onResumeTap,
+    this.mentoringSnapshot,
+    Future<List<dynamic>> filter({String title, List<MentoringCategory> categories})
+  }): _mentorings = null,
+      _filter = filter, 
+      super();
 
-  void filter({String title, List<int> category}) {
+  void filter({String title = '', List<MentoringCategory> categories = const []}) {
     setState(() {
-      if (title != null && title.length == 0)
-        this._titleFilter = null;
-      else if (title != null) this._titleFilter = title.toUpperCase();
-
-      if (category != null && category.length == 0)
-        this._categoryFilter = null;
-      else if (category != null) this._categoryFilter = category;
+      _searching = true;
+    });
+    _filter(
+      title: ( title==null || title.length < 3) ? null: title,
+      categories: (categories == null || categories.isEmpty ? null : categories)
+    ).then((List<Mentoring> mentorings){
+      setState(() {
+        this._mentorings = mentorings;
+        _searching = false;
+      });
     });
   }
 
-  List<Mentoring> _filterMentoringsByTitles(String title) {
-    return this
-        ._mentorings
-        .where((mentoring) => mentoring.name.toUpperCase().contains(title))
-        .toList();
-  }
+  // List<Mentoring> _filterMentoringsByTitles(String title) {
+  //   return this
+  //       ._mentorings
+  //       .where((mentoring) => mentoring.name.toUpperCase().contains(title))
+  //       .toList();
+  // }
+
+
 
   List<Mentoring> _filterMentoringsByCategories(List<int> categories) {
     return this
@@ -66,16 +84,7 @@ class _MentoringListView extends State<MentoringListView> {
         .toList();
   }
 
-  List<Mentoring> _getMentoringListFiltered() {
-    if (this._titleFilter != null && 3 < this._titleFilter.length)
-      this._mentorings = _filterMentoringsByTitles(this._titleFilter);
-    if (this._categoryFilter != null)
-      this._mentorings = _filterMentoringsByCategories(this._categoryFilter);
-
-    return this._mentorings;
-  }
-
-  Widget _mentoringList(BuildContext context) {
+  Widget _mentoringList(BuildContext context){
     List<Widget> mentoringList = [];
 
     final Divider divider = Divider(
@@ -84,7 +93,7 @@ class _MentoringListView extends State<MentoringListView> {
       indent: 20,
     );
 
-    for (Mentoring mentoring in this._getMentoringListFiltered()) {
+    for (Mentoring mentoring in this._mentorings) {
       mentoringList.add(
         _mentoringResume(context, mentoring,
             Decorator.generateDecoration(),
@@ -122,7 +131,7 @@ class _MentoringListView extends State<MentoringListView> {
             Expanded(
                 child: GestureDetector(
                     onTap: onResumeTap != null
-                        ? this.onResumeTap(context, mentoring.id)
+                        ? this.onResumeTap(context, mentoring)
                         : null,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,18 +189,23 @@ class _MentoringListView extends State<MentoringListView> {
         : description;
   }
 
+  Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) => 
+    Future.wait(Mentoring.listFromSnapshot(snapshot.data.documents)).then( (mentorings) => setState(() => this._mentorings = mentorings.map((m) => cast<Mentoring>(m)).toList()));
+
   @override
   Widget build(BuildContext context) => 
     StreamBuilder<QuerySnapshot>(
       stream: mentoringSnapshot,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
         if (snapshot.hasError)
-          return new Text('Error: ${snapshot.error}');        
-        if ( snapshot.connectionState == ConnectionState.waiting)
-          return new Text('Loading...');
-        if (this._mentorings.isEmpty)
-          Future.wait(Mentoring.listFromSnapshot(snapshot.data.documents)).then( (mentorings) => setState(() => this._mentorings = mentorings.map((m) => cast<Mentoring>(m)).toList()));
-        
+          return new Text('Error: ${snapshot.error}');
+        if ( snapshot.connectionState == ConnectionState.waiting || _searching )
+          return CircularProgressIndicator();
+        if (this._mentorings == null){
+          _initialGetMentorings(snapshot);
+          return CircularProgressIndicator();
+        }
+
         return this._mentoringList(context);
       },
     );

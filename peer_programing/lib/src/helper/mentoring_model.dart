@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
@@ -20,6 +21,8 @@ class Mentoring{
   MentoringType mentoringType;
   final DocumentReference userReference;
   UserModel user;
+  DocumentReference selectedByReference;
+  UserModel selectedBy;
   String lugar;
   int precio;
   final DocumentReference reference;
@@ -48,15 +51,46 @@ class Mentoring{
       assert( map['points'] != null),
       assert( map['categories'] != null),
       assert( map['mentoringType'] != null),
+      assert( map['precio'] != null),
+      assert( map['lugar'] != null),
       name = map['name'],
       description = map['description'],
       points = map['points'],
       categoriesReference = map['categories'].map( (cat) => cast<DocumentReference>(cat)).toList(),
       mentoringTypeReference = map['mentoringType'],
-      userReference = map['user'];
+      userReference = map['user'],
+      precio = map['precio'],
+      lugar = map['lugar'];
 
   Mentoring.fromSnapshot(DocumentSnapshot snapshot)
     :this.fromMap(snapshot.data, reference: snapshot.reference);
+
+
+  static CollectionReference collection() => 
+    Firestore.instance.collection(MENTORING_COLLECTION_NAME);
+
+  static Query _whereOfAvilable(MentoringType mentoringType, UserModel user) => 
+    collection().where('selectedBy', isNull: true).where('mentoringType', isEqualTo: mentoringType.reference);
+
+  static Future<QuerySnapshot> whereOfAvilable(MentoringType mentoringType, UserModel user) async =>
+    await _whereOfAvilable(mentoringType, user).getDocuments();
+
+  static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
+    await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
+
+  static Future<List<Mentoring>> filterByTitle(MentoringType mentoringType, UserModel user, String title) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user).where('name', isGreaterThanOrEqualTo: title  ).where('name', isLessThan: title+'z'  ).getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterByCategory(MentoringType mentoringType, UserModel user, List<MentoringCategory> categories) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user).where('categories', arrayContainsAny: categories.map((cat)=>cat.reference).toList()).getDocuments()).documents));
+
+  static Future<List<Mentoring>> filterByTitleAndCategory(MentoringType mentoringType, UserModel user, {String title, List<MentoringCategory> categories}) async =>
+    await Future.wait( listFromSnapshot((await _whereOfAvilable(mentoringType, user)
+      .where('name', isGreaterThanOrEqualTo: title  )
+      .where('name', isLessThan: title+'z'  )
+      .where('categories', arrayContainsAny: categories.map((cat)=>cat.reference).toList())
+      .getDocuments()).documents));
+
 
   Future<Mentoring> populate() async{
     this.mentoringType = MentoringType.fromSnapshot(await mentoringTypeReference.get());
@@ -73,6 +107,9 @@ class Mentoring{
     return this;
   }
 
+  Future<void> selectBy(UserModel user) async  =>
+    await this.reference.updateData({'selectedBy': user.reference});
+
   Map<String, dynamic> _toMap() => 
     {
       "name": this.name,
@@ -82,12 +119,13 @@ class Mentoring{
       "categories": this.categoriesReference,
       "lugar": this.lugar,
       "precio": this.precio,
-      "user": this.userReference
+      "user": this.userReference,
+      "selectedBy": null
     };
 
   @override
   String toString() =>
-    "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n\t'user': $user  \n}";
+    "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n\t'user': $user, \n\t'precio': $precio, \n\t'lugar': $lugar \n}";
 
 }
 class MentoringList {
