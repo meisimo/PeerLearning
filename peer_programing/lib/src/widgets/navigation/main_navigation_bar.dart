@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MainNavigationBar extends StatelessWidget {
-  final _routeMap = ['/', '/recomended', '/list_selected', '/login'];
+class MainNavigationBar extends StatefulWidget {
+  @override
+  _MainNavigationBar createState() => _MainNavigationBar();
+}
+
+class _MainNavigationBar extends State<MainNavigationBar> {
+
+  final _routeMap = ['/', '/recomended', '/list_selected', '/login',];
+  int _index = 0;
 
   BottomNavigationBarItem _bottomIcons(IconData icon) =>
       BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
