@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
+import 'package:peer_programing/src/widgets/utils/validations/contraRepetidaValidations.dart';
+import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,7 +13,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPage extends State<LoginPage> {
   String _title;
   bool _signUpMode;
-
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
 
@@ -58,6 +59,7 @@ class _LoginPage extends State<LoginPage> {
           }
         },
       );
+
 
   Widget _toggleButton({String text, VoidCallback onPressed}) => Container(
         width: 150,
@@ -132,14 +134,6 @@ class _LoginForm extends State<LoginForm> {
         width: 200,
         height: 100,
       );
-
-  String _emailValidation(email) {
-    RegExp emailRegex = new RegExp(
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-    if (emailRegex.stringMatch(email) == email) return null;
-    return "El email ingresado no es válido.";
-  }
-
   List<Widget> _loginInputs() => <Widget>[
         InputLogin(
           Key('input-email'),
@@ -148,8 +142,9 @@ class _LoginForm extends State<LoginForm> {
             color: Colors.white,
           ),
           'Email',
+          pasword: false,
           requiredField: true,
-          validator: _emailValidation,
+          validator: EmailValidations.emailValidation,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -157,8 +152,13 @@ class _LoginForm extends State<LoginForm> {
             Icons.lock,
             color: Colors.white,
           ),
+
+          
           'Contraseña',
+           pasword: true,
           requiredField: true,
+          validator: EmailValidations.validaUsuario,
+
         ),
       ];
 
@@ -194,7 +194,6 @@ class SignupForm extends StatefulWidget {
   SignupForm(this._formKey) : super();
 
   @override
-  
   _SignupForm createState() => _SignupForm(this._formKey);
 }
 
@@ -202,14 +201,6 @@ class _SignupForm extends State<SignupForm> {
   final _formKey;
 
   _SignupForm(this._formKey) : super();
-
-  String _emailValidation(email) {
-    RegExp emailRegex = new RegExp(
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-    if (emailRegex.stringMatch(email) == email) return null;
-    return "El email ingresado no es válido.";
-
-  }
 
   List<Widget> _signupInputs() => <Widget>[
         InputLogin(
@@ -219,6 +210,8 @@ class _SignupForm extends State<SignupForm> {
             color: Colors.white,
           ),
           "Nombre",
+
+          pasword: false,
           requiredField: true,
         ),
         InputLogin(
@@ -228,8 +221,9 @@ class _SignupForm extends State<SignupForm> {
             color: Colors.white,
           ),
           "Correo",
+          pasword: false,
           requiredField: true,
-          validator: _emailValidation,
+          validator: EmailValidations.emailValidation,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -238,8 +232,9 @@ class _SignupForm extends State<SignupForm> {
             color: Colors.white,
           ),
           "Contraseña",
+          pasword: true,
           requiredField: true,
-          // TODO:
+          validator: ContraRepetidaValidation.contraseValidation,
         ),
         InputLogin(
           Key('input-contraseña-compartida'),
@@ -248,8 +243,9 @@ class _SignupForm extends State<SignupForm> {
             color: Colors.white,
           ),
           "Confirmar contraseña",
+          pasword: true,
           requiredField: true,
-          // TODO:
+          validator: ContraRepetidaValidation.contraseValidationReal,
         ),
         LDropDown(),
       ];
@@ -258,7 +254,7 @@ class _SignupForm extends State<SignupForm> {
   Widget build(BuildContext context) => Form(
       key: _formKey,
       child: Container(
-        height: 520,
+        height: 490,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: _signupInputs(),
@@ -272,9 +268,10 @@ class InputLogin extends StatelessWidget {
   final String hintText;
   final Function validator;
   final bool requiredField;
+  final bool pasword;
 
   InputLogin(this.key, this.fieldIcon, this.hintText,
-      {this.validator, this.requiredField = false})
+      {this.validator, this.requiredField = false, this.pasword})
       : super();
 
   String _innerValidator(value) {
@@ -294,13 +291,15 @@ class InputLogin extends StatelessWidget {
       hintText: hintText,
       fillColor: Colors.white,
       filled: true,
-      enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(40.0)),
-          borderSide: const BorderSide(
-            color: Colors.red,
-          )));
+      // enabledBorder: const OutlineInputBorder(
+      //     borderRadius: BorderRadius.all(Radius.circular(40.0)),
+      //     borderSide: const BorderSide(
+      //       color: Colors.red,
+      //     ))
+          );
 
   Widget _input() => TextFormField(
+        obscureText: pasword,
         key: this.key,
         validator: _innerValidator,
         decoration: _innerTextFieldDecorationA(),
@@ -314,7 +313,8 @@ class InputLogin extends StatelessWidget {
   Widget _inputLayout({child}) => Container(
         width: 240,
         child: Material(
-            elevation: 8,
+
+            elevation: 10,
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.deepOrange,
             child: Row(

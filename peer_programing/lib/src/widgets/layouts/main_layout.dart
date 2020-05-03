@@ -17,12 +17,11 @@ class MainLayout extends StatelessWidget{
   MainLayout({this.body, this.title, this.headerChild, this.defaultVerticalScroll=true, 
     this.floatingActionButton, this.withBottomNavBar = true});
 
-  BottomNavigationBarItem _bottomIcons(IconData icon) {
-    return BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
-  }
+  BottomNavigationBarItem _bottomIcons(IconData icon) =>
+    BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
 
-  Widget _body(Widget body){
-    return Container(
+  Widget _body(Widget body) =>
+    Container(
           child: Column(
             children: <Widget>[
               MainHeader( 
@@ -35,7 +34,6 @@ class MainLayout extends StatelessWidget{
             ],
           ),
         );
-  }
 
   BottomNavigationBar _bottomNavBar(BuildContext context){
     return BottomNavigationBar(
@@ -67,11 +65,10 @@ class MainLayout extends StatelessWidget{
   }
 
   @override
-  Widget build(BuildContext context){
-    return Scaffold(
+  Widget build(BuildContext context) =>
+    Scaffold(
       bottomNavigationBar: this.withBottomNavBar ? MainNavigationBar() : null,
       body: defaultVerticalScroll ?  SingleChildScrollView(child: _body(body)) : _body(body),
       floatingActionButton: this.floatingActionButton,
     );
-  }
 }
