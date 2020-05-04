@@ -10,38 +10,78 @@ import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.d
 import '../../routes.dart';
 
 class LoginPage extends StatefulWidget {
+  final bool _betweenAction;
+
+  LoginPage({bool betweenAction=false}):_betweenAction=betweenAction;
+
   @override
-  _LoginPage createState() => _LoginPage();
+  _LoginPage createState() => _LoginPage(betweenAction: _betweenAction);
 }
 
 class _LoginPage extends State<LoginPage> {
-  String _title;
+  String _title, _singInError, _singUpError;
   bool _signUpMode;
+  final bool _betweenAction;
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
 
   BasicAuth auth = Routes.auth;
 
-  _LoginPage() : super() {
-    _title = 'Login';
-    _signUpMode = false;
+  _LoginPage({bool betweenAction}):
+    _title = 'Login',
+    _signUpMode = false,
+    _betweenAction = betweenAction,
+    super();
+
+  void _getOut() {
+    if (_betweenAction)
+      Navigator.pop(context);
+    else
+      Navigator.pushReplacementNamed(context, '/');
   }
 
   void _sendLogin() {
-    Navigator.pushReplacementNamed(context, '/');
+    _singInError = null;
     String email = _LoginForm(this._loginFormKey).getEmailField();
     String pass = _LoginForm(this._loginFormKey).getPasswordField();
-    auth.signIn(email, pass);
-    _LoginForm(this._loginFormKey).clearSignInFields();
+    auth
+      .signIn(email, pass)
+      .then((loginResult){
+        _getOut();
+        _LoginForm(this._loginFormKey).clearSignInFields();
+      })
+      .catchError(
+        (error){
+          if(error.code == "ERROR_USER_NOT_FOUND" || error.code == "ERROR_WRONG_PASSWORD"){
+            _singInError = "El email y/o contraseña no es válida.";
+          } else{
+            _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
+          }
+          _loginFormKey.currentState.validate();
+        });
   }
 
   void _sendSignUp() {
-    Navigator.pushReplacementNamed(context, '/');
+    _singUpError = null;
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
-    auth.signUp(name, email, pass);
-    _SignupForm(this._signUpKey).clearSignUpFields();
+    auth
+      .signUp(name, email, pass)
+      .then((signUpResult){
+        _getOut();
+        _SignupForm(this._signUpKey).clearSignUpFields();
+      })
+      .catchError((error){
+        print("ERROR LOGIN $error");
+        if (error.code == "ERROR_WEAK_PASSWORD")
+          _singUpError = "La contraseña es demasiado debil.";
+        else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE")
+          _singUpError = "Este correo ya se encuentra registrado.";
+        else 
+          _singUpError = "Error inesperado en el registro";
+        _signUpKey.currentState.validate();
+      });
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -122,27 +162,31 @@ class _LoginPage extends State<LoginPage> {
         child: Center(
           child: _formLayout(
               form: this._signUpMode
-                  ? SignupForm(this._signUpKey)
-                  : LoginForm(this._loginFormKey),
+                  ? SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
+                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError,),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
+          ),
         ),
-      ));
+      withBottomNavBar: !this._betweenAction,
+      );
 }
 
 class LoginForm extends StatefulWidget {
   final _formKey;
   final _signInDataWrapper = <_LoginForm>[null];
-  LoginForm(this._formKey);
+  final Function showError;
+  LoginForm(this._formKey, {this.showError});
   @override
-  _LoginForm createState() => _signInDataWrapper[0] = new _LoginForm(_formKey);
+  _LoginForm createState() => _signInDataWrapper[0] = new _LoginForm(_formKey, showError: showError);
 }
 
 TextEditingController _emailSignInField = TextEditingController();
 TextEditingController _passwordSignInField = TextEditingController();
 
 class _LoginForm extends State<LoginForm> {
+  Function showError;
   getEmailField() => _emailSignInField.text;
   getPasswordField() => _passwordSignInField.text;
   clearSignInFields() {
@@ -151,7 +195,7 @@ class _LoginForm extends State<LoginForm> {
   }
   final _formKey;
 
-  _LoginForm(this._formKey) : super();
+  _LoginForm(this._formKey, {Function this.showError}) : super();
 
   Widget _loginIcon() => Image.asset(
         daticosDummy[0].avatar,
@@ -160,6 +204,14 @@ class _LoginForm extends State<LoginForm> {
       );
 
   List<Widget> _loginInputs() => <Widget>[
+        Container(
+          height: 20,
+          child: TextFormField(
+            readOnly: true,
+            validator: showError,
+            textAlign: TextAlign.center,
+          ),
+        ),
         InputLogin(
           Key('input-email'),
           Icon(
@@ -222,15 +274,17 @@ TextEditingController _nameField = TextEditingController();
 class SignupForm extends StatefulWidget {
   final _formKey;
   final _signUpDataWrapper = <_SignupForm>[null];
+  final Function showError;
 
-  SignupForm(this._formKey) : super();
+  SignupForm(this._formKey,{this.showError}) : super();
 
   @override
   _SignupForm createState() =>
-      _signUpDataWrapper[0] = new _SignupForm(this._formKey);
+      _signUpDataWrapper[0] = new _SignupForm(this._formKey, showError: showError);
 }
 
 class _SignupForm extends State<SignupForm> {
+  Function showError;
   final _formKey;
   getEmailField() => _emailSignUpField.text;
   getPasswordField() => _passwordSignUpField.text;
@@ -241,9 +295,17 @@ class _SignupForm extends State<SignupForm> {
     _nameField.clear();
   }
 
-  _SignupForm(this._formKey) : super();
+  _SignupForm(this._formKey, {this.showError}) : super();
 
   List<Widget> _signupInputs() => <Widget>[
+        Container(
+          height: 20,
+          child: TextFormField(
+            readOnly: true,
+            validator: showError,
+            textAlign: TextAlign.center,
+          ),
+        ),
         InputLogin(
           Key('input-nombre'),
           Icon(

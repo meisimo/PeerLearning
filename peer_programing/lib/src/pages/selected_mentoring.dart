@@ -14,7 +14,7 @@ class SelectedMentorings extends StatefulWidget {
 
 class _SelectedMentorings extends State<SelectedMentorings> {
   PageController _detailDialogPageController;
-  bool _loading = true, _sendingFeedback=false;
+  bool _loading = true, _sendingFeedback=false, _logged=false;
   UserModel _user;
   MentoringListView _mentoringListView;
 
@@ -22,7 +22,7 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   void initState(){
     _detailDialogPageController = PageController( initialPage: 0);
     Future
-      .any(<Future>[UserModel.getOne()])
+      .any(<Future>[UserModel.getCurrentUser()])
       .then((result){ 
         setState(() {
           _user = result;
@@ -30,18 +30,36 @@ class _SelectedMentorings extends State<SelectedMentorings> {
             onResumeTap: _showMentoringDetail,
             mentorigQuery: Mentoring.whereOfSelectedBy(_user),
           );
+          _logged = _user != null;
           _loading = false;
+          if( _logged ){
+            _mentoringListView = MentoringListView(
+              onResumeTap: _showMentoringDetail,
+              mentorigQuery: Mentoring.whereOfSelectedBy(_user),
+            );
+          }
         });
       });
   }
+
+  Widget _notLoggedMessage() =>
+    Text(
+      "No se encuentra registrado. Por favor, ingrese con su usuario o registrese.",
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold
+      ),
+      textAlign: TextAlign.center,
+    );
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
       title: "Ofertas seleccionadas",
-      body: this._loading ? _showLoading() : _showMentorings()
+      body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage()
     );
   }
+
 
 
   Widget _cancelButton(Mentoring mentoring) => new RaisedButton(
@@ -108,13 +126,6 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Function _mentoringDone(Mentoring mentoring, BuildContext context) => 
     () =>
       _detailDialogPageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-      // mentoring
-      //   .done()
-      //   .then((_){
-      //     _refreshMentorings();
-      //     Navigator.pop(context);
-      //   })
-      //   .catchError( (error)=> print(error) );
 
   Widget _showLoading() => new CircularProgressIndicator();
 

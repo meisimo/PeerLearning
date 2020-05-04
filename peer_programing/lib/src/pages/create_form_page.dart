@@ -87,7 +87,13 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
   Function _createMentoring(BuildContext context) => () async {
     if(_formKey.currentState.validate()){
       _formKey.currentState.save();
-      final user = await UserModel.getOne();
+      final user = await UserModel.getCurrentUser();
+
+      if(user == null){
+        Navigator.pushNamed(context, '/login/action');  
+        return;
+      }
+
       final Mentoring newMentoring = new Mentoring(
         name: this._name,
         description: this._description,
