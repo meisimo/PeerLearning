@@ -14,13 +14,12 @@ class Routes{
   static final routes = {
     '/': (BuildContext context) => new HomePage(),
     '/recomended': (BuildContext context) => new RecomendedPage(),
-  //'/list_selected': (BuildContext context) => new SelectedMentorings(),
     '/list_selected': (BuildContext context) => new SelectedMentorings(),
     '/list_proposals': (BuildContext context) => new ListPage(),
     '/create_mentoring': (BuildContext context) => new CreateForm(),
     '/user': (BuildContext context) => new UserPage(),
     '/login': (BuildContext context) => new LoginPage(),
-    '/login/action': (BuildContext context) => new LoginPage(betweenAction: true,)
+    //'/login/action': (BuildContext context) => new LoginPage(betweenAction: true,)
   };
   static final BasicAuth auth = Auth();
 }

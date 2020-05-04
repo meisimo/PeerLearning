@@ -8,7 +8,7 @@ class MainNavigationBar extends StatefulWidget {
 }
 
 class _MainNavigationBar extends State<MainNavigationBar> {
-  final _routeMap = ['/', '/recomended', '/user', '/login'];
+  final _routeMap = ['/', '/recomended', '/list_selected', '/login'];
   int _index = 0;
 
   BottomNavigationBarItem _bottomIcons(IconData icon) =>
