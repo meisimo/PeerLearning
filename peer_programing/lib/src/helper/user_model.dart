@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 
 import '../../routes.dart';
@@ -11,42 +12,61 @@ const USER_COLLECTION_NAME = 'user';
 class UserModel{
   final int id;
   final String name;
-  final double points;
   final String imgPath;
   final String emal = "johanneira902@gmail.com";
   final DocumentReference reference;
+  final List<dynamic> califications;
   static final BasicAuth auth = Routes.auth;
+  FirebaseUser _userAuth;
+  
+  get email => _userAuth.email;
+  get points => _averageCalification();
+
+  double _averageCalification(){
+    if ( califications == null || califications.length == 0)
+      return 0;
+    
+    double sum = 0;
+    califications.forEach((calification) => sum += calification['points']);
+    
+    return sum/califications.length;
+  }
 
   UserModel({
     this.id = 0, 
     this.name,
-    this.points,
     this.imgPath,
-    this.reference
+    this.reference,
+    this.califications=const []
   });
 
-  UserModel.fromMap(Map<String, dynamic> map, {this.reference})
+  UserModel.fromMap(Map<String, dynamic> map, {this.reference, FirebaseUser userAuth})
     : assert(map['name'] != null),
       assert(map['points'] != null),
       id = 0,
       name = map['name'],
-      points = map['points'],
-      imgPath = map['imgPath'] != null ? map['imgPath'] : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg";
+      imgPath = map['imgPath'] != null ? map['imgPath'] : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg",
+      _userAuth = userAuth,
+      califications = map['califications'] == null ? []: map['califications'];
 
-  UserModel.fromSnapshot(DocumentSnapshot snapshot)
-    : this.fromMap(snapshot.data, reference:snapshot.reference);
-
-  static Future<UserModel> getOne() async {
-    return new UserModel.fromSnapshot((await Firestore.instance.collection(USER_COLLECTION_NAME).getDocuments()).documents[0]);
-  }
+  UserModel.fromSnapshot(DocumentSnapshot snapshot, {FirebaseUser userAuth})
+    : this.fromMap(snapshot.data, reference:snapshot.reference, userAuth: userAuth);
 
   static Future<UserModel> getCurrentUser() async {
-    var user = await auth.getCurrentUser();
-    if(user.uid != null){
-      var query = await Firestore.instance.collection(USER_COLLECTION_NAME).where('authId', isEqualTo: user.uid).getDocuments();   
-      return new UserModel.fromSnapshot(query.documents.first);
+    FirebaseUser userAuth = await auth.getCurrentUser();
+    if(userAuth != null && userAuth.uid != null){
+      var query = await Firestore.instance.collection(USER_COLLECTION_NAME).where('authId', isEqualTo: userAuth.uid).getDocuments();   
+      return new UserModel.fromSnapshot(query.documents.first, userAuth: userAuth);
     }
     return null;
+  }
+
+  Future<void> addFeedback({String coment, double calification}) {
+    califications.add({'coment':coment, 'points':calification});
+    return Future.wait(<Future>[
+      reference.updateData({'califications': califications}),
+      reference.updateData({'points': _averageCalification()}),
+    ]);
   }
 
   @override

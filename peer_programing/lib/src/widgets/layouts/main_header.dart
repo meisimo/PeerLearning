@@ -38,7 +38,6 @@ class MainHeader extends StatelessWidget{
     );
 
     if (this.child != null){
-      print(500);
       contet.add(SizedBox(height: 10,));
       contet.add(this.child);
     }

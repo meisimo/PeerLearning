@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  bool _loading = true;
+  bool _loading = true, _logged = false;
   MentoringListView _mentoringListView, _requestListView;
   Map<String, MentoringType> _mentoringTypes;
   String _searchText, _title;
@@ -33,7 +34,7 @@ class _HomePage extends State<HomePage> {
   );
   static UserModel _user;
 
-  String _selectedType(){
+  String _selectedType() {
     if (_pageController.page ==0)
       return 'teach';
     else 
@@ -52,7 +53,7 @@ class _HomePage extends State<HomePage> {
               actionButton: new RaisedButton(
                 child: Text('aceptar'),
                 color: LightColor.purple,
-                onPressed: _selectMentoring(mentoring, context),
+                onPressed: _logged ? _selectMentoring(mentoring, context) : () => Navigator.pushNamed(context, '/login/action'),
               )));
 
   Function _selectMentoring(Mentoring mentoring, BuildContext context) => 
@@ -157,7 +158,7 @@ class _HomePage extends State<HomePage> {
     _title = 'Tutorías';
 
     Future
-      .wait( <Future>[MentoringType.all(), MentoringCategory.all(), UserModel.getOne()] )
+      .wait( <Future>[MentoringType.all(), MentoringCategory.all(), UserModel.getCurrentUser()] )
       .then((result){
         setState(() {  
           _mentoringTypes = MentoringType.mapMentoringTypes(result[0]);
@@ -173,7 +174,8 @@ class _HomePage extends State<HomePage> {
             mentorigQuery: Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
             filter: _filter(_mentoringTypes['learn'], _user),
           );
-          _loading = false;  
+          _logged = _user != null;
+          _loading = false;
         });
       });
   }
@@ -198,11 +200,12 @@ class _HomePage extends State<HomePage> {
   
   @override
   Widget build(BuildContext context) {
+    // (new Auth()).signOut();
     return MainLayout(
       title: _title,
       headerChild: this._finder(),
       body: (this._loading ? Loading() : _homeInfo(context)),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _loading ? null : FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/create_mentoring'),
         child: Icon(Icons.add),
         backgroundColor: LightColor.orange,
