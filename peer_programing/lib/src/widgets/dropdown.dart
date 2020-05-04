@@ -15,8 +15,8 @@ class SelectorTematicas extends StatefulWidget {
       _selectorTematicasStateWrapper[0].selectedCategories;
 
   @override
-  _SelectorTematicasState createState() => _selectorTematicasStateWrapper[0] =
-      new _SelectorTematicasState(title: _title);
+  _SelectorTematicasState createState() => 
+    _selectorTematicasStateWrapper[0] = new _SelectorTematicasState(title: _title);
 }
 
 class _SelectorTematicasState extends State<SelectorTematicas> {

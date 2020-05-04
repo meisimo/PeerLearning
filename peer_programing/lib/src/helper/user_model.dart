@@ -12,20 +12,31 @@ const USER_COLLECTION_NAME = 'user';
 class UserModel{
   final int id;
   final String name;
-  final double points;
   final String imgPath;
   final DocumentReference reference;
+  final List<dynamic> califications;
   static final BasicAuth auth = Routes.auth;
   FirebaseUser _userAuth;
   
   get email => _userAuth.email;
+  get points => _averageCalification();
+
+  double _averageCalification(){
+    if ( califications == null || califications.length == 0)
+      return 0;
+    
+    double sum = 0;
+    califications.forEach((calification) => sum += calification['points']);
+    
+    return sum/califications.length;
+  }
 
   UserModel({
     this.id = 0, 
     this.name,
-    this.points,
     this.imgPath,
-    this.reference
+    this.reference,
+    this.califications=const []
   });
 
   UserModel.fromMap(Map<String, dynamic> map, {this.reference, FirebaseUser userAuth})
@@ -33,9 +44,9 @@ class UserModel{
       assert(map['points'] != null),
       id = 0,
       name = map['name'],
-      points = map['points'],
       imgPath = map['imgPath'] != null ? map['imgPath'] : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg",
-      _userAuth = userAuth;
+      _userAuth = userAuth,
+      califications = map['califications'] == null ? []: map['califications'];
 
   UserModel.fromSnapshot(DocumentSnapshot snapshot, {FirebaseUser userAuth})
     : this.fromMap(snapshot.data, reference:snapshot.reference, userAuth: userAuth);
@@ -47,6 +58,14 @@ class UserModel{
       return new UserModel.fromSnapshot(query.documents.first, userAuth: userAuth);
     }
     return null;
+  }
+
+  Future<void> addFeedback({String coment, double calification}) {
+    califications.add({'coment':coment, 'points':calification});
+    return Future.wait(<Future>[
+      reference.updateData({'califications': califications}),
+      reference.updateData({'points': _averageCalification()}),
+    ]);
   }
 
   @override

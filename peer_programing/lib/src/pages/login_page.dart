@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/main.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
+import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -21,6 +23,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPage extends State<LoginPage> {
   String _title, _singInError, _singUpError;
   bool _signUpMode;
+  SignupForm _signupFormWidget;
   final bool _betweenAction;
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
@@ -66,8 +69,9 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
+    List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
     auth
-      .signUp(name, email, pass)
+      .signUp(name, email, pass, categories)
       .then((signUpResult){
         _getOut();
         _SignupForm(this._signUpKey).clearSignUpFields();
@@ -162,7 +166,7 @@ class _LoginPage extends State<LoginPage> {
         child: Center(
           child: _formLayout(
               form: this._signUpMode
-                  ? SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
+                  ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
                   : LoginForm(this._loginFormKey, showError: (String _) => _singInError,),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
@@ -223,6 +227,7 @@ class _LoginForm extends State<LoginForm> {
           requiredField: true,
           validator: EmailValidations.emailValidation,
           controller: _emailSignInField,
+          inputType: TextInputType.emailAddress,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -236,6 +241,7 @@ class _LoginForm extends State<LoginForm> {
           requiredField: true,
           //validator: EmailValidations.validaUsuario,
           controller: _passwordSignInField,
+          inputType: TextInputType.visiblePassword,
         ),
       ];
 
@@ -281,11 +287,17 @@ class SignupForm extends StatefulWidget {
   @override
   _SignupForm createState() =>
       _signUpDataWrapper[0] = new _SignupForm(this._formKey, showError: showError);
+
+  getTematicas() => _signUpDataWrapper[0].getTematicas();
+  
 }
 
 class _SignupForm extends State<SignupForm> {
   Function showError;
   final _formKey;
+  final SelectorTematicas _selectorTematicas = new SelectorTematicas(title: "Temática de interes");
+
+  getTematicas() => _selectorTematicas.selectedCategories;
   getEmailField() => _emailSignUpField.text;
   getPasswordField() => _passwordSignUpField.text;
   getNameField() => _nameField.text;
@@ -316,6 +328,7 @@ class _SignupForm extends State<SignupForm> {
           pasword: false,
           requiredField: true,
           controller: _nameField,
+          inputType: TextInputType.text,
         ),
         InputLogin(
           Key('input-correo'),
@@ -328,6 +341,7 @@ class _SignupForm extends State<SignupForm> {
           requiredField: true,
           validator: EmailValidations.emailValidation,
           controller: _emailSignUpField,
+          inputType: TextInputType.emailAddress,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -339,6 +353,7 @@ class _SignupForm extends State<SignupForm> {
           pasword: true,
           requiredField: true,
           validator: ContraRepetidaValidation.contraseValidation,
+          inputType: TextInputType.visiblePassword,
         ),
         InputLogin(
           Key('input-contraseña-compartida'),
@@ -351,8 +366,9 @@ class _SignupForm extends State<SignupForm> {
           requiredField: true,
           validator: ContraRepetidaValidation.contraseValidationReal,
           controller: _passwordSignUpField,
+          inputType: TextInputType.visiblePassword,
         ),
-        SelectorTematicas(title: "Temática de interes"),
+        _selectorTematicas,
       ];
 
   @override
@@ -375,12 +391,14 @@ class InputLogin extends StatelessWidget {
   final bool requiredField;
   final bool pasword;
   final TextEditingController controller;
+  final TextInputType inputType;
 
   InputLogin(this.key, this.fieldIcon, this.hintText,
       {this.validator,
       this.requiredField = false,
       this.pasword,
-      this.controller})
+      this.controller,
+      this.inputType})
       : super();
 
   String _innerValidator(value) {
@@ -400,11 +418,6 @@ class InputLogin extends StatelessWidget {
         hintText: hintText,
         fillColor: Colors.white,
         filled: true,
-        // enabledBorder: const OutlineInputBorder(
-        //     borderRadius: BorderRadius.all(Radius.circular(40.0)),
-        //     borderSide: const BorderSide(
-        //       color: Colors.red,
-        //     ))
       );
 
   Widget _input() => TextFormField(
@@ -414,6 +427,7 @@ class InputLogin extends StatelessWidget {
         decoration: _innerTextFieldDecorationA(),
         style: TextStyle(fontSize: 20, color: Colors.black),
         controller: this.controller,
+        keyboardType: this.inputType,
       );
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(

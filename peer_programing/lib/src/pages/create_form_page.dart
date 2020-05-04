@@ -51,6 +51,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
               decoration: const InputDecoration(
                 icon: Icon(Icons.description),
                 hintText: 'Descripción',
+                
               ),
               validator: this._requiredField(subject: "La Descrición"),
               onSaved: (String value) => this._description = value,
@@ -61,7 +62,8 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
                 hintText: 'Tarifa',
               ),
               validator: this._requiredField(subject: "La tarifa"),
-              onSaved: (String value) => this._tarifa = int.parse(value)
+              onSaved: (String value) => this._tarifa = int.parse(value),
+              keyboardType: TextInputType.number,
             ),
             TextFormField(
               decoration: const InputDecoration(

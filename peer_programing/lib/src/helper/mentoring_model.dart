@@ -120,7 +120,7 @@ class Mentoring{
 
   Future<void> sendFeedBack({double calification, String comments}) async {
     return await Future.wait(<Future>[
-      this.user.reference.updateData({'califications': {'comments':comments, 'points':calification}}),
+      this.user.addFeedback(coment: comments, calification:calification),
       this.reference.updateData({'closed': true})
     ]);
   }
