@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/main.dart';
+import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/utils/validations/contraRepetidaValidations.dart';
 import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.dart';
+
+import '../../routes.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,6 +20,8 @@ class _LoginPage extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
 
+  BasicAuth auth = Routes.auth;
+
   _LoginPage() : super() {
     _title = 'Login';
     _signUpMode = false;
@@ -23,10 +29,19 @@ class _LoginPage extends State<LoginPage> {
 
   void _sendLogin() {
     Navigator.pushReplacementNamed(context, '/');
+    String email = _LoginForm(this._loginFormKey).getEmailField();
+    String pass = _LoginForm(this._loginFormKey).getPasswordField();
+    auth.signIn(email, pass);
+    _LoginForm(this._loginFormKey).clearSignInFields();
   }
 
   void _sendSignUp() {
     Navigator.pushReplacementNamed(context, '/');
+    String email = _SignupForm(this._signUpKey).getEmailField();
+    String pass = _SignupForm(this._signUpKey).getPasswordField();
+    String name = _SignupForm(this._signUpKey).getNameField();
+    auth.signUp(name, email, pass);
+    _SignupForm(this._signUpKey).clearSignUpFields();
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -59,7 +74,6 @@ class _LoginPage extends State<LoginPage> {
           }
         },
       );
-
 
   Widget _toggleButton({String text, VoidCallback onPressed}) => Container(
         width: 150,
@@ -119,12 +133,22 @@ class _LoginPage extends State<LoginPage> {
 
 class LoginForm extends StatefulWidget {
   final _formKey;
+  final _signInDataWrapper = <_LoginForm>[null];
   LoginForm(this._formKey);
   @override
-  _LoginForm createState() => _LoginForm(_formKey);
+  _LoginForm createState() => _signInDataWrapper[0] = new _LoginForm(_formKey);
 }
 
+TextEditingController _emailSignInField = TextEditingController();
+TextEditingController _passwordSignInField = TextEditingController();
+
 class _LoginForm extends State<LoginForm> {
+  getEmailField() => _emailSignInField.text;
+  getPasswordField() => _passwordSignInField.text;
+  clearSignInFields() {
+    _emailSignInField.clear();
+    _passwordSignInField.clear();
+  }
   final _formKey;
 
   _LoginForm(this._formKey) : super();
@@ -145,6 +169,7 @@ class _LoginForm extends State<LoginForm> {
           pasword: false,
           requiredField: true,
           validator: EmailValidations.emailValidation,
+          controller: _emailSignInField,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -153,12 +178,11 @@ class _LoginForm extends State<LoginForm> {
             color: Colors.white,
           ),
 
-          
           'Contraseña',
-           pasword: true,
+          pasword: true,
           requiredField: true,
-          validator: EmailValidations.validaUsuario,
-
+          //validator: EmailValidations.validaUsuario,
+          controller: _passwordSignInField,
         ),
       ];
 
@@ -188,17 +212,32 @@ class _LoginForm extends State<LoginForm> {
       ));
 }
 
+
+TextEditingController _emailSignUpField = TextEditingController();
+TextEditingController _passwordSignUpField = TextEditingController();
+TextEditingController _nameField = TextEditingController();
+
 class SignupForm extends StatefulWidget {
   final _formKey;
+  final _signUpDataWrapper = <_SignupForm>[null];
 
   SignupForm(this._formKey) : super();
 
   @override
-  _SignupForm createState() => _SignupForm(this._formKey);
+  _SignupForm createState() =>
+      _signUpDataWrapper[0] = new _SignupForm(this._formKey);
 }
 
 class _SignupForm extends State<SignupForm> {
   final _formKey;
+  getEmailField() => _emailSignUpField.text;
+  getPasswordField() => _passwordSignUpField.text;
+  getNameField() => _nameField.text;
+  clearSignUpFields() {
+    _emailSignUpField.clear();
+    _passwordSignUpField.clear();
+    _nameField.clear();
+  }
 
   _SignupForm(this._formKey) : super();
 
@@ -210,9 +249,9 @@ class _SignupForm extends State<SignupForm> {
             color: Colors.white,
           ),
           "Nombre",
-
           pasword: false,
           requiredField: true,
+          controller: _nameField,
         ),
         InputLogin(
           Key('input-correo'),
@@ -224,6 +263,7 @@ class _SignupForm extends State<SignupForm> {
           pasword: false,
           requiredField: true,
           validator: EmailValidations.emailValidation,
+          controller: _emailSignUpField,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -246,6 +286,7 @@ class _SignupForm extends State<SignupForm> {
           pasword: true,
           requiredField: true,
           validator: ContraRepetidaValidation.contraseValidationReal,
+          controller: _passwordSignUpField,
         ),
         LDropDown(),
       ];
@@ -269,9 +310,13 @@ class InputLogin extends StatelessWidget {
   final Function validator;
   final bool requiredField;
   final bool pasword;
+  final TextEditingController controller;
 
   InputLogin(this.key, this.fieldIcon, this.hintText,
-      {this.validator, this.requiredField = false, this.pasword})
+      {this.validator,
+      this.requiredField = false,
+      this.pasword,
+      this.controller})
       : super();
 
   String _innerValidator(value) {
@@ -287,16 +332,16 @@ class InputLogin extends StatelessWidget {
   }
 
   InputDecoration _innerTextFieldDecorationA() => InputDecoration(
-      border: InputBorder.none,
-      hintText: hintText,
-      fillColor: Colors.white,
-      filled: true,
-      // enabledBorder: const OutlineInputBorder(
-      //     borderRadius: BorderRadius.all(Radius.circular(40.0)),
-      //     borderSide: const BorderSide(
-      //       color: Colors.red,
-      //     ))
-          );
+        border: InputBorder.none,
+        hintText: hintText,
+        fillColor: Colors.white,
+        filled: true,
+        // enabledBorder: const OutlineInputBorder(
+        //     borderRadius: BorderRadius.all(Radius.circular(40.0)),
+        //     borderSide: const BorderSide(
+        //       color: Colors.red,
+        //     ))
+      );
 
   Widget _input() => TextFormField(
         obscureText: pasword,
@@ -304,6 +349,7 @@ class InputLogin extends StatelessWidget {
         validator: _innerValidator,
         decoration: _innerTextFieldDecorationA(),
         style: TextStyle(fontSize: 20, color: Colors.black),
+        controller: this.controller,
       );
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(
@@ -313,7 +359,6 @@ class InputLogin extends StatelessWidget {
   Widget _inputLayout({child}) => Container(
         width: 240,
         child: Material(
-
             elevation: 10,
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.deepOrange,
