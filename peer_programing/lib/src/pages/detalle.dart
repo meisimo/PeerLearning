@@ -6,7 +6,7 @@ import 'package:peer_programing/src/widgets/stars_points.dart';
 
 class Detalle extends StatefulWidget {
   final Mentoring _mentoring;
-  final RaisedButton actionButton;
+  final Widget actionButton;
 
   Detalle(this._mentoring, {this.actionButton}) : super();
 
@@ -19,24 +19,10 @@ class DetalleState extends State<Detalle> {
   static const int maxScore = 5;
   // final int detalleId;
   final Mentoring _mentoring;
-  final RaisedButton actionButton;
+  final Widget actionButton;
   var offers;
 
   DetalleState(this._mentoring, this.actionButton) : super();
-
-  // Widget onInit() {
-  //   return StreamBuilder(
-  //     stream: Firestore.instance.collection('ofertas-tutorias').snapshots(),
-  //     builder: (context, snapshot) {
-  //       if (!snapshot.hasData) {
-  //         return Container(
-  //           child: CircularProgressIndicator(),
-  //         );
-  //       }
-  //       return _buildDialog(context, snapshot.data.documents);
-  //     },
-  //   );
-  // }
 
   _buildDialog(context) {
     return Container(
