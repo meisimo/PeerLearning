@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/rendering/box.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -131,7 +132,7 @@ import 'package:shared_preferences/shared_preferences.dart';
               ),
               
                 
-                Row(
+              Tu rama está actualizada con 'origin/dev-perfil'.  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Align(
@@ -296,6 +297,15 @@ class UserPage extends StatefulWidget{
 }
 
 class UserPageState extends State<StatefulWidget> {
+  UserModel _usuarioR;
+  @override
+  void initState(){
+    UserModel.getCurrentUser().then((usuario) { 
+        setState(() { 
+        this._usuarioR=usuario;
+        });
+    });
+  }
   Widget build(BuildContext context){
     var crossAxisAlignment;
     return MainLayout(
@@ -324,8 +334,8 @@ class UserPageState extends State<StatefulWidget> {
                  Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    nombrePuntuacion('tutor'),
-                    estrellaPuntuacion('4')
+                    nombrePuntuacion('Tutor'),
+                    estrellaPuntuacion('3')
                   ],
                  ),
 
@@ -349,7 +359,7 @@ class UserPageState extends State<StatefulWidget> {
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      //contenedorEdit()
+                      contenedorEdit()
                     ],
                   )
                   //Text('estamos aqui'),
@@ -369,6 +379,7 @@ class UserPageState extends State<StatefulWidget> {
 
 //Imagen perfil 
 class imagenPerfil extends StatelessWidget{
+  String s;
   Widget build(BuildContext context){
     return new Container(
       child:  CircleAvatar(
@@ -391,6 +402,8 @@ class imagenPerfil extends StatelessWidget{
 
 class nombrePuntuacion extends StatelessWidget{
   String nombre;
+
+  
 
   nombrePuntuacion(nombre){
     this.nombre = nombre;
@@ -440,26 +453,66 @@ class estrellaPuntuacion extends StatelessWidget{
   }
 }
 
-class contenedorEdit extends StatelessWidget{
+class contenedorEdit extends StatefulWidget{
+  @override
+  _contenedorEditState createState() => _contenedorEditState();
+}
+
+class _contenedorEditState extends State<contenedorEdit> {
+     UserModel _usuarioR;
+
+  @override
+  void initState(){
+    UserModel.getCurrentUser().then((usuario) {
+        setState(() { 
+        this._usuarioR=usuario;
+        });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
        width: 310.0,
        height: 410.0,
-      decoration: new BoxDecoration(
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(12),
-        color: const Color(0xffd4d4ea)
-      ),
+      // decoration: new BoxDecoration(
+      //   shape: BoxShape.rectangle,
+      //   borderRadius: BorderRadius.circular(12),
+      //   color: const Color(0xffd4d4ea)
+      // ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'ajaagjh',
-              border: const UnderlineInputBorder()
+
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.people),
+              title: Text("Nombre"),
+              subtitle: Text(_usuarioR.name),
             ),
-          )
+          ),
+
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.email),
+              title: Text("Email"),
+              subtitle: Text(_usuarioR.emal),
+            ),
+          ),
+          RaisedButton(
+            color: Color(0xfff46352),
+            child: Text("Cerrar sesion"),
+            onPressed: (){
+              Navigator.pushReplacementNamed(context, '/');
+            }
+            )
+          // TextFormField(
+          //   decoration: const InputDecoration(
+          //     labelText: "Nombre usuario",
+          //     border: const UnderlineInputBorder(),
+          //   ),
+          // ),
+          
           /*edit(Icon(Icons.edit), 'Nombre'),
           edit(Icon(Icons.edit), 'Email'),
           edit(Icon(Icons.edit), 'Numero')*/

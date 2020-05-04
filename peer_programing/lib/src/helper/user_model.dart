@@ -13,6 +13,7 @@ class UserModel{
   final String name;
   final double points;
   final String imgPath;
+  final String emal = "johanneira902@gmail.com";
   final DocumentReference reference;
   static final BasicAuth auth = Routes.auth;
 
