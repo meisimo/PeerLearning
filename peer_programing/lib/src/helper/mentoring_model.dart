@@ -14,7 +14,7 @@ class Mentoring{
   final id = 0;
   final String name;
   final String description;
-  final double points;
+  double points;
   final List<dynamic> categoriesReference;
   List<MentoringCategory> categories;
   final DocumentReference mentoringTypeReference;
@@ -25,6 +25,7 @@ class Mentoring{
   UserModel selectedBy;
   String lugar;
   int precio;
+  bool closed;
   final DocumentReference reference;
 
   Mentoring({
@@ -48,14 +49,12 @@ class Mentoring{
   Mentoring.fromMap(Map<String, dynamic> map, {this.reference})
     : assert( map['name'] != null),
       assert( map['description'] != null),
-      assert( map['points'] != null),
       assert( map['categories'] != null),
       assert( map['mentoringType'] != null),
       assert( map['precio'] != null),
       assert( map['lugar'] != null),
       name = map['name'],
       description = map['description'],
-      points = map['points'],
       categoriesReference = map['categories'].map( (cat) => cast<DocumentReference>(cat)).toList(),
       mentoringTypeReference = map['mentoringType'],
       userReference = map['user'],
@@ -70,13 +69,13 @@ class Mentoring{
     Firestore.instance.collection(MENTORING_COLLECTION_NAME);
 
   static Query _whereOfAvilable(MentoringType mentoringType, UserModel user) => 
-    collection().where('selectedBy', isNull: true).where('mentoringType', isEqualTo: mentoringType.reference);
+    collection().where('selectedBy', isNull: true).where('closed', isEqualTo: false).where('mentoringType', isEqualTo: mentoringType.reference);
 
   static Future<QuerySnapshot> whereOfAvilable(MentoringType mentoringType, UserModel user) async =>
     await _whereOfAvilable(mentoringType, user).getDocuments();
 
-  static Future<QuerySnapshot> whereOfSelectedBy(UserModel user) async => 
-    await collection().where('selectedBy', isEqualTo: user.reference).getDocuments();
+  static Future<QuerySnapshot> whereOfSelectedBy(UserModel user, {bool closed=false}) async => 
+    await collection().where('selectedBy', isEqualTo: user.reference).where('closed',isEqualTo: closed).getDocuments();
 
   static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
     await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
@@ -97,11 +96,10 @@ class Mentoring{
   static Future<List<Mentoring>> filterBySelectedBy(UserModel user) async =>
     await Future.wait( listFromSnapshot((await whereOfSelectedBy(user)).documents));
 
-
-
   Future<Mentoring> populate() async{
     this.mentoringType = MentoringType.fromSnapshot(await mentoringTypeReference.get());
     this.user = UserModel.fromSnapshot(await userReference.get() );
+    this.points = this.user.points;
     this.categories = [];
     for (DocumentReference category in categoriesReference){
       categories.add(new MentoringCategory.fromSnapshot(await category.get()));
@@ -120,17 +118,24 @@ class Mentoring{
   Future<void> unselect() async => 
     await this.reference.updateData({'selectedBy': null});
 
+  Future<void> sendFeedBack({double calification, String comments}) async {
+    return await Future.wait(<Future>[
+      this.user.addFeedback(coment: comments, calification:calification),
+      this.reference.updateData({'closed': true})
+    ]);
+  }
+
   Map<String, dynamic> _toMap() => 
     {
       "name": this.name,
-      "points": 1.1,
       "description": this.description,
       "mentoringType": this.mentoringTypeReference,
       "categories": this.categoriesReference,
       "lugar": this.lugar,
       "precio": this.precio,
       "user": this.userReference,
-      "selectedBy": null
+      "selectedBy": null,
+      "closed": false
     };
 
   @override

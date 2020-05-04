@@ -35,35 +35,6 @@ class MainLayout extends StatelessWidget{
           ),
         );
 
-  BottomNavigationBar _bottomNavBar(BuildContext context){
-    return BottomNavigationBar(
-        showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedItemColor: LightColor.purple,
-          unselectedItemColor: Colors.grey.shade300,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 0,
-          items: [
-            _bottomIcons(Icons.home),
-            _bottomIcons(Icons.star_border),
-            _bottomIcons(Icons.dns),
-            _bottomIcons(Icons.account_circle ),
-          ],
-          onTap: (index) async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();    
-            bool logged = (prefs.getBool('logged') == null ? false: prefs.getBool('logged'));
-            String ruta = this.routeMap[index];
-
-            print(logged);
-            if ( logged && ruta == '/login'){
-              ruta = '/user';
-            }
-
-            Navigator.pushReplacementNamed(context, ruta);
-          },
-      );
-  }
-
   @override
   Widget build(BuildContext context) =>
     Scaffold(
