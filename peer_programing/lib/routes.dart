@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/auth_module.dart';
 
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/pages/recomended_page.dart';
@@ -20,4 +21,5 @@ class Routes{
     '/user': (BuildContext context) => new UserPage(),
     '/login': (BuildContext context) => new LoginPage()
   };
+  static final BasicAuth auth = Auth();
 }
