@@ -13,6 +13,7 @@ class UserModel{
   final int id;
   final String name;
   final String imgPath;
+  final String emal = "johanneira902@gmail.com";
   final DocumentReference reference;
   final List<dynamic> califications;
   static final BasicAuth auth = Routes.auth;
