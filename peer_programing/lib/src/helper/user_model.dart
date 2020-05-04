@@ -2,6 +2,9 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peer_programing/src/helper/auth_module.dart';
+
+import '../../routes.dart';
 
 const USER_COLLECTION_NAME = 'user';
 
@@ -11,6 +14,7 @@ class UserModel{
   final double points;
   final String imgPath;
   final DocumentReference reference;
+  static final BasicAuth auth = Routes.auth;
 
   UserModel({
     this.id = 0, 
@@ -35,9 +39,18 @@ class UserModel{
     return new UserModel.fromSnapshot((await Firestore.instance.collection(USER_COLLECTION_NAME).getDocuments()).documents[0]);
   }
 
+  static Future<UserModel> getCurrentUser() async {
+    var user = await auth.getCurrentUser();
+    if(user.uid != null){
+      var query = await Firestore.instance.collection(USER_COLLECTION_NAME).where('authId', isEqualTo: user.uid).getDocuments();   
+      return new UserModel.fromSnapshot(query.documents.first);
+    }
+    return null;
+  }
+
   @override
   String toString(){
-    return "{'name':$name}";
+    return "{'name':$name 'points':$points}";
   }
 }
 

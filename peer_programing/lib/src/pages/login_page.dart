@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/main.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/utils/validations/contraRepetidaValidations.dart';
 import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.dart';
+
+import '../../routes.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -17,7 +20,7 @@ class _LoginPage extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
 
-  BasicAuth auth = Auth();
+  BasicAuth auth = Routes.auth;
 
   _LoginPage() : super() {
     _title = 'Login';
@@ -29,6 +32,7 @@ class _LoginPage extends State<LoginPage> {
     String email = _LoginForm(this._loginFormKey).getEmailField();
     String pass = _LoginForm(this._loginFormKey).getPasswordField();
     auth.signIn(email, pass);
+    _LoginForm(this._loginFormKey).clearSignInFields();
   }
 
   void _sendSignUp() {
@@ -37,6 +41,7 @@ class _LoginPage extends State<LoginPage> {
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
     auth.signUp(name, email, pass);
+    _SignupForm(this._signUpKey).clearSignUpFields();
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -140,6 +145,10 @@ TextEditingController _passwordSignInField = TextEditingController();
 class _LoginForm extends State<LoginForm> {
   getEmailField() => _emailSignInField.text;
   getPasswordField() => _passwordSignInField.text;
+  clearSignInFields() {
+    _emailSignInField.clear();
+    _passwordSignInField.clear();
+  }
   final _formKey;
 
   _LoginForm(this._formKey) : super();
@@ -224,6 +233,11 @@ class _SignupForm extends State<SignupForm> {
   getEmailField() => _emailSignUpField.text;
   getPasswordField() => _passwordSignUpField.text;
   getNameField() => _nameField.text;
+  clearSignUpFields() {
+    _emailSignUpField.clear();
+    _passwordSignUpField.clear();
+    _nameField.clear();
+  }
 
   _SignupForm(this._formKey) : super();
 
