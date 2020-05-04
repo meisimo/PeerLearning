@@ -60,7 +60,6 @@ class _LoginPage extends State<LoginPage> {
         },
       );
 
-
   Widget _toggleButton({String text, VoidCallback onPressed}) => Container(
         width: 150,
         child: RaisedButton(
@@ -134,6 +133,7 @@ class _LoginForm extends State<LoginForm> {
         width: 200,
         height: 100,
       );
+
   List<Widget> _loginInputs() => <Widget>[
         InputLogin(
           Key('input-email'),
@@ -186,6 +186,7 @@ class _LoginForm extends State<LoginForm> {
           children: [_loginIcon()]..addAll(_loginInputs()),
         ),
       ));
+
 }
 
 class SignupForm extends StatefulWidget {
@@ -247,7 +248,7 @@ class _SignupForm extends State<SignupForm> {
           requiredField: true,
           validator: ContraRepetidaValidation.contraseValidationReal,
         ),
-        LDropDown(),
+        SelectorTematicas(title: "Temática de interes"),
       ];
 
   @override

@@ -4,6 +4,8 @@ import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/widgets/dropdown.dart';
+import 'package:peer_programing/src/widgets/loading.dart';
 
 class CreateForm extends StatefulWidget {
   @override
@@ -14,7 +16,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
   final List<String> _mentoringTypesMap = ['learn', 'teach'];
   final _formKey = GlobalKey<FormState>();
   final Map<String, MentoringCategory> _categoriesMap = {};
-
+  final SelectorTematicas _selectorTematicas = new SelectorTematicas(title:"Temática");
   List<MentoringCategory> _categories = [];
   Map<String,MentoringType> _mentoringTypes;
   TabController _formTabPageController;
@@ -44,7 +46,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
               validator: this._requiredField(subject: "El tírulo"),
               onSaved: (String value) => this._name = value, 
             ),
-            _categoryList(),
+            _selectorTematicas,
             TextFormField(
               decoration: const InputDecoration(
                 icon: Icon(Icons.description),
@@ -80,22 +82,6 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
         TabController(vsync: this, length: 2, initialIndex: 0);
   }
 
-  Widget _categoryList() => 
-    DropdownButtonFormField(
-      value: null,
-      items: _categories.map<DropdownMenuItem<String>>((MentoringCategory category) =>
-         DropdownMenuItem<String>(
-          value: category.reference.path,
-          child: Text(category.name),
-        )
-      ).toList(),
-      onChanged: (String categoryReferencePath) => _selectedCategories.add(this._categoriesMap[categoryReferencePath]),
-      decoration: const InputDecoration(
-        hintText: 'Temáticas',
-      ),
-      validator: (_){ return this._selectedCategories.isEmpty ?"Debe seleccionar al menos una temática.": null;} ,
-    );
-  
   MentoringType _selectedMentoringType() => this._mentoringTypes[_mentoringTypesMap[_formTabPageController.index]];
 
   Function _createMentoring(BuildContext context) => () async {
@@ -108,7 +94,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
         precio: this._tarifa,
         lugar: this._lugar,
         mentoringTypeReference: _selectedMentoringType().reference,
-        categoriesReference: _selectedCategories.map((MentoringCategory category) => category.reference).toList(),
+        categoriesReference: _selectorTematicas.selectedCategories.map((MentoringCategory category) => category.reference).toList(),
         userReference: user.reference
       );
 
@@ -145,7 +131,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');        
         if ( snapshot.connectionState == ConnectionState.waiting)
-          return CircularProgressIndicator();
+          return Loading();
 
         if (this._mentoringTypes == null || this._mentoringTypes.isEmpty) _setMentoringTypes(snapshot);
         if (this._categories == null || this._categories.isEmpty) _setCategories();
