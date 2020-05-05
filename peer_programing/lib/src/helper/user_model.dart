@@ -13,13 +13,12 @@ class UserModel{
   final int id;
   final String name;
   final String imgPath;
-  final String emal = "johanneira902@gmail.com";
   final DocumentReference reference;
   final List<dynamic> califications;
   static final BasicAuth auth = Routes.auth;
   FirebaseUser _userAuth;
   
-  get email => _userAuth.email;
+  String get email => _userAuth.email;
   get points => _averageCalification();
 
   double _averageCalification(){
@@ -68,6 +67,10 @@ class UserModel{
       reference.updateData({'points': _averageCalification()}),
     ]);
   }
+
+  Future<void> signOut() =>
+    (new Auth()).signOut();
+  
 
   @override
   String toString(){

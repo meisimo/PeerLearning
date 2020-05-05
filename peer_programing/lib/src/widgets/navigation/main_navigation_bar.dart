@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainNavigationBar extends StatefulWidget {
   @override
@@ -15,9 +15,8 @@ class _MainNavigationBar extends State<MainNavigationBar> {
       BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
 
   Function _navigate(BuildContext context) => (int index) async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        bool logged =
-            (prefs.getBool('logged') == null ? false : prefs.getBool('logged'));
+        var auth = await (new Auth()).getCurrentUser();
+        bool logged = auth != null;
         String ruta = this._routeMap[index];
         if (logged && ruta == '/login') {
           ruta = '/user';
