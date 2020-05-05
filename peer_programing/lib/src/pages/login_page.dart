@@ -40,7 +40,7 @@ class _LoginPage extends State<LoginPage> {
     if (_betweenAction)
       Navigator.pop(context);
     else
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushReplacementNamed(context, '/user');
   }
 
   void _sendLogin() {
