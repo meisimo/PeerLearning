@@ -19,7 +19,7 @@ class Routes{
     '/create_mentoring': (BuildContext context) => new CreateForm(),
     '/user': (BuildContext context) => new UserPage(),
     '/login': (BuildContext context) => new LoginPage(),
-    //'/login/action': (BuildContext context) => new LoginPage(betweenAction: true,)
+    '/login/action': (BuildContext context) => new LoginPage(betweenAction: true,)
   };
   static final BasicAuth auth = Auth();
 }
