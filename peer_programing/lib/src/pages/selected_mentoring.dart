@@ -26,10 +26,6 @@ class _SelectedMentorings extends State<SelectedMentorings> {
       .then((result){ 
         setState(() {
           _user = result;
-          _mentoringListView = MentoringListView(
-            onResumeTap: _showMentoringDetail,
-            mentorigQuery: Mentoring.whereOfSelectedBy(_user),
-          );
           _logged = _user != null;
           _loading = false;
           if( _logged ){
