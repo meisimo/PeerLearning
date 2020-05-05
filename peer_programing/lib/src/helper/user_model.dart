@@ -60,6 +60,13 @@ class UserModel{
     return null;
   }
 
+  static Stream<QuerySnapshot> snapshot() =>
+    Firestore.instance.collection(USER_COLLECTION_NAME).snapshots();
+
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) =>
+    snapshots.map((snap) async =>  ( (new UserModel.fromSnapshot(snap)) ) ).toList();
+    
+
   Future<void> addFeedback({String coment, double calification}) {
     califications.add({'coment':coment, 'points':calification});
     return Future.wait(<Future>[
