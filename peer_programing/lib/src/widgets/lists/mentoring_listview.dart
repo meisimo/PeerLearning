@@ -17,34 +17,34 @@ class MentoringListView extends StatefulWidget {
   final List _entoringListViewWrapper = <_MentoringListView>[null];
   final Map<String, dynamic> _filters = {};
 
-  bool get hasFilters => (_filters['title'] != null && _filters['title'].isEmpty) || (_filters['categories'] != null && _filters['categories'].isEmpty);
+  bool get hasFilters =>
+      (_filters['title'] != null && _filters['title'].isEmpty) ||
+      (_filters['categories'] != null && _filters['categories'].isEmpty);
   get _mentoringListView => _entoringListViewWrapper[0];
-  set _setMentoringListView(_MentoringListView mentorings) => _entoringListViewWrapper[0] = mentorings;
 
-  MentoringListView({
-    Function onResumeTap,
-    Future<QuerySnapshot> mentorigQuery,
-    Function filter
-  }): _filter = filter,
-      _mentorigQuery = mentorigQuery,
-      _onResumeTap = onResumeTap;
+  MentoringListView(
+      {Function onResumeTap,
+      Future<QuerySnapshot> mentorigQuery,
+      Function filter})
+      : _filter = filter,
+        _mentorigQuery = mentorigQuery,
+        _onResumeTap = onResumeTap;
 
   @override
   _MentoringListView createState() =>
       _entoringListViewWrapper[0] = new _MentoringListView(
-        filter: _filter,
-        mentoringSnapshot: Stream.fromFuture(_mentorigQuery),
-        onResumeTap: _onResumeTap,
-        filters: this.hasFilters ? _filters : null
-      );
+          filter: _filter,
+          mentoringSnapshot: Stream.fromFuture(_mentorigQuery),
+          onResumeTap: _onResumeTap,
+          filters: this.hasFilters ? _filters : null);
 
   void refreshList(List<Mentoring> mentorings) =>
-      _mentoringListView.refreshList(mentorings);
+      _entoringListViewWrapper[0].refreshList(mentorings);
 
-  void filter({String title, List<MentoringCategory> categories}){
-      _filters['title'] = title;
-      _filters['categories'] = categories;
-      _mentoringListView.filter(title: title, categories: categories);
+  void filter({String title, List<MentoringCategory> categories}) {
+    _filters['title'] = title;
+    _filters['categories'] = categories;
+    _entoringListViewWrapper[0].filter(title: title, categories: categories);
   }
 }
 
@@ -55,16 +55,19 @@ class _MentoringListView extends State<MentoringListView> {
   final Function onResumeTap;
   final Stream<QuerySnapshot> mentoringSnapshot;
   final Function _filter;
-  final Map<String, dynamic> _filters;
+  Map<String, dynamic> _filters = {};
 
-  bool get hasFilters => _filters!=null &&( (_filters['title'] != null && _filters['title'].isEmpty) || (_filters['categories'] != null && _filters['categories'].isEmpty));
+  bool get hasFilters =>
+      _filters != null &&
+      ((_filters['title'] != null && _filters['title'].isEmpty) ||
+          (_filters['categories'] != null && _filters['categories'].isEmpty));
 
   _MentoringListView(
       {this.onResumeTap,
       this.mentoringSnapshot,
-      Future<List<dynamic>> filter({String title, List<MentoringCategory> categories}),    
-      Map<String, dynamic> filters
-      })
+      Future<List<dynamic>> filter(
+          {String title, List<MentoringCategory> categories}),
+      Map<String, dynamic> filters})
       : _mentorings = null,
         _filter = filter,
         _filters = filters,
@@ -72,6 +75,8 @@ class _MentoringListView extends State<MentoringListView> {
 
   void filter(
       {String title = '', List<MentoringCategory> categories = const []}) {
+    _filters['title'] = title;
+    _filters['categories'] = categories;
     setState(() {
       _searching = true;
     });
@@ -99,14 +104,14 @@ class _MentoringListView extends State<MentoringListView> {
   }
 
   Widget _notMentoringToShow() => Padding(
-    padding: EdgeInsets.all(100),
-    child: Text(
-      "No se há conseguido ninguna coincidencia.",
-      style: TextStyle(
-        fontSize: 20,
-      ),
-    ),
-  );
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No se há conseguido ninguna coincidencia.",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      );
 
   Widget _mentoringList(BuildContext context) {
     List<Widget> mentoringList = [];
@@ -225,17 +230,22 @@ class _MentoringListView extends State<MentoringListView> {
   Widget build(BuildContext context) => StreamBuilder<QuerySnapshot>(
         stream: mentoringSnapshot,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          print("BUILDER $_filters");
           if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
           if (snapshot.connectionState == ConnectionState.waiting || _searching)
             return Loading();
           if (this._mentorings == null) {
             if (hasFilters)
-              _initialGetMentorings(snapshot).then((_) => filter(title: _filters['title'], categories: _filters['categories']));
-            else 
+              _initialGetMentorings(snapshot).then((_) => filter(
+                  title: _filters['title'],
+                  categories: _filters['categories']));
+            else
               _initialGetMentorings(snapshot);
             return Loading();
           }
-          return this._mentorings.isEmpty? _notMentoringToShow(): this._mentoringList(context);
+          return this._mentorings.isEmpty
+              ? _notMentoringToShow()
+              : this._mentoringList(context);
         },
       );
 }
