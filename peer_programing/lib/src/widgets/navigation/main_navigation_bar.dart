@@ -9,7 +9,6 @@ class MainNavigationBar extends StatefulWidget {
 
 class _MainNavigationBar extends State<MainNavigationBar> {
   final _routeMap = ['/', '/recomended', '/list_selected', '/login'];
-  int _index = 0;
 
   BottomNavigationBarItem _bottomIcons(IconData icon) =>
       BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
@@ -21,6 +20,7 @@ class _MainNavigationBar extends State<MainNavigationBar> {
         if (logged && ruta == '/login') {
           ruta = '/user';
         }
+        
         Navigator.pushReplacementNamed(context, ruta, arguments: index);
       };
 

@@ -97,9 +97,9 @@ class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryLi
           crossAxisAlignment: CrossAxisAlignment.end,
           children: _recomendedUsers.map<Widget>((user)=>
              MiniCard(
-                primary: LightColor.orange,
+                primary: LightColor.rand(),
                 backWidget: Decorator.generateDecoration(),
-                chipColor: LightColor.orange,
+                chipColor: LightColor.rand(),
                 chipText1: user.name,
                 chipText2: "8 Cources",
                 isPrimaryCard: true,
