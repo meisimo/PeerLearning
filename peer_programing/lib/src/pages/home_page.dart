@@ -81,8 +81,18 @@ class _HomePage extends State<HomePage> {
       .catchError( (error)=> print(error) );
 
   void _filterMentorings(){
-    this._mentoringListView.filter(title: _searchText, categories: _selectedCaterogies);
-    this._requestListView.filter(title: _searchText, categories: _selectedCaterogies);
+    String selectedType = _selectedType();
+
+    this._mentoringListView.filter(
+      title: _searchText,
+      categories: _selectedCaterogies,
+      build: selectedType=='teach'
+    );
+    this._requestListView.filter(
+      title: _searchText,
+      categories: _selectedCaterogies,
+      build: selectedType=='learn'
+    );
   }
 
   Widget _finder() =>

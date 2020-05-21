@@ -36,15 +36,17 @@ class MentoringListView extends StatefulWidget {
           filter: _filter,
           mentoringSnapshot: Stream.fromFuture(_mentorigQuery),
           onResumeTap: _onResumeTap,
-          filters: this.hasFilters ? _filters : null);
+          filters: _filters);
 
   void refreshList(List<Mentoring> mentorings) =>
       _entoringListViewWrapper[0].refreshList(mentorings);
 
-  void filter({String title, List<MentoringCategory> categories}) {
+  void filter(
+      {String title, List<MentoringCategory> categories, bool build = false}) {
     _filters['title'] = title;
     _filters['categories'] = categories;
-    _entoringListViewWrapper[0].filter(title: title, categories: categories);
+    _entoringListViewWrapper[0]
+        .filter(title: title, categories: categories, build: build);
   }
 }
 
@@ -74,22 +76,27 @@ class _MentoringListView extends State<MentoringListView> {
         super();
 
   void filter(
-      {String title = '', List<MentoringCategory> categories = const []}) {
+      {String title = '',
+      List<MentoringCategory> categories = const [],
+      bool build = true}) {
     _filters['title'] = title;
     _filters['categories'] = categories;
-    setState(() {
-      _searching = true;
-    });
-    _filter(
-            title: (title == null || title.length < 3) ? null : title,
-            categories:
-                (categories == null || categories.isEmpty ? null : categories))
-        .then((List<Mentoring> mentorings) {
+    if (build) {
       setState(() {
-        this._mentorings = mentorings;
-        _searching = false;
+        _searching = true;
       });
-    });
+      _filter(
+              title: (title == null || title.length < 3) ? null : title,
+              categories: (categories == null || categories.isEmpty
+                  ? null
+                  : categories))
+          .then((List<Mentoring> mentorings) {
+        setState(() {
+          this._mentorings = mentorings;
+          _searching = false;
+        });
+      });
+    }
   }
 
   List<Mentoring> _filterMentoringsByCategories(List<int> categories) {
@@ -140,6 +147,33 @@ class _MentoringListView extends State<MentoringListView> {
     );
   }
 
+  Widget _mentoringPoints(double points, Color background) => Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+            radius: 3,
+            backgroundColor: background,
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Text("$points",
+              style: TextStyle(
+                color: LightColor.grey,
+                fontSize: 14,
+              ))
+        ],
+      ));
+
+  Widget _newUserPointsMark() => Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Text("Nuevo",
+          style: TextStyle(
+            color: LightColor.grey,
+            fontSize: 14,
+          )));
+
   Widget _mentoringResume(
       BuildContext context, Mentoring mentoring, Widget decoration,
       {Color background}) {
@@ -176,18 +210,10 @@ class _MentoringListView extends State<MentoringListView> {
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold)),
                               ),
-                              CircleAvatar(
-                                radius: 3,
-                                backgroundColor: background,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text("${mentoring.points}",
-                                  style: TextStyle(
-                                    color: LightColor.grey,
-                                    fontSize: 14,
-                                  )),
+                              (mentoring.points < 0.5
+                                  ? _newUserPointsMark()
+                                  : _mentoringPoints(
+                                      mentoring.points, background)),
                             ],
                           ),
                         ),
@@ -230,7 +256,6 @@ class _MentoringListView extends State<MentoringListView> {
   Widget build(BuildContext context) => StreamBuilder<QuerySnapshot>(
         stream: mentoringSnapshot,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          print("BUILDER $_filters");
           if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
           if (snapshot.connectionState == ConnectionState.waiting || _searching)
             return Loading();
