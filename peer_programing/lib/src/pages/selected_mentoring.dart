@@ -52,11 +52,10 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Widget build(BuildContext context) {
     return MainLayout(
       title: "Ofertas seleccionadas",
-      body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage()
+      body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage(),
+      defaultVerticalScroll: false,
     );
   }
-
-
 
   Widget _cancelButton(Mentoring mentoring) => new RaisedButton(
                 child: Text('Cancelar'),
@@ -126,13 +125,7 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Widget _showLoading() => new CircularProgressIndicator();
 
   Widget _showMentorings() =>
-    Container(
-        child: Column(
-          children: <Widget>[
-            this._mentoringListView,
-          ],
-        ),
-      );
+    this._mentoringListView;
 
   void _refreshMentorings() =>
     Mentoring

@@ -220,6 +220,7 @@ class _HomePage extends State<HomePage> {
         child: Icon(Icons.add),
         backgroundColor: LightColor.orange,
       ),
+      defaultVerticalScroll: false,
     );
   }
 }

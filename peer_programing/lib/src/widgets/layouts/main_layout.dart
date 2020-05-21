@@ -30,7 +30,9 @@ class MainLayout extends StatelessWidget{
                 height: (this.headerChild == null ? 120: 150),
               ),
               SizedBox(height: 20),
-              this.body,
+              Flexible(
+                child: this.body,
+              )
             ],
           ),
         );

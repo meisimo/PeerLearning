@@ -137,13 +137,9 @@ class _MentoringListView extends State<MentoringListView> {
       mentoringList.add(divider);
     }
 
-    return SingleChildScrollView(
+    return ListView(
       scrollDirection: Axis.vertical,
-      child: Container(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: mentoringList),
-      ),
+      children: mentoringList,
     );
   }
 
