@@ -41,7 +41,8 @@ class Auth implements BasicAuth {
       'email': email,
       'categories': categories,
       'califications': [],
-      'points': 0.0
+      'points': 0.0,
+      'createdMentorings': 0
     };
     await Firestore.instance.collection('user').add(userData);
     return user.uid;

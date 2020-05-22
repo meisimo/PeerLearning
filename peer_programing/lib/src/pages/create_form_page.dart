@@ -106,6 +106,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
         userReference: user.reference
       );
 
+      await user.addMentoring();
       await newMentoring.save();
       Navigator.pop(context);
     }

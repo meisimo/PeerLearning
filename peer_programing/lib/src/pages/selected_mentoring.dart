@@ -115,6 +115,7 @@ class _SelectedMentorings extends State<SelectedMentorings> {
         .unselect()
         .then((_){
           _refreshMentorings();
+          mentoring.user.addMentoring();
           Navigator.pop(context);
         })
         .catchError( (error)=> print(error) );

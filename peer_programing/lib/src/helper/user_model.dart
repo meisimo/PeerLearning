@@ -15,6 +15,7 @@ class UserModel{
   final String imgPath;
   final DocumentReference reference;
   final List<dynamic> califications;
+  final int createdMentorings;
   static final BasicAuth auth = Routes.auth;
   FirebaseUser _userAuth;
   
@@ -36,7 +37,8 @@ class UserModel{
     this.name,
     this.imgPath,
     this.reference,
-    this.califications=const []
+    this.califications=const [],
+    this.createdMentorings
   });
 
   UserModel.fromMap(Map<String, dynamic> map, {this.reference, FirebaseUser userAuth})
@@ -46,6 +48,7 @@ class UserModel{
       name = map['name'],
       imgPath = map['imgPath'] != null ? map['imgPath'] : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg",
       _userAuth = userAuth,
+      createdMentorings = map['createdMentorings'] == null ? 0 : map['createdMentorings'],
       califications = map['califications'] == null ? []: map['califications'];
 
   UserModel.fromSnapshot(DocumentSnapshot snapshot, {FirebaseUser userAuth})
@@ -72,6 +75,18 @@ class UserModel{
     return Future.wait(<Future>[
       reference.updateData({'califications': califications}),
       reference.updateData({'points': _averageCalification()}),
+    ]);
+  }
+
+  Future<void> addMentoring() {
+    return Future.wait(<Future>[
+      reference.updateData({'createdMentorings': createdMentorings+1}),
+    ]);
+  }
+
+    Future<void> removeMentoring() {
+    return Future.wait(<Future>[
+      reference.updateData({'createdMentorings': createdMentorings-1}),
     ]);
   }
 

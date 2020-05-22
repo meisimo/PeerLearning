@@ -62,6 +62,7 @@ class _HomePage extends State<HomePage> {
       .selectBy(_user)
       .then((_){
         _refreshMentorings();
+        mentoring.user.removeMentoring();
         Navigator.pop(context);
       })
       .catchError((error) => print(error));

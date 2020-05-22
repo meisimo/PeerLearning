@@ -1,10 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/layouts/card_layout.dart';
 
-class MiniCard extends StatelessWidget{
+class MiniCard extends StatelessWidget {
   final bool isPrimaryCard;
   final Color primary;
   final String imgPath;
@@ -15,15 +14,14 @@ class MiniCard extends StatelessWidget{
 
   double width;
 
-  MiniCard({
-    this.primary = Colors.redAccent,
-    this.imgPath,
-    this.chipText1 = '',
-    this.chipText2 = '',
-    this.backWidget,
-    this.chipColor = LightColor.orange,
-    this.isPrimaryCard = false
-  });
+  MiniCard(
+      {this.primary = Colors.redAccent,
+      this.imgPath,
+      this.chipText1 = '',
+      this.chipText2 = '',
+      this.backWidget,
+      this.chipColor = LightColor.orange,
+      this.isPrimaryCard = false});
 
   Widget _cardInfo(String title, String courses, Color textColor, Color primary,
       {bool isPrimaryCard = false}) {
@@ -52,20 +50,19 @@ class MiniCard extends StatelessWidget{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
-    return CardLayout(
-      height: isPrimaryCard ? 190 : 180,
-      imgPath: this.imgPath,
-      primary: this.primary,
-      backWidget: this.backWidget,
-      cardInfo: _cardInfo(
-        chipText1,
-        chipText2,
-        LightColor.titleTextColor,
-        chipColor,
-        isPrimaryCard: isPrimaryCard
+    return GestureDetector(
+      child: CardLayout(
+        height: isPrimaryCard ? 190 : 180,
+        imgPath: this.imgPath,
+        primary: this.primary,
+        backWidget: this.backWidget,
+        cardInfo: _cardInfo(
+            chipText1, chipText2, LightColor.titleTextColor, chipColor,
+            isPrimaryCard: isPrimaryCard),
       ),
+      onTap: (() => print('touched')),
     );
   }
 }
