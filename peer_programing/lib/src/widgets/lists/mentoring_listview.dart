@@ -62,8 +62,8 @@ class _MentoringListView extends State<MentoringListView> {
 
   bool get hasFilters =>
       _filters != null &&
-      ((_filters['title'] != null && _filters['title'].isEmpty) ||
-          (_filters['categories'] != null && _filters['categories'].isEmpty));
+      ((_filters['title'] != null && !_filters['title'].isEmpty) ||
+          (_filters['categories'] != null && !_filters['categories'].isEmpty));
 
   _MentoringListView(
       {this.onResumeTap,

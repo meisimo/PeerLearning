@@ -38,7 +38,6 @@ class StateCategoryList extends State<CategoryList> {
 
   @override
   Widget build(BuildContext context) {
-    print(title);
     if (categories.length < 1)
       return _showEmpty();
     

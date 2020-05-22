@@ -135,9 +135,9 @@ class _HomePage extends State<HomePage> {
 
   Function _filter(MentoringType mentoringType, UserModel user) =>
       ({String title, List<MentoringCategory> categories}) async {
-        if (title != null && categories != null)
+        if (title != null && categories != null){
           return await Mentoring.filterByTitleAndCategory(mentoringType, user,
-              title: title, categories: categories);
+              title: title, categories: categories);}
         else if (title != null)
           return await Mentoring.filterByTitle(mentoringType, user, title);
         else if (categories != null)
