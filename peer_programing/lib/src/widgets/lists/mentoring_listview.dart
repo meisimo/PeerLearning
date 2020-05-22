@@ -45,7 +45,8 @@ class MentoringListView extends StatefulWidget {
       {String title, List<MentoringCategory> categories, bool build = false}) {
     _filters['title'] = title;
     _filters['categories'] = categories;
-    _entoringListViewWrapper[0]
+    if (_entoringListViewWrapper[0]!=null)
+      _entoringListViewWrapper[0]
         .filter(title: title, categories: categories, build: build);
   }
 }
@@ -224,7 +225,9 @@ class _MentoringListView extends State<MentoringListView> {
                           height: 21,
                           child: CategoryList(
                               dividerWidth: 10,
-                              categories: mentoring.categories),
+                              categories: mentoring.categories,
+                              title: "",
+                          ),
                         )
                       ],
                     )))
