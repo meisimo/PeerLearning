@@ -66,6 +66,8 @@ class MentoringCategory {
   static Future<List<MentoringCategory>> all() async =>
       (await Firestore.instance.collection(MENTORING_CATEGORY_COLLECTION_NAME).getDocuments()).documents.map( (DocumentSnapshot category) => new MentoringCategory.fromSnapshot(category)).toList();
 
+  static Function compareWith(MentoringCategory category1) => (MentoringCategory category2) => category1.reference.documentID == category2.reference.documentID;
+
   @override
   String toString() {
     return "{'id':$id, 'name':$name, 'color':$color, }";
