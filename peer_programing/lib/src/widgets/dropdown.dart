@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
-// import 'package:multiselect_formfield/multiselect_formfield.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 class SelectorTematicas extends StatefulWidget {
   final List _selectorTematicasStateWrapper = <_SelectorTematicasState>[null];
@@ -15,59 +15,55 @@ class SelectorTematicas extends StatefulWidget {
       _selectorTematicasStateWrapper[0].selectedCategories;
 
   @override
-  _SelectorTematicasState createState() => 
-    _selectorTematicasStateWrapper[0] = new _SelectorTematicasState(title: _title);
+  _SelectorTematicasState createState() => _selectorTematicasStateWrapper[0] =
+      new _SelectorTematicasState(title: _title);
 }
 
 class _SelectorTematicasState extends State<SelectorTematicas> {
   Map<String, MentoringCategory> _categoryMap;
   List<MentoringCategory> _categories, _selectedCategories = [];
   List _myActivities = [];
+  List<int> _selectedItems = const [];
   final String _title;
-
   List<MentoringCategory> get selectedCategories => _selectedCategories;
-
   _SelectorTematicasState({String title})
       : assert(title != null),
         _title = title;
-
   @override
   void initState() {
     super.initState();
   }
 
-  Widget _multiselectCategorias() => Container(
-        child: MultiSelectFormField(
-          autovalidate: false,
-          titleText: _title,
-          validator: (_) {
-            if (_selectedCategories == null || _selectedCategories.length == 0) {
-              return 'Porfavor selecciona una o mas de una';
-            }
-            return null;
-          },
-          dataSource: _categories
-              .map((category) =>
-                  {"display": category.name, "value": category.reference.path})
-              .toList(),
-          textField: 'display',
-          valueField: 'value',
-          okButtonLabel: 'OK',
-          cancelButtonLabel: 'CANCEL',
-          required: true,
-          hintText: 'Selecciona una o mas de una ',
-          value: _myActivities,
-          onSaved: (selectedCategories) {
-            if (selectedCategories == null) return;
-            setState(() {
-              _selectedCategories = selectedCategories
-                  .map<MentoringCategory>((path) => _categoryMap[path])
-                  .toList();
-              _myActivities = selectedCategories;
-            });
-          },
-        ),
-      );
+  Widget _multiselectCategorias() {
+    return SearchableDropdown.multiple(
+        items: _categories
+            .map((category) => DropdownMenuItem(
+                  child: Text(category.name),
+                  value: category.name,
+                ))
+            .toList(),
+        displayClearIcon: false,
+        selectedItems: _selectedItems,
+        hint: "Temáticas",
+        searchHint: "Temáticas",
+        onChanged: (value) {
+          setState(() {
+            _selectedCategories = value
+                .map<MentoringCategory>((indice) => _categories[indice])
+                .toList();
+            _selectedItems = value;
+          });
+        },
+        doneButton: (selectedItemsDone, doneContext) {
+          return new RaisedButton(
+            onPressed: () => Navigator.of(doneContext).pop(),
+            child: Text("Seleccionar"),
+            color: LightColor.lightOrange,
+          );
+        },
+        closeButton: null,
+        isExpanded: true);
+  }
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
