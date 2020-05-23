@@ -208,9 +208,19 @@ class _HomePage extends State<HomePage> {
         ],
       ));
 
+  Function _checkConnectivity(context, VoidCallback errorCallback ) => () =>
+    checkConnectivity().then((connected){
+      if (connected){
+        Navigator.pushNamed(context, '/create_mentoring');
+      } else if (errorCallback != null) {
+        errorCallback();
+      }
+    });
+
+
+
   @override
   Widget build(BuildContext context) {
-    checkConnectivity();
     return MainLayout(
       title: _title,
       headerChild: this._finder(),
@@ -218,8 +228,7 @@ class _HomePage extends State<HomePage> {
       floatingActionButton: _loading
           ? null
           : FloatingActionButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, '/create_mentoring'),
+              onPressed: _checkConnectivity(context, () => print("object")),
               child: Icon(Icons.add),
               backgroundColor: LightColor.orange,
             ),
