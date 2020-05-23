@@ -18,9 +18,8 @@ class RecomendedPage extends StatelessWidget {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
       title: "Favoritos",
-      body: Expanded(
-        child: RecomendedMentorByCategoryList(),
-      ),
+      body: RecomendedMentorByCategoryList(),
+
       defaultVerticalScroll: false,
     );
   }
