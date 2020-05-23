@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/pages/tutor_profile_page.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/layouts/card_layout.dart';
@@ -11,6 +13,7 @@ class MiniCard extends StatelessWidget {
   final String chipText2;
   final Widget backWidget;
   final Color chipColor;
+  final UserModel tutor;
 
   double width;
 
@@ -21,6 +24,7 @@ class MiniCard extends StatelessWidget {
       this.chipText2 = '',
       this.backWidget,
       this.chipColor = LightColor.orange,
+      this.tutor,
       this.isPrimaryCard = false});
 
   Widget _cardInfo(String title, String courses, Color textColor, Color primary,
@@ -62,7 +66,7 @@ class MiniCard extends StatelessWidget {
             chipText1, chipText2, LightColor.titleTextColor, chipColor,
             isPrimaryCard: isPrimaryCard),
       ),
-      onTap: (() => print('touched')),
+      onTap: (() => Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: this.tutor)))),
     );
   }
 }

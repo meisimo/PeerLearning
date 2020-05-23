@@ -92,16 +92,20 @@ class _RecomendedMentorByCategoryList
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: _recomendedUsers.map<Widget>((user) {
-              return user.createdMentorings != 0 ? MiniCard(
-                  primary: LightColor.rand(),
-                  backWidget: Decorator.generateDecoration(),
-                  chipColor: LightColor.rand(),
-                  chipText1: user.name,
-                  chipText2: user.createdMentorings.toString() + " Tutorias",
-                  isPrimaryCard: true,
-                  imgPath: user.imgPath != null
-                      ? user.imgPath
-                      : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg") : Text('');
+              return user.createdMentorings != 0
+                  ? MiniCard(
+                      tutor: user,
+                      primary: LightColor.rand(),
+                      backWidget: Decorator.generateDecoration(),
+                      chipColor: LightColor.rand(),
+                      chipText1: user.name,
+                      chipText2:
+                          user.createdMentorings.toString() + " Tutorias",
+                      isPrimaryCard: true,
+                      imgPath: user.imgPath != null
+                          ? user.imgPath
+                          : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg")
+                  : Text('');
             }).toList()),
       ),
     );
