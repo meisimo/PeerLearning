@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
@@ -17,54 +18,49 @@ class RecomendedPage extends StatelessWidget {
     width = MediaQuery.of(context).size.width;
     return MainLayout(
       title: "Favoritos",
-      body: Expanded(
-          child: RecomendedMentorByCategoryList(),
-        ),
+      body: RecomendedMentorByCategoryList(),
+
       defaultVerticalScroll: false,
     );
   }
 }
 
-class RecomendedMentorByCategoryList extends StatefulWidget{
+class RecomendedMentorByCategoryList extends StatefulWidget {
   @override
   _RecomendedMentorByCategoryList createState() =>
-    _RecomendedMentorByCategoryList();
-
+      _RecomendedMentorByCategoryList();
 }
 
-class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryList>{
+class _RecomendedMentorByCategoryList
+    extends State<RecomendedMentorByCategoryList> {
   List<UserModel> _recomendedUsers;
 
-  Widget _recomendedList() =>
-  ListView(
-      children: <Widget>[
-        _categoryRow(
-          "Tutores recomendados", LightColor.orange, LightColor.orange),
-        _featuredRowA(),
-        SizedBox(height: 0),
-        // _categoryRow(
-        //   "Temas recomendados", LightColor.purple, LightColor.darkpurple),
-        // _featuredRowB()
-    ],);
+  Widget _recomendedList() => ListView(
+        children: <Widget>[
+          _categoryRow(
+              "Tutores recomendados", LightColor.orange, LightColor.orange),
+          _featuredRowA(),
+          SizedBox(height: 0),
+        ],
+      );
 
   @override
-  Widget build(BuildContext context) =>
-    StreamBuilder(
+  Widget build(BuildContext context) => StreamBuilder(
       stream: UserModel.snapshot(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) 
-            return new Text('Error: ${snapshot.error}');
-          if (snapshot.connectionState == ConnectionState.waiting )
-            return Loading();
-          if (_recomendedUsers == null){
-            Future.wait(UserModel.listFromSnapshot(snapshot.data.documents)).then((users) =>setState((){_recomendedUsers = users.map<UserModel>((u)=>u).toList();}));
-            return Loading();  
-          }
+        if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return Loading();
+        if (_recomendedUsers == null) {
+          Future.wait(UserModel.listFromSnapshot(snapshot.data.documents))
+              .then((users) => setState(() {
+                    _recomendedUsers = users.map<UserModel>((u) => u).toList();
+                  }));
+          return Loading();
+        }
 
-          return _recomendedUsers == null ? Loading(): _recomendedList();
+        return _recomendedUsers == null ? Loading() : _recomendedList();
       });
-  
-
 
   Widget _categoryRow(
     String title,
@@ -82,7 +78,6 @@ class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryLi
             style: TextStyle(
                 color: LightColor.titleTextColor, fontWeight: FontWeight.bold),
           ),
-          TagChip("See all", primary, onTap: () => print("See all"),)
         ],
       ),
     );
@@ -93,57 +88,24 @@ class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryLi
       scrollDirection: Axis.horizontal,
       child: Container(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: _recomendedUsers.map<Widget>((user)=>
-             MiniCard(
-                primary: LightColor.rand(),
-                backWidget: Decorator.generateDecoration(),
-                chipColor: LightColor.rand(),
-                chipText1: user.name,
-                chipText2: "8 Cources",
-                isPrimaryCard: true,
-                imgPath: user.imgPath != null ? user.imgPath :
-                    "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
-          ).toList()
-          
-          // <Widget>[
-
-          //   MiniCard(
-          //       primary: LightColor.orange,
-          //       backWidget: Decorator.generateDecoration(),
-          //       chipColor: LightColor.orange,
-          //       chipText1: "Find the right degree for you",
-          //       chipText2: "8 Cources",
-          //       isPrimaryCard: true,
-          //       imgPath:
-          //           "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
-          //   MiniCard(
-          //       primary: Colors.white,
-          //       chipColor: LightColor.seeBlue,
-          //       backWidget: Decorator.generateDecoration(),
-          //       chipText1: "Become a data scientist",
-          //       chipText2: "8 Cources",
-          //       imgPath:
-          //           "https://hips.hearstapps.com/esquireuk.cdnds.net/16/39/980x980/square-1475143834-david-gandy.jpg?resize=480:*"),
-          //   MiniCard(
-          //       primary: Colors.white,
-          //       chipColor: LightColor.lightOrange,
-          //       backWidget: Decorator.generateDecoration(),
-          //       chipText1: "Become a digital marketer",
-          //       chipText2: "8 Cources",
-          //       imgPath:
-          //           "https://www.visafranchise.com/wp-content/uploads/2019/05/patrick-findaro-visa-franchise-square.jpg"),
-          //   MiniCard(
-          //       primary: Colors.white,
-          //       chipColor: LightColor.seeBlue,
-          //       backWidget: Decorator.generateDecoration(),
-          //       chipText1: "Become a machine learner",
-          //       chipText2: "8 Cources",
-          //       imgPath:
-          //           "https://d1mo3tzxttab3n.cloudfront.net/static/img/shop/560x580/vint0080.jpg"),
-          // ],
-        ),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: _recomendedUsers.map<Widget>((user) {
+              return user.createdMentorings != 0
+                  ? MiniCard(
+                      tutor: user,
+                      primary: LightColor.rand(),
+                      backWidget: Decorator.generateDecoration(),
+                      chipColor: LightColor.rand(),
+                      chipText1: user.name,
+                      chipText2:
+                          user.createdMentorings.toString() + " Tutorias",
+                      isPrimaryCard: true,
+                      imgPath: user.imgPath != null
+                          ? user.imgPath
+                          : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg")
+                  : Text('');
+            }).toList()),
       ),
     );
   }
@@ -227,5 +189,4 @@ class _RecomendedMentorByCategoryList extends State<RecomendedMentorByCategoryLi
       ),
     );
   }
-
 }
