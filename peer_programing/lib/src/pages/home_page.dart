@@ -12,6 +12,8 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 
+import '../utils/connection.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePage createState() => new _HomePage();
@@ -208,6 +210,7 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    checkConnectivity();
     return MainLayout(
       title: _title,
       headerChild: this._finder(),
