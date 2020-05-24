@@ -4,6 +4,7 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
+import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
 
@@ -20,7 +21,7 @@ class TutorProfilePage extends StatefulWidget {
 
 class TutorProfileState extends State<StatefulWidget> {
   final UserModel tutor;
-
+  bool _loading;
   TutorProfileState({this.tutor});
 
   Widget _paginaUsuario() => Column(
@@ -71,12 +72,20 @@ class TutorProfileState extends State<StatefulWidget> {
             ],
           );
 
+  @override
+  void initState(){
+    super.initState();
+    _loading = true;
+    this.tutor.populate().then((_) => setState(() => _loading = false));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MainLayout(
         title: 'Perfil del Tutor',
         withBottomNavBar: false,
         body: Container(
-          child: _paginaUsuario()
+          child: _loading ? Loading(): _paginaUsuario()
         )
       );
   }
@@ -237,7 +246,7 @@ class _ContenedorEditState extends State<ContenedorEdit> {
 
 
   Widget _paginaUsuario() => Container(
-      width: 310.0,
+      width: 400,
       height: 410.0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
