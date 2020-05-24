@@ -67,7 +67,6 @@ class TutorProfileState extends State<StatefulWidget> {
           );
 
   Widget build(BuildContext context) {
-    print(tutor);
     return MainLayout(
         title: 'Perfil del Tutor',
         withBottomNavBar: false,

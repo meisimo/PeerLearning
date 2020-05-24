@@ -52,12 +52,14 @@ class MentoringListView extends StatefulWidget {
 }
 
 class _MentoringListView extends State<MentoringListView> {
-  List<Mentoring> _mentorings;
-  double width;
-  bool _searching = false;
+  static final int DESCRIPTION_MAX_LENGTH = 90;
+  static final int TITLE_MAX_LENGTH = 30;
   final Function onResumeTap;
   final Stream<QuerySnapshot> mentoringSnapshot;
   final Function _filter;
+  List<Mentoring> _mentorings;
+  double width;
+  bool _searching = false;
   Map<String, dynamic> _filters = {};
 
   bool get hasFilters =>
@@ -198,7 +200,8 @@ class _MentoringListView extends State<MentoringListView> {
                             mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
                               Expanded(
-                                child: Text(mentoring.name,
+                                child: Text(
+                                  _truncateText(mentoring.name, TITLE_MAX_LENGTH),
                                     style: TextStyle(
                                         color: LightColor.purple,
                                         fontSize: 16,
@@ -212,7 +215,7 @@ class _MentoringListView extends State<MentoringListView> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Text(_truncateDescription(mentoring.description),
+                        Text(_truncateText(mentoring.description, DESCRIPTION_MAX_LENGTH),
                             style: AppTheme.h6Style.copyWith(
                                 fontSize: 12,
                                 color: LightColor.extraDarkPurple)),
@@ -232,8 +235,7 @@ class _MentoringListView extends State<MentoringListView> {
         ));
   }
 
-  String _truncateDescription(String description) {
-    final int maxLength = 90;
+  String _truncateText(String description, int maxLength) {
     return description.length > maxLength
         ? "${description.substring(0, maxLength)}..."
         : description;

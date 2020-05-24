@@ -153,7 +153,6 @@ class _HomePage extends State<HomePage> {
   Function _filter(MentoringType mentoringType, UserModel user) =>
       ({String title, List<MentoringCategory> categories}) =>
         _handleConnectivity(onSuccess: () async {
-          print("FIlter");
           if (title != null && categories != null) {
             return await Mentoring.filterByTitleAndCategory(mentoringType, user,
                 title: title, categories: categories);
