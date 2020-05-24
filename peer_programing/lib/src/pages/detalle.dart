@@ -82,7 +82,7 @@ class DetalleState extends State<Detalle> {
         ListTile(
         leading: CircleAvatar(
              backgroundColor: Colors.grey.shade300,
-            backgroundImage: NetworkImage("https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
+            backgroundImage: NetworkImage(this._mentoring.user.imgPath),
         ),
           title: Text(
             this._mentoring.user.name,

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -70,9 +71,10 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
+    String imgPath = generateRandomGravatarUrl();
     List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
     auth
-      .signUp(name, email, pass, categories)
+      .signUp(name, email, pass, categories, imgPath)
       .then((signUpResult){
         _getOut();
         _SignupForm(this._signUpKey).clearSignUpFields();

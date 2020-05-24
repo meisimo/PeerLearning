@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/utils/dev.dart';
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 
 import '../../routes.dart';
 
@@ -52,7 +53,7 @@ class UserModel{
       assert(map['points'] != null),
       id = 0,
       name = map['name'],
-      imgPath = map['imgPath'] != null ? map['imgPath'] : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg",
+      imgPath = map['imgPath'] != null ? map['imgPath'] : generateRandomGravatarUrl(),
       _userAuth = userAuth,
       createdMentorings = map['createdMentorings'] == null ? 0 : map['createdMentorings'],
       califications = map['califications'] == null ? []: map['califications'],
