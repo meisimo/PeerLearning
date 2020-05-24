@@ -49,11 +49,14 @@ class _HomePage extends State<HomePage> {
   void _setTitle() => setState(
       () => _title = _selectedType() == 'teach' ? 'Tutorías' : 'Solicitudes');
 
-  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
-      () => showDialog(
+  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) => 
+      () => _logged ? 
+        showDialog(
           context: context,
           child: Detalle(mentoring,
-              actionButton: new RaisedButton(
+              actionButton: mentoring.user.reference.documentID == _user.reference.documentID ?
+                null:
+                new RaisedButton(
                   child: Text('aceptar'),
                   color: LightColor.purple,
                   onPressed: () => _handleConnectivity(onSuccess: () {
@@ -63,7 +66,8 @@ class _HomePage extends State<HomePage> {
                       }, onError: () {
                         Navigator.of(context).pop();
                         _showNotConnectedDialog(context);
-                      }))));
+                      }))))
+          : Navigator.pushNamed(context, '/login/action');
 
   void _selectMentoring(Mentoring mentoring, BuildContext context) =>
       mentoring.selectBy(_user).then((_) {
