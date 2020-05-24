@@ -11,6 +11,7 @@ import 'package:peer_programing/src/widgets/inputs/finder.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 import '../utils/connection.dart';
 
@@ -20,7 +21,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  bool _loading = true, _logged = false;
+  bool _loading = true,
+      _logged = false,
+      _checkConnection = true,
+      _connected = false;
   MentoringListView _mentoringListView, _requestListView;
   Map<String, MentoringType> _mentoringTypes;
   String _searchText, _title;
@@ -50,19 +54,23 @@ class _HomePage extends State<HomePage> {
           context: context,
           child: Detalle(mentoring,
               actionButton: new RaisedButton(
-                child: Text('aceptar'),
-                color: LightColor.purple,
-                onPressed: _logged
-                    ? _selectMentoring(mentoring, context)
-                    : () => Navigator.pushNamed(context, '/login/action'),
-              )));
+                  child: Text('aceptar'),
+                  color: LightColor.purple,
+                  onPressed: () => _handleConnectivity(onSuccess: () {
+                        _logged
+                            ? _selectMentoring(mentoring, context)
+                            : Navigator.pushNamed(context, '/login/action');
+                      }, onError: () {
+                        Navigator.of(context).pop();
+                        _showNotConnectedDialog(context);
+                      }))));
 
-  Function _selectMentoring(Mentoring mentoring, BuildContext context) =>
-      () => mentoring.selectBy(_user).then((_) {
-            _refreshMentorings();
-            Navigator.pop(context);
-            mentoring.user.removeMentoring();
-          }).catchError((error) => print(error));
+  void _selectMentoring(Mentoring mentoring, BuildContext context) =>
+      mentoring.selectBy(_user).then((_) {
+        _refreshMentorings();
+        Navigator.pop(context);
+        mentoring.user.removeMentoring();
+      }).catchError((error) => print(error));
 
   void _refreshMentorings() =>
       Mentoring.getAvilables(_mentoringTypes[_selectedType()], _user)
@@ -110,7 +118,9 @@ class _HomePage extends State<HomePage> {
 
   Function _unFilterByCategories(MentoringCategory category) => () {
         this._categories.add(category);
-        this._selectedCaterogies.removeWhere(MentoringCategory.compareWith(category));
+        this
+            ._selectedCaterogies
+            .removeWhere(MentoringCategory.compareWith(category));
         _filterMentorings();
         _setCategoriesLists();
       };
@@ -120,34 +130,43 @@ class _HomePage extends State<HomePage> {
       List<MentoringCategory> categories,
       @required Function onTap,
       Key key}) {
-      return Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 27,
-            child: CategoryList(
+    return Padding(
+        padding: EdgeInsets.only(bottom: 8),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 27,
+          child: CategoryList(
               key: key,
               dividerWidth: 15,
               categories: categories,
               onTap: onTap,
-              title: title
-            ),
-          ));
-    
+              title: title),
+        ));
   }
 
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
   Function _filter(MentoringType mentoringType, UserModel user) =>
-      ({String title, List<MentoringCategory> categories}) async {
-        if (title != null && categories != null){
-          return await Mentoring.filterByTitleAndCategory(mentoringType, user,
-              title: title, categories: categories);}
-        else if (title != null)
-          return await Mentoring.filterByTitle(mentoringType, user, title);
-        else if (categories != null)
-          return await Mentoring.filterByCategory(
-              mentoringType, user, categories);
-        else
-          return await Mentoring.getAvilables(mentoringType, user);
+      ({String title, List<MentoringCategory> categories}) {
+        _handleConnectivity(onSuccess: () async {
+          if (title != null && categories != null) {
+            return await Mentoring.filterByTitleAndCategory(mentoringType, user,
+                title: title, categories: categories);
+          } else if (title != null)
+            return await Mentoring.filterByTitle(mentoringType, user, title);
+          else if (categories != null)
+            return await Mentoring.filterByCategory(
+                mentoringType, user, categories);
+          else
+            return await Mentoring.getAvilables(mentoringType, user);
+        }, onError: () {
+          _showNotConnectedDialog(context);
+          setState(() => this._connected = false);
+        });
       };
 
   @override
@@ -187,40 +206,41 @@ class _HomePage extends State<HomePage> {
     });
   }
 
-  Widget _homeInfo(BuildContext context) => Container(
-      height: MediaQuery.of(context).size.height,
-      child: Column(
-        children: <Widget>[
-          _categoryRow(context,
-              categories: _categories,
-              onTap: _filterByCategories,
-              key: _categoriesKey),
-          _categoryRow(context,
-              title: "Escoge una categoría",
-              categories: _selectedCaterogies,
-              onTap: _unFilterByCategories,
-              key: _selectedCategoriesKey),
-          Expanded(
-              child: PageView(controller: _pageController, children: <Widget>[
-            this._mentoringListView,
-            this._requestListView
-          ])),
-        ],
-      ));
+  Widget _homeInfo(BuildContext context) {
+    return Container(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: <Widget>[
+            _categoryRow(context,
+                categories: _categories,
+                onTap: _filterByCategories,
+                key: _categoriesKey),
+            _categoryRow(context,
+                title: "Escoge una categoría",
+                categories: _selectedCaterogies,
+                onTap: _unFilterByCategories,
+                key: _selectedCategoriesKey),
+            Expanded(
+                child: PageView(controller: _pageController, children: <Widget>[
+              this._mentoringListView,
+              this._requestListView
+            ])),
+          ],
+        ));
+  }
 
-  Function _checkConnectivity(context, VoidCallback errorCallback ) => () =>
-    checkConnectivity().then((connected){
-      if (connected){
-        Navigator.pushNamed(context, '/create_mentoring');
-      } else if (errorCallback != null) {
-        errorCallback();
-      }
-    });
+  void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
 
+  Function _checkConnectivity(context) => () => _handleConnectivity(
+      onSuccess: () => Navigator.pushNamed(context, '/create_mentoring'),
+      onError: () => _showNotConnectedDialog(context));
 
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _showPage() {
     return MainLayout(
       title: _title,
       headerChild: this._finder(),
@@ -228,11 +248,49 @@ class _HomePage extends State<HomePage> {
       floatingActionButton: _loading
           ? null
           : FloatingActionButton(
-              onPressed: _checkConnectivity(context, () => print("object")),
+              onPressed: _checkConnectivity(context),
               child: Icon(Icons.add),
               backgroundColor: LightColor.orange,
             ),
       defaultVerticalScroll: false,
     );
+  }
+
+  Widget _showNotConnectedPage() {
+    return MainLayout(
+      title: _title,
+      body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+      defaultVerticalScroll: false,
+    );
+  }
+
+  void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+  @override
+  Widget build(BuildContext context) {
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
   }
 }

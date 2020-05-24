@@ -9,7 +9,7 @@ class CategoryList extends StatefulWidget {
   final Function onTap;
   final String title;
 
-  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title})
+  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title = ""})
       : super(key: key);
 
   @override

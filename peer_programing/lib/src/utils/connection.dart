@@ -9,3 +9,13 @@ Future<bool> checkConnectivity() async {
     return false;
   }
 }
+
+void handleConnectivity({Function onSuccess, Function onError, Function onResponse}) => 
+  checkConnectivity().then((bool  connected){
+    if (onResponse != null)
+      onResponse();
+    if(connected && onSuccess != null)
+      onSuccess();
+    else if (!connected && onError != null)
+      onError();
+  });

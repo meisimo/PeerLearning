@@ -68,8 +68,7 @@ class _MentoringListView extends State<MentoringListView> {
   _MentoringListView(
       {this.onResumeTap,
       this.mentoringSnapshot,
-      Future<List<dynamic>> filter(
-          {String title, List<MentoringCategory> categories}),
+      Function filter,
       Map<String, dynamic> filters})
       : _mentorings = null,
         _filter = filter,
