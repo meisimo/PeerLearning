@@ -33,7 +33,10 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
     return value.isEmpty ? "$subject no puede estar vacío.": null;
     }
     try {
-    int.parse(value);
+    
+    if(int.parse(value)<0){
+      return "El numero no puede ser negativo";
+    }
     } catch (e) {
       return "Digite un numero valido porfavor";
     }
