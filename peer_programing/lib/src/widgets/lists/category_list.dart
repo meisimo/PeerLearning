@@ -9,9 +9,9 @@ class CategoryList extends StatefulWidget {
   final Function onTap;
   final String title;
   final bool wrap;
-  final bool usePadding;
+  final bool usePadding, chipConstraints;
 
-  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding = false})
+  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding = false, this.chipConstraints = false})
       : super(key: key);
 
   @override
@@ -22,6 +22,7 @@ class CategoryList extends StatefulWidget {
       title: this.title,
       wrap: this.wrap,
       usePadding: this.usePadding,
+      chipConstraints: this.chipConstraints,
   );
 }
 
@@ -30,11 +31,11 @@ class StateCategoryList extends State<CategoryList> {
   final Function onTap;
   final String title;
   final bool wrap;
-  final bool usePadding;
+  final bool usePadding, chipConstraints;
 
   List<MentoringCategory> categories;
 
-  StateCategoryList({this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding});
+  StateCategoryList({this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding, this.chipConstraints});
 
   Widget _showEmpty() => Text(
           title,
@@ -57,6 +58,7 @@ class StateCategoryList extends State<CategoryList> {
         dividerWidth: dividerWidth,
         id: category.id,
         onTap: this.onTap != null ? this.onTap(category) : null,
+        chipConstraints: chipConstraints,
       ));
     });
 

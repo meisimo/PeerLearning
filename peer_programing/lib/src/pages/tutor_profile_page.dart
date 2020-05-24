@@ -4,9 +4,10 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
-import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
+
+const int NAME_MAX_LENGTH = 200;
 
 class TutorProfilePage extends StatefulWidget {
   final UserModel tutor;
@@ -190,6 +191,7 @@ class _ContenedorEditState extends State<ContenedorEdit> {
           wrap: true,
           dividerWidth: 5,
           usePadding: true,
+          chipConstraints: true,
         ),
       ),
     );
@@ -220,7 +222,7 @@ class _ContenedorEditState extends State<ContenedorEdit> {
           Padding(
               padding: EdgeInsets.only(top: 10),
               child: Text(
-                "Puntuaciones de ${_usuarioR.name}",
+                "Calificaciones",
                 style: TextStyle(fontSize: 15),
               )),
           Expanded(
@@ -244,7 +246,7 @@ class _ContenedorEditState extends State<ContenedorEdit> {
             child: ListTile(
               leading: Icon(Icons.people),
               title: Text("Nombre"),
-              subtitle: Text(_usuarioR.name),
+              subtitle: Text(truncateText(_usuarioR.name, NAME_MAX_LENGTH)),
             ),
           ),
           _userCategories(),

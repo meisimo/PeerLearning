@@ -8,10 +8,10 @@ class TagChip extends StatelessWidget {
   final int id;
   final Function onTap;
   final double dividerWidth;
-  final bool usePadding;
+  final bool usePadding, chipConstraints;
 
   TagChip(this.text, this.textColor,
-      {this.height = 0, this.isPrimaryCard = false, this.id, this.onTap, this.dividerWidth=1, this.usePadding = false});
+      {this.height = 0, this.isPrimaryCard = false, this.id, this.onTap, this.dividerWidth=1, this.usePadding = false, this.chipConstraints = false});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,7 @@ class TagChip extends StatelessWidget {
         child: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: height),
-        constraints: BoxConstraints(
-          maxWidth: 80, minWidth: 50
-        ),
+        constraints: chipConstraints ? BoxConstraints( maxWidth: 100, minWidth: 50 ): null,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: textColor.withAlpha(isPrimaryCard ? 200 : 50),

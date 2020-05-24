@@ -10,6 +10,9 @@ import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
 
+const int NAME_MAX_LENGTH = 200;
+const int EMAIL_MAX_LENGTH = 200;
+
 class UserPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return UserPageState();
@@ -192,6 +195,7 @@ class UserPageState extends State<StatefulWidget> {
           wrap: true,
           dividerWidth: 5,
           usePadding: true,
+          chipConstraints: true,
         ),
       ),
     );
@@ -231,7 +235,7 @@ class UserPageState extends State<StatefulWidget> {
           Padding(
               padding: EdgeInsets.only(top: 10),
               child: Text(
-                "Puntuaciones de ${_usuarioR.name}",
+                "Calificaciones",
                 style: TextStyle(fontSize: 15),
               )),
           Expanded(
@@ -347,14 +351,14 @@ class _ContenedorEditState extends State<ContenedorEdit> {
               child: ListTile(
                 leading: Icon(Icons.people),
                 title: Text("Nombre"),
-                subtitle: Text(_usuarioR.name),
+                subtitle: Text(truncateText(_usuarioR.name, NAME_MAX_LENGTH)),
               ),
             ),
             Card(
               child: ListTile(
                 leading: Icon(Icons.email),
                 title: Text("Email"),
-                subtitle: Text(_usuarioR.email),
+                subtitle: Text(truncateText(_usuarioR.email, EMAIL_MAX_LENGTH)),
               ),
             )
           ],

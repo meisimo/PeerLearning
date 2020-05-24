@@ -155,7 +155,11 @@ class _MentoringListView extends State<MentoringListView> {
   Widget _mentoringResume(
       BuildContext context, Mentoring mentoring, Widget decoration,
       {Color background}) {
-    return Container(
+    return GestureDetector(
+      onTap: onResumeTap != null
+          ? this.onResumeTap(context, mentoring)
+          : null,
+      child:Container(
         height: 130,
         width: width,
         child: Row(
@@ -169,11 +173,7 @@ class _MentoringListView extends State<MentoringListView> {
               ),
             ),
             Expanded(
-                child: GestureDetector(
-                    onTap: onResumeTap != null
-                        ? this.onResumeTap(context, mentoring)
-                        : null,
-                    child: Column(
+                child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(height: 15),
@@ -206,16 +206,16 @@ class _MentoringListView extends State<MentoringListView> {
                           width: width,
                           height: 21,
                           child: CategoryList(
-                              dividerWidth: 3,
+                              dividerWidth: 1,
                               categories: mentoring.categories,
                               usePadding: false,
                               title: "",
                           ),
                         )
                       ],
-                    )))
+                    ))
           ],
-        ));
+        )));
   }
 
   Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) =>
