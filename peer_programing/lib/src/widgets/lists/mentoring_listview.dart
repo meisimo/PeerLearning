@@ -6,6 +6,7 @@ import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
 import 'package:peer_programing/src/theme/theme.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/tarjetas/micro_card.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
@@ -52,12 +53,14 @@ class MentoringListView extends StatefulWidget {
 }
 
 class _MentoringListView extends State<MentoringListView> {
-  List<Mentoring> _mentorings;
-  double width;
-  bool _searching = false;
+  static final int DESCRIPTION_MAX_LENGTH = 90;
+  static final int TITLE_MAX_LENGTH = 30;
   final Function onResumeTap;
   final Stream<QuerySnapshot> mentoringSnapshot;
   final Function _filter;
+  List<Mentoring> _mentorings;
+  double width;
+  bool _searching = false;
   Map<String, dynamic> _filters = {};
 
   bool get hasFilters =>
@@ -68,8 +71,7 @@ class _MentoringListView extends State<MentoringListView> {
   _MentoringListView(
       {this.onResumeTap,
       this.mentoringSnapshot,
-      Future<List<dynamic>> filter(
-          {String title, List<MentoringCategory> categories}),
+      Function filter,
       Map<String, dynamic> filters})
       : _mentorings = null,
         _filter = filter,
@@ -79,23 +81,21 @@ class _MentoringListView extends State<MentoringListView> {
   void filter(
       {String title = '',
       List<MentoringCategory> categories = const [],
-      bool build = true}) {
+      bool build = true}) async  {
     _filters['title'] = title;
     _filters['categories'] = categories;
     if (build) {
       setState(() {
         _searching = true;
       });
-      _filter(
+      List<Mentoring> mentorings = await _filter(
               title: (title == null || title.length < 3) ? null : title,
               categories: (categories == null || categories.isEmpty
                   ? null
-                  : categories))
-          .then((List<Mentoring> mentorings) {
-        setState(() {
-          this._mentorings = mentorings;
-          _searching = false;
-        });
+                  : categories));
+      setState(() {
+        this._mentorings = mentorings;
+        _searching = false;
       });
     }
   }
@@ -144,25 +144,6 @@ class _MentoringListView extends State<MentoringListView> {
     );
   }
 
-  Widget _mentoringPoints(double points, Color background) => Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: <Widget>[
-          CircleAvatar(
-            radius: 3,
-            backgroundColor: background,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text("$points",
-              style: TextStyle(
-                color: LightColor.grey,
-                fontSize: 14,
-              ))
-        ],
-      ));
-
   Widget _newUserPointsMark() => Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Text("Nuevo",
@@ -174,7 +155,11 @@ class _MentoringListView extends State<MentoringListView> {
   Widget _mentoringResume(
       BuildContext context, Mentoring mentoring, Widget decoration,
       {Color background}) {
-    return Container(
+    return GestureDetector(
+      onTap: onResumeTap != null
+          ? this.onResumeTap(context, mentoring)
+          : null,
+      child:Container(
         height: 130,
         width: width,
         child: Row(
@@ -188,11 +173,7 @@ class _MentoringListView extends State<MentoringListView> {
               ),
             ),
             Expanded(
-                child: GestureDetector(
-                    onTap: onResumeTap != null
-                        ? this.onResumeTap(context, mentoring)
-                        : null,
-                    child: Column(
+                child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(height: 15),
@@ -201,7 +182,8 @@ class _MentoringListView extends State<MentoringListView> {
                             mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
                               Expanded(
-                                child: Text(mentoring.name,
+                                child: Text(
+                                  truncateText(mentoring.name, TITLE_MAX_LENGTH),
                                     style: TextStyle(
                                         color: LightColor.purple,
                                         fontSize: 16,
@@ -209,13 +191,13 @@ class _MentoringListView extends State<MentoringListView> {
                               ),
                               (mentoring.points < 0.5
                                   ? _newUserPointsMark()
-                                  : _mentoringPoints(
+                                  : MentoringPoints(
                                       mentoring.points, background)),
                             ],
                           ),
                         ),
                         SizedBox(height: 10),
-                        Text(_truncateDescription(mentoring.description),
+                        Text(truncateText(mentoring.description, DESCRIPTION_MAX_LENGTH),
                             style: AppTheme.h6Style.copyWith(
                                 fontSize: 12,
                                 color: LightColor.extraDarkPurple)),
@@ -224,22 +206,16 @@ class _MentoringListView extends State<MentoringListView> {
                           width: width,
                           height: 21,
                           child: CategoryList(
-                              dividerWidth: 10,
+                              dividerWidth: 1,
                               categories: mentoring.categories,
+                              usePadding: false,
                               title: "",
                           ),
                         )
                       ],
-                    )))
+                    ))
           ],
-        ));
-  }
-
-  String _truncateDescription(String description) {
-    final int maxLength = 90;
-    return description.length > maxLength
-        ? "${description.substring(0, maxLength)}..."
-        : description;
+        )));
   }
 
   Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) =>

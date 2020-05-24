@@ -76,7 +76,6 @@ class _LoginPage extends State<LoginPage> {
         _SignupForm(this._signUpKey).clearSignUpFields();
       })
       .catchError((error){
-        print("ERROR LOGIN $error");
         if (error.code == "ERROR_WEAK_PASSWORD")
           _singUpError = "La contraseña es demasiado debil.";
         else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE")

@@ -47,7 +47,7 @@ class _StarsPoints extends State<StarsPoints>{
             allowHalfRating: true,
             onRatingChanged: (double v){
               _onChange(v);
-              setState((){print("object");});
+              setState((){});
             },
             starCount: 5,
             rating: _initialRating,

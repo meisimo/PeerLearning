@@ -14,7 +14,7 @@ dependencies:
   shared_preferences: ^0.5.6+3
   progress_indicators: ^0.1.5
   smooth_star_rating: 1.0.3
-  connectivity: '>=0.4.8 <2.0.0'
+  connectivity: 0.4.4+1
 
 dev_dependencies:
   flutter_test:

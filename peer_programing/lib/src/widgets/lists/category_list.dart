@@ -8,8 +8,10 @@ class CategoryList extends StatefulWidget {
   final List<MentoringCategory> categories;
   final Function onTap;
   final String title;
+  final bool wrap;
+  final bool usePadding, chipConstraints;
 
-  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title})
+  CategoryList({key, this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding = false, this.chipConstraints = false})
       : super(key: key);
 
   @override
@@ -17,7 +19,10 @@ class CategoryList extends StatefulWidget {
       dividerWidth: this.dividerWidth,
       categories: this.categories,
       onTap: this.onTap,
-      title: this.title
+      title: this.title,
+      wrap: this.wrap,
+      usePadding: this.usePadding,
+      chipConstraints: this.chipConstraints,
   );
 }
 
@@ -25,10 +30,12 @@ class StateCategoryList extends State<CategoryList> {
   final double dividerWidth;
   final Function onTap;
   final String title;
+  final bool wrap;
+  final bool usePadding, chipConstraints;
 
   List<MentoringCategory> categories;
 
-  StateCategoryList({this.dividerWidth, this.categories, this.onTap, this.title = ""});
+  StateCategoryList({this.dividerWidth, this.categories, this.onTap, this.title = "", this.wrap = false, this.usePadding, this.chipConstraints});
 
   Widget _showEmpty() => Text(
           title,
@@ -42,19 +49,24 @@ class StateCategoryList extends State<CategoryList> {
       return _showEmpty();
     
     List<Widget> categoryList = [];
-    Widget divider = SizedBox(
-      width: dividerWidth,
-    );
     categories.forEach((category) {
-      categoryList.add(divider);
       categoryList.add(TagChip(
         category.name,
         category.color,
         height: 5,
+        usePadding: this.usePadding,
+        dividerWidth: dividerWidth,
         id: category.id,
         onTap: this.onTap != null ? this.onTap(category) : null,
+        chipConstraints: chipConstraints,
       ));
     });
+
+    if (wrap){
+      return Wrap(
+        children: categoryList
+      );
+    }
     return ListView(
       scrollDirection: Axis.horizontal,
       children: categoryList,

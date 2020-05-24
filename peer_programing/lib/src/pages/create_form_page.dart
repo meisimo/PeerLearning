@@ -12,11 +12,13 @@ class CreateForm extends StatefulWidget {
   State<StatefulWidget> createState() => _CreateForm();
 }
 
-class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin {
+class _CreateForm extends State<CreateForm>
+    with SingleTickerProviderStateMixin {
   final List<String> _mentoringTypesMap = ['learn', 'teach'];
   final _formKey = GlobalKey<FormState>();
   final Map<String, MentoringCategory> _categoriesMap = {};
-  final SelectorTematicas _selectorTematicas = new SelectorTematicas(title:"Temática");
+  final SelectorTematicas _selectorTematicas =
+      new SelectorTematicas(title: "Temática");
   List<MentoringCategory> _categories = [];
   Map<String,MentoringType> _mentoringTypes;
   TabController _formTabPageController;
