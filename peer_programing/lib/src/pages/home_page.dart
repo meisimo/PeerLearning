@@ -118,8 +118,7 @@ class _HomePage extends State<HomePage> {
 
   Function _unFilterByCategories(MentoringCategory category) => () {
         this._categories.add(category);
-        this
-            ._selectedCaterogies
+        this._selectedCaterogies
             .removeWhere(MentoringCategory.compareWith(category));
         _filterMentorings();
         _setCategoriesLists();
@@ -167,43 +166,6 @@ class _HomePage extends State<HomePage> {
           _showNotConnectedDialog(context);
           setState(() => this._connected = false);
         });
-
-  @override
-  void initState() {
-    _loading = true;
-    _pageController = PageController(initialPage: 0);
-    _pageController.addListener(() {
-      if (_pageController.page.ceilToDouble() == _pageController.page)
-        _setTitle();
-    });
-    _title = 'Tutorías';
-
-    Future.wait(<Future>[
-      MentoringType.all(),
-      MentoringCategory.all(),
-      UserModel.getCurrentUser()
-    ]).then((result) {
-      setState(() {
-        _mentoringTypes = MentoringType.mapMentoringTypes(result[0]);
-        _categories = result[1];
-        _user = result[2];
-        _mentoringListView = MentoringListView(
-          onResumeTap: _showMentoringDetail,
-          mentorigQuery:
-              Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user),
-          filter: _filter(_mentoringTypes['teach'], _user),
-        );
-        _requestListView = MentoringListView(
-          onResumeTap: _showMentoringDetail,
-          mentorigQuery:
-              Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
-          filter: _filter(_mentoringTypes['learn'], _user),
-        );
-        _logged = _user != null;
-        _loading = false;
-      });
-    });
-  }
 
   Widget _homeInfo(BuildContext context) {
     return Container(
@@ -279,6 +241,49 @@ class _HomePage extends State<HomePage> {
           this._checkConnection = true;
         });
       }));
+
+  @override
+  void initState() {
+    _loading = true;
+    _pageController = PageController(initialPage: 0);
+    _pageController.addListener(() {
+      if (_pageController.page.ceilToDouble() == _pageController.page)
+        _setTitle();
+    });
+    _title = 'Tutorías';
+    Future.wait(<Future>[
+      MentoringType.all(),
+      MentoringCategory.all(),
+      UserModel.getCurrentUser(populate: true)
+    ]).then((result) {
+      _mentoringTypes = MentoringType.mapMentoringTypes(result[0]);
+        _categories = result[1];
+        _user = result[2];
+        _mentoringListView = MentoringListView(
+          onResumeTap: _showMentoringDetail,
+          mentorigQuery:
+              Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user),
+          filter: _filter(_mentoringTypes['teach'], _user),
+        );
+        _requestListView = MentoringListView(
+          onResumeTap: _showMentoringDetail,
+          mentorigQuery:
+              Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
+          filter: _filter(_mentoringTypes['learn'], _user),
+        );
+        if (_user != null && _user.categories != null){
+          _user.categories.forEach((userCategory) { 
+            this._selectedCaterogies.add(userCategory);
+            this._categories
+              .removeWhere(MentoringCategory.compareWith(userCategory));
+          });
+        }
+      setState(() {
+        _logged = _user != null;
+        _loading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

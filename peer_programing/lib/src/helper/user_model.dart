@@ -61,10 +61,14 @@ class UserModel{
   UserModel.fromSnapshot(DocumentSnapshot snapshot, {FirebaseUser userAuth})
     : this.fromMap(snapshot.data, reference:snapshot.reference, userAuth: userAuth);
 
-  static Future<UserModel> getCurrentUser() async {
+  static Future<UserModel> getCurrentUser({bool populate: false}) async {
     FirebaseUser userAuth = await auth.getCurrentUser();
     if(userAuth != null && userAuth.uid != null){
       var query = await Firestore.instance.collection(USER_COLLECTION_NAME).where('authId', isEqualTo: userAuth.uid).getDocuments();   
+      if (populate){
+        final user = await (new UserModel.fromSnapshot(query.documents.first, userAuth: userAuth)).populate();
+        return user;
+      }
       return new UserModel.fromSnapshot(query.documents.first, userAuth: userAuth);
     }
     return null;
