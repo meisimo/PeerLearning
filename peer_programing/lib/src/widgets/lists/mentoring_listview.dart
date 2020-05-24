@@ -78,23 +78,21 @@ class _MentoringListView extends State<MentoringListView> {
   void filter(
       {String title = '',
       List<MentoringCategory> categories = const [],
-      bool build = true}) {
+      bool build = true}) async  {
     _filters['title'] = title;
     _filters['categories'] = categories;
     if (build) {
       setState(() {
         _searching = true;
       });
-      _filter(
+      List<Mentoring> mentorings = await _filter(
               title: (title == null || title.length < 3) ? null : title,
               categories: (categories == null || categories.isEmpty
                   ? null
-                  : categories))
-          .then((List<Mentoring> mentorings) {
-        setState(() {
-          this._mentorings = mentorings;
-          _searching = false;
-        });
+                  : categories));
+      setState(() {
+        this._mentorings = mentorings;
+        _searching = false;
       });
     }
   }

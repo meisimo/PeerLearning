@@ -151,8 +151,9 @@ class _HomePage extends State<HomePage> {
           onResponse: () => this._checkConnection = false);
 
   Function _filter(MentoringType mentoringType, UserModel user) =>
-      ({String title, List<MentoringCategory> categories}) {
+      ({String title, List<MentoringCategory> categories}) =>
         _handleConnectivity(onSuccess: () async {
+          print("FIlter");
           if (title != null && categories != null) {
             return await Mentoring.filterByTitleAndCategory(mentoringType, user,
                 title: title, categories: categories);
@@ -167,7 +168,6 @@ class _HomePage extends State<HomePage> {
           _showNotConnectedDialog(context);
           setState(() => this._connected = false);
         });
-      };
 
   @override
   void initState() {
