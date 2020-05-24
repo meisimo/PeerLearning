@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
 
 class UserPage extends StatefulWidget {
@@ -11,76 +17,160 @@ class UserPage extends StatefulWidget {
 }
 
 class UserPageState extends State<StatefulWidget> {
+  final int COMENT_MAX_LENGTH = 50;
   UserModel _usuarioR;
   bool _loading = true;
 
   @override
   void initState() {
-    UserModel.getCurrentUser().then((usuario) {
-      setState(() {
-        this._usuarioR = usuario;
-        _loading = false;
-      });
-    });
+    UserModel.getCurrentUser()
+        .then((usuario) => usuario.populate().then((usuario) {
+              setState(() {
+                this._usuarioR = usuario;
+                _loading = false;
+              });
+            }));
   }
 
-  Widget _paginaUsuario() => Column(
+  Widget _paginaUsuario() => Container(
+      constraints: new BoxConstraints(
+        minHeight: 500,
+        maxHeight: 700,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          //Image of profile
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              //Image of profile
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              ImagenPerfil(
+                user: _usuarioR,
+              )
+            ],
+          ),
+
+          SizedBox(
+            height: 20.0,
+          ),
+          //Puntuacion tutoria, estudiante
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ImagenPerfil(
+                  // estrellaPuntuacion(_usuarioR.points.toString())
+                  StartsPoints(5, _usuarioR.points)
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  ContenedorEdit(
                     user: _usuarioR,
                   )
                 ],
-              ),
-
-              SizedBox(
-                height: 20.0,
-              ),
-
-              //Puntuacion tutoria, estudiante
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      // estrellaPuntuacion(_usuarioR.points.toString())
-                      StartsPoints(5, _usuarioR.points)
-                    ],
-                  ),
-                ],
-              ),
-
-              SizedBox(
-                height: 20.0,
-              ),
-
-              //Editar perfil
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[ContenedorEdit(user: _usuarioR,)],
-                  )
-                  //Text('estamos aqui'),
-
-                  //contenedorEdit()
-                ],
               )
             ],
-          );
+          ),
+          _userCategories(),
+          Flexible(
+            fit: FlexFit.loose,
+            child: _feedBackList(),
+          ),
+          _signOutButton()
+        ],
+      ));
+
+  Widget _userCategories() {
+    if (_usuarioR.categories == null || _usuarioR.categories.isEmpty){
+      return Card(
+        child: ListTile(
+          title: Text('No tiene categorías seleccionadas aún',
+            style: TextStyle(
+              fontSize: 15
+            ),
+          ),
+        ),
+      );  
+    }
+    return Card(
+      child: ListTile(
+        title: Text('Categorías',
+          style: TextStyle(
+            fontSize: 15
+          ),
+        ),
+        subtitle: CategoryList(
+          categories: _usuarioR.categories,
+          wrap: true,
+          dividerWidth: 5,
+          usePadding: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _signOutButton() => RaisedButton(
+      color: Color(0xfff46352),
+      child: Text("Cerrar sesion"),
+      onPressed: () {
+        _usuarioR
+            .signOut()
+            .then((value) => Navigator.pushReplacementNamed(context, '/'));
+      });
+
+  Widget _feedBackList() {
+    if (_usuarioR.califications.isEmpty) {
+      return Card(
+          child: ListTile(
+              title: Text(
+        "No tiene calificaciones aún",
+        style: TextStyle(fontSize: 15),
+      )));
+    }
+    List feedbacks = _usuarioR.califications
+        .map((feedback) => Card(
+                child: ListTile(
+              title: MentoringPoints(
+                  truncateDouble(feedback['points'], 1), LightColor.seeBlue),
+              subtitle: feedback['coment'] != null && feedback['coment'] != ''
+                  ? Text(truncateText(feedback['coment'], COMENT_MAX_LENGTH))
+                  : null,
+            )))
+        .toList();
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                "Puntuaciones de ${_usuarioR.name}",
+                style: TextStyle(fontSize: 15),
+              )),
+          Expanded(
+            child: ListView(
+              children: feedbacks,
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   Widget build(BuildContext context) {
     return MainLayout(
-        title: 'Perfil',
-        body: Container(
-          child: _loading ? Loading() : _paginaUsuario()
-        )
-      );
+      title: 'Perfil',
+      body: Container(child: _loading ? Loading() : _paginaUsuario()),
+    );
   }
 }
 
@@ -156,7 +246,7 @@ class estrellaPuntuacion extends StatelessWidget {
 class ContenedorEdit extends StatefulWidget {
   final UserModel _usuarioR;
 
-  ContenedorEdit({@required UserModel user}): _usuarioR=user;
+  ContenedorEdit({@required UserModel user}) : _usuarioR = user;
 
   @override
   _ContenedorEditState createState() => _ContenedorEditState(user: _usuarioR);
@@ -165,42 +255,33 @@ class ContenedorEdit extends StatefulWidget {
 class _ContenedorEditState extends State<ContenedorEdit> {
   UserModel _usuarioR;
 
-  _ContenedorEditState({@required UserModel user}): _usuarioR=user;
+  _ContenedorEditState({@required UserModel user}) : _usuarioR = user;
 
   Widget _paginaUsuario() => Container(
-      width: 310.0,
-      height: 410.0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.people),
-              title: Text("Nombre"),
-              subtitle: Text(_usuarioR.name),
+        width: 310.0,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Card(
+              child: ListTile(
+                leading: Icon(Icons.people),
+                title: Text("Nombre"),
+                subtitle: Text(_usuarioR.name),
+              ),
             ),
-          ),
-
-          Card(
-            child: ListTile(
-              leading: Icon(Icons.email),
-              title: Text("Email"),
-              subtitle: Text(_usuarioR.email),
-            ),
-          ),
-          RaisedButton(
-              color: Color(0xfff46352),
-              child: Text("Cerrar sesion"),
-              onPressed: () {
-                _usuarioR.signOut().then((value) => Navigator.pushReplacementNamed(context, '/'));
-              })
-        ],
-      ),
-    );
+            Card(
+              child: ListTile(
+                leading: Icon(Icons.email),
+                title: Text("Email"),
+                subtitle: Text(_usuarioR.email),
+              ),
+            )
+          ],
+        ),
+      );
 
   @override
-  Widget build(BuildContext context) =>
-    _paginaUsuario();
+  Widget build(BuildContext context) => _paginaUsuario();
 }
 
 class edit extends StatelessWidget {

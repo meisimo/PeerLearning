@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
 
 class TutorProfilePage extends StatefulWidget {
@@ -157,8 +161,78 @@ class ContenedorEdit extends StatefulWidget {
 
 class _ContenedorEditState extends State<ContenedorEdit> {
   UserModel _usuarioR;
+  final int COMENT_MAX_LENGTH = 50;
+
 
   _ContenedorEditState({@required UserModel user}): _usuarioR=user;
+
+  Widget _userCategories() {
+    if (_usuarioR.categories == null || _usuarioR.categories.isEmpty){
+      return Card(
+        child: ListTile(
+          title: Text('No tiene categorías seleccionadas aún',
+            style: TextStyle(
+              fontSize: 15
+            ),
+          ),
+        ),
+      );  
+    }
+    return Card(
+      child: ListTile(
+        title: Text('Categorías',
+          style: TextStyle(
+            fontSize: 15
+          ),
+        ),
+        subtitle: CategoryList(
+          categories: _usuarioR.categories,
+          wrap: true,
+          dividerWidth: 5,
+          usePadding: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _feedBackList() {
+    if (_usuarioR.califications.isEmpty) {
+      return Card(
+          child: ListTile(
+              title: Text(
+        "No tiene calificaciones aún",
+        style: TextStyle(fontSize: 15),
+      )));
+    }
+    List feedbacks = _usuarioR.califications
+        .map((feedback) => Card(
+                child: ListTile(
+              title: MentoringPoints(
+                  truncateDouble(feedback['points'], 1), LightColor.seeBlue),
+              subtitle: feedback['coment'] != null && feedback['coment'] != ''
+                  ? Text(truncateText(feedback['coment'], COMENT_MAX_LENGTH))
+                  : null,
+            )))
+        .toList();
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                "Puntuaciones de ${_usuarioR.name}",
+                style: TextStyle(fontSize: 15),
+              )),
+          Expanded(
+            child: ListView(
+              children: feedbacks,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
 
   Widget _paginaUsuario() => Container(
       width: 310.0,
@@ -172,6 +246,11 @@ class _ContenedorEditState extends State<ContenedorEdit> {
               title: Text("Nombre"),
               subtitle: Text(_usuarioR.name),
             ),
+          ),
+          _userCategories(),
+          Flexible(
+            fit: FlexFit.loose,
+            child: _feedBackList(),
           ),
         ],
       ),

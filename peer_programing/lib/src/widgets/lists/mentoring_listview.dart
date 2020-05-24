@@ -6,6 +6,7 @@ import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
 import 'package:peer_programing/src/theme/theme.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/tarjetas/micro_card.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
@@ -143,25 +144,6 @@ class _MentoringListView extends State<MentoringListView> {
     );
   }
 
-  Widget _mentoringPoints(double points, Color background) => Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: <Widget>[
-          CircleAvatar(
-            radius: 3,
-            backgroundColor: background,
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text("$points",
-              style: TextStyle(
-                color: LightColor.grey,
-                fontSize: 14,
-              ))
-        ],
-      ));
-
   Widget _newUserPointsMark() => Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Text("Nuevo",
@@ -201,7 +183,7 @@ class _MentoringListView extends State<MentoringListView> {
                             children: <Widget>[
                               Expanded(
                                 child: Text(
-                                  _truncateText(mentoring.name, TITLE_MAX_LENGTH),
+                                  truncateText(mentoring.name, TITLE_MAX_LENGTH),
                                     style: TextStyle(
                                         color: LightColor.purple,
                                         fontSize: 16,
@@ -209,13 +191,13 @@ class _MentoringListView extends State<MentoringListView> {
                               ),
                               (mentoring.points < 0.5
                                   ? _newUserPointsMark()
-                                  : _mentoringPoints(
+                                  : MentoringPoints(
                                       mentoring.points, background)),
                             ],
                           ),
                         ),
                         SizedBox(height: 10),
-                        Text(_truncateText(mentoring.description, DESCRIPTION_MAX_LENGTH),
+                        Text(truncateText(mentoring.description, DESCRIPTION_MAX_LENGTH),
                             style: AppTheme.h6Style.copyWith(
                                 fontSize: 12,
                                 color: LightColor.extraDarkPurple)),
@@ -224,8 +206,9 @@ class _MentoringListView extends State<MentoringListView> {
                           width: width,
                           height: 21,
                           child: CategoryList(
-                              dividerWidth: 10,
+                              dividerWidth: 3,
                               categories: mentoring.categories,
+                              usePadding: false,
                               title: "",
                           ),
                         )
@@ -233,12 +216,6 @@ class _MentoringListView extends State<MentoringListView> {
                     )))
           ],
         ));
-  }
-
-  String _truncateText(String description, int maxLength) {
-    return description.length > maxLength
-        ? "${description.substring(0, maxLength)}..."
-        : description;
   }
 
   Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) =>

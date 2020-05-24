@@ -137,7 +137,7 @@ class _HomePage extends State<HomePage> {
           height: 27,
           child: CategoryList(
               key: key,
-              dividerWidth: 15,
+              dividerWidth: 5,
               categories: categories,
               onTap: onTap,
               title: title),
