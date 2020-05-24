@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/utils/dev.dart';
+
+const LONG_TEXT_MAX_LENGTH = 25;
+const TEXT_MAX_LENGTH = 10;
 
 class TagChip extends StatelessWidget {
   final String text;
@@ -28,7 +32,7 @@ class TagChip extends StatelessWidget {
           color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
         ),
         child: Text(
-          text,
+          chipConstraints ? truncateText(text, TEXT_MAX_LENGTH): truncateText(text, LONG_TEXT_MAX_LENGTH),
           style: TextStyle(
               color: isPrimaryCard ? Colors.white : textColor, fontSize: 12),
         ),
