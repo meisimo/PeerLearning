@@ -12,11 +12,13 @@ class CreateForm extends StatefulWidget {
   State<StatefulWidget> createState() => _CreateForm();
 }
 
-class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin {
+class _CreateForm extends State<CreateForm>
+    with SingleTickerProviderStateMixin {
   final List<String> _mentoringTypesMap = ['learn', 'teach'];
   final _formKey = GlobalKey<FormState>();
   final Map<String, MentoringCategory> _categoriesMap = {};
-  final SelectorTematicas _selectorTematicas = new SelectorTematicas(title:"Temática");
+  final SelectorTematicas _selectorTematicas =
+      new SelectorTematicas(title: "Temática");
   List<MentoringCategory> _categories = [];
   Map<String,MentoringType> _mentoringTypes;
   TabController _formTabPageController;
@@ -26,6 +28,22 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
 
   Function _requiredField({String subject = "Este campo"}) =>  (String value) => 
     value.isEmpty ? "$subject no puede estar vacío.": null;
+
+
+  Function _requiredField2({String subject = "Este campo"}) =>  (String value){
+    if(value==""){
+    return value.isEmpty ? "$subject no puede estar vacío.": null;
+    }
+    try {
+    
+    if(int.parse(value)<0){
+      return "El numero no puede ser negativo";
+    }
+    } catch (e) {
+      return "Digite un numero valido porfavor";
+    }
+  };
+
 
   Widget _form() =>
     Form(
@@ -61,7 +79,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
                 icon: Icon(Icons.monetization_on),
                 hintText: 'Tarifa',
               ),
-              validator: this._requiredField(subject: "La tarifa"),
+              validator: this._requiredField2(subject: "La tarifa"),
               onSaved: (String value) => this._tarifa = int.parse(value),
               keyboardType: TextInputType.number,
             ),
@@ -119,13 +137,6 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
     );
   }
 
-  Widget _teach(Form form) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: form
-    );
-  }
-
   void _setMentoringTypes(AsyncSnapshot<QuerySnapshot> snapshot) => 
     this._mentoringTypes = MentoringType.mapMentoringTypes(MentoringType.listFromSnapshot(snapshot.data.documents));
 
@@ -158,10 +169,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
               ],
             ),
           ),
-          body: TabBarView(
-            controller: _formTabPageController,
-            children: <Widget>[_learn(creationForm), _teach(creationForm)],
-          ),
+          body: SingleChildScrollView(child: _learn(creationForm),),
           floatingActionButton: FloatingActionButton(
             onPressed: _createMentoring(context),
             child: Icon(Icons.save),

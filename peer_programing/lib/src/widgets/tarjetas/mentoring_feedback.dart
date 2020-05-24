@@ -54,15 +54,18 @@ class _MentoringFeedBack extends State<MentoringFeedBack> {
     ),
   );
 
-  Widget _buildDialog(context) =>Container(
+  Widget _buildDialog(context) =>
+    SingleChildScrollView(
+      child: 
+    Container(
       width: 300,
-      height: 500,
       child: Column(
         children: <Widget>[
           _header(),
           _descripcion(),
           _feedbackForm(context),    
         ],
+    )
       ));
       
   Widget _starsInput() => 
@@ -147,6 +150,6 @@ class _MentoringFeedBack extends State<MentoringFeedBack> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: _buildDialog(context),
+      child: SingleChildScrollView(child: _buildDialog(context),),
     );
 }

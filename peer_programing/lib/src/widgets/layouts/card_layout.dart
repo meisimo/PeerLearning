@@ -62,8 +62,7 @@ class CardLayout extends StatelessWidget{
                   )
                 ),
                 Positioned(
-                  bottom: 10,
-                  left: 10,
+                  bottom: 15,
                   child: cardInfo,
                 )
               ],

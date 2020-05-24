@@ -8,33 +8,50 @@ import 'package:searchable_dropdown/searchable_dropdown.dart';
 class SelectorTematicas extends StatefulWidget {
   final List _selectorTematicasStateWrapper = <_SelectorTematicasState>[null];
   final String _title;
+  final List<MentoringCategory> _selectedCategories;
 
-  SelectorTematicas({String title}) : _title = title;
+  SelectorTematicas({String title, List<MentoringCategory> selectedCategories}) : _title = title, _selectedCategories = selectedCategories;
 
   List<MentoringCategory> get selectedCategories =>
       _selectorTematicasStateWrapper[0].selectedCategories;
 
   @override
   _SelectorTematicasState createState() => _selectorTematicasStateWrapper[0] =
-      new _SelectorTematicasState(title: _title);
+      new _SelectorTematicasState(title: _title, selectedCategories: _selectedCategories);
 }
 
 class _SelectorTematicasState extends State<SelectorTematicas> {
   Map<String, MentoringCategory> _categoryMap;
-  List<MentoringCategory> _categories, _selectedCategories = [];
+  List<MentoringCategory> _categories, _selectedCategories;
   List _myActivities = [];
-  List<int> _selectedItems = const [];
+  List<int> _selectedItems = [];
   final String _title;
   List<MentoringCategory> get selectedCategories => _selectedCategories;
-  _SelectorTematicasState({String title})
+  
+  _SelectorTematicasState({String title,List<MentoringCategory> selectedCategories})
       : assert(title != null),
-        _title = title;
+        _title = title,
+        _selectedCategories = selectedCategories != null ? selectedCategories: [];
+  
   @override
   void initState() {
     super.initState();
   }
 
+  void _mapSelectedCategories(){
+    final nCategories = _categories.length;
+    _selectedItems.clear();
+    for (MentoringCategory selectedCategory in _selectedCategories) {
+      for (int i = 0; i < nCategories; i++){
+        if (_categories[i].reference.documentID == selectedCategory.reference.documentID){
+          _selectedItems.add(i);
+        }
+      }
+    }
+  }
+
   Widget _multiselectCategorias() {
+    _mapSelectedCategories();
     return SearchableDropdown.multiple(
         items: _categories
             .map((category) => DropdownMenuItem(

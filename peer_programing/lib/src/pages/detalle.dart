@@ -80,10 +80,10 @@ class DetalleState extends State<Detalle> {
     return Column(
       children: <Widget>[
         ListTile(
-          leading: Icon(
-            Icons.person,
-            color: LightColor.purple,
-          ),
+        leading: CircleAvatar(
+             backgroundColor: Colors.grey.shade300,
+            backgroundImage: NetworkImage(this._mentoring.user.imgPath),
+        ),
           title: Text(
             this._mentoring.user.name,
             style: TextStyle(color: LightColor.purple),
@@ -94,7 +94,7 @@ class DetalleState extends State<Detalle> {
           children: <Widget>[
             StartsPoints(maxScore, this._mentoring.points),
             Spacer(),
-            this.actionButton,
+            this.actionButton != null ? this.actionButton : Text(''),
           ],
         ),
       ],

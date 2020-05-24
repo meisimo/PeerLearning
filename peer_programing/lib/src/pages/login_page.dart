@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -49,6 +50,7 @@ class _LoginPage extends State<LoginPage> {
     auth
       .signIn(email, pass)
       .then((loginResult){
+        _singInError = null;
         _getOut();
         _LoginForm(this._loginFormKey).clearSignInFields();
       })
@@ -60,6 +62,7 @@ class _LoginPage extends State<LoginPage> {
             _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
           }
           _loginFormKey.currentState.validate();
+          _singInError = null;
         });
   }
 
@@ -68,15 +71,15 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
+    String imgPath = generateRandomGravatarUrl();
     List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
     auth
-      .signUp(name, email, pass, categories)
+      .signUp(name, email, pass, categories, imgPath)
       .then((signUpResult){
         _getOut();
         _SignupForm(this._signUpKey).clearSignUpFields();
       })
       .catchError((error){
-        print("ERROR LOGIN $error");
         if (error.code == "ERROR_WEAK_PASSWORD")
           _singUpError = "La contraseña es demasiado debil.";
         else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE")
@@ -84,6 +87,7 @@ class _LoginPage extends State<LoginPage> {
         else 
           _singUpError = "Error inesperado en el registro";
         _signUpKey.currentState.validate();
+        _singUpError = null;
       });
   }
 
@@ -153,9 +157,9 @@ class _LoginPage extends State<LoginPage> {
       Container(
           child: Center(
               child: Container(
-                  width: 600,
-                  child: Column(
-                    children: <Widget>[form, submitButton, toggleButton],
+                  child:
+                  Column(
+                    children: <Widget>[ form, submitButton, toggleButton],
                   ))));
 
   @override
@@ -166,7 +170,7 @@ class _LoginPage extends State<LoginPage> {
           child: _formLayout(
               form: this._signUpMode
                   ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
-                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError,),
+                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
@@ -374,9 +378,7 @@ class _SignupForm extends State<SignupForm> {
   Widget build(BuildContext context) => Form(
       key: _formKey,
       child: Container(
-        height: 490,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: _signupInputs(),
         ),
       ));
@@ -431,28 +433,37 @@ class InputLogin extends StatelessWidget {
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.only(topRight: Radius.circular(10)));
+      borderRadius: BorderRadius.horizontal(right: Radius.circular(10)));
 
   Widget _inputLayout({child}) => Container(
-        width: 240,
+        width: 290,
         child: Material(
-            elevation: 10,
+            elevation: 3,
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.deepOrange,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                fieldIcon,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 3),
+                  child: fieldIcon,
+                ),
                 Container(
                   decoration: _inputContainerDecoration(),
-                  width: 200,
+                  width: 260,
                   child:
-                      Padding(padding: const EdgeInsets.all(8), child: child),
+                      Padding(padding: const EdgeInsets.all(2), child: child),
                 ),
               ],
             )),
       );
 
   @override
-  Widget build(BuildContext context) => _inputLayout(child: _input());
+  Widget build(BuildContext context) => 
+  Padding(
+    padding: EdgeInsets.symmetric(vertical: 5),
+    child: _inputLayout(child: _input())
+  )
+    
+  ;
 }

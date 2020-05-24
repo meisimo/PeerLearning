@@ -20,7 +20,6 @@ class _MainNavigationBar extends State<MainNavigationBar> {
         if (logged && ruta == '/login') {
           ruta = '/user';
         }
-        
         Navigator.pushReplacementNamed(context, ruta, arguments: index);
       };
 

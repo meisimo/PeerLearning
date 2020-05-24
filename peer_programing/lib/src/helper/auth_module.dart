@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BasicAuth {
   Future<String> signIn(String email, String pasword);
-  Future<String> signUp(String name, String email, String pasword, List<DocumentReference> categories);
+  Future<String> signUp(String name, String email, String pasword, List<DocumentReference> categories, String imgPath);
   Future<FirebaseUser> getCurrentUser();
   Future<void> signOut();
 }
@@ -31,7 +31,7 @@ class Auth implements BasicAuth {
   }
 
   @override
-  Future<String> signUp(String name, String email, String password, List<DocumentReference> categories) async {
+  Future<String> signUp(String name, String email, String password, List<DocumentReference> categories,String imgPath) async {
     AuthResult result = await _fbAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     FirebaseUser user = result.user;
@@ -42,7 +42,8 @@ class Auth implements BasicAuth {
       'categories': categories,
       'califications': [],
       'points': 0.0,
-      'createdMentorings': 0
+      'createdMentorings': 0,
+      'imgPath': imgPath,
     };
     await Firestore.instance.collection('user').add(userData);
     return user.uid;

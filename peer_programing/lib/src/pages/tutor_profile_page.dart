@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
+
+const int NAME_MAX_LENGTH = 200;
 
 class TutorProfilePage extends StatefulWidget {
   final UserModel tutor;
@@ -15,7 +21,7 @@ class TutorProfilePage extends StatefulWidget {
 
 class TutorProfileState extends State<StatefulWidget> {
   final UserModel tutor;
-
+  bool _loading;
   TutorProfileState({this.tutor});
 
   Widget _paginaUsuario() => Column(
@@ -66,13 +72,20 @@ class TutorProfileState extends State<StatefulWidget> {
             ],
           );
 
+  @override
+  void initState(){
+    super.initState();
+    _loading = true;
+    this.tutor.populate().then((_) => setState(() => _loading = false));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(tutor);
     return MainLayout(
         title: 'Perfil del Tutor',
         withBottomNavBar: false,
         body: Container(
-          child: _paginaUsuario()
+          child: _loading ? Loading(): _paginaUsuario()
         )
       );
   }
@@ -158,12 +171,83 @@ class ContenedorEdit extends StatefulWidget {
 
 class _ContenedorEditState extends State<ContenedorEdit> {
   UserModel _usuarioR;
+  final int COMENT_MAX_LENGTH = 50;
+
 
   _ContenedorEditState({@required UserModel user}): _usuarioR=user;
 
+  Widget _userCategories() {
+    if (_usuarioR.categories == null || _usuarioR.categories.isEmpty){
+      return Card(
+        child: ListTile(
+          title: Text('No tiene categorías seleccionadas aún',
+            style: TextStyle(
+              fontSize: 15
+            ),
+          ),
+        ),
+      );  
+    }
+    return Card(
+      child: ListTile(
+        title: Text('Categorías',
+          style: TextStyle(
+            fontSize: 15
+          ),
+        ),
+        subtitle: CategoryList(
+          categories: _usuarioR.categories,
+          wrap: true,
+          dividerWidth: 5,
+          usePadding: true,
+          chipConstraints: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _feedBackList() {
+    if (_usuarioR.califications.isEmpty) {
+      return Card(
+          child: ListTile(
+              title: Text(
+        "No tiene calificaciones aún",
+        style: TextStyle(fontSize: 15),
+      )));
+    }
+    List feedbacks = _usuarioR.califications
+        .map((feedback) => Card(
+                child: ListTile(
+              title: MentoringPoints(
+                  truncateDouble(feedback['points'], 1), LightColor.seeBlue),
+              subtitle: feedback['coment'] != null && feedback['coment'] != ''
+                  ? Text(truncateText(feedback['coment'], COMENT_MAX_LENGTH))
+                  : null,
+            )))
+        .toList();
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                "Calificaciones",
+                style: TextStyle(fontSize: 15),
+              )),
+          Expanded(
+            child: ListView(
+              children: feedbacks,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+
   Widget _paginaUsuario() => Container(
-      width: 310.0,
-      height: 410.0,
+      width: 400,
+      height: 600,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -171,8 +255,13 @@ class _ContenedorEditState extends State<ContenedorEdit> {
             child: ListTile(
               leading: Icon(Icons.people),
               title: Text("Nombre"),
-              subtitle: Text(_usuarioR.name),
+              subtitle: Text(truncateText(_usuarioR.name, NAME_MAX_LENGTH)),
             ),
+          ),
+          _userCategories(),
+          Flexible(
+            fit: FlexFit.loose,
+            child: _feedBackList(),
           ),
         ],
       ),
