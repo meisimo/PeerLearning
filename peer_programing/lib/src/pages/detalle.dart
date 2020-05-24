@@ -94,7 +94,7 @@ class DetalleState extends State<Detalle> {
           children: <Widget>[
             StartsPoints(maxScore, this._mentoring.points),
             Spacer(),
-            this.actionButton,
+            this.actionButton != null ? this.actionButton : Text(''),
           ],
         ),
       ],

@@ -53,7 +53,9 @@ class _HomePage extends State<HomePage> {
       () => showDialog(
           context: context,
           child: Detalle(mentoring,
-              actionButton: new RaisedButton(
+              actionButton: mentoring.user.reference.documentID == _user.reference.documentID ?
+                null:
+                new RaisedButton(
                   child: Text('aceptar'),
                   color: LightColor.purple,
                   onPressed: () => _handleConnectivity(onSuccess: () {

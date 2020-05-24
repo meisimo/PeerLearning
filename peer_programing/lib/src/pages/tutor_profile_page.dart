@@ -247,7 +247,7 @@ class _ContenedorEditState extends State<ContenedorEdit> {
 
   Widget _paginaUsuario() => Container(
       width: 400,
-      height: 410.0,
+      height: 600,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
