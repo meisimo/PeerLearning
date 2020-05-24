@@ -176,10 +176,7 @@ class _CreateForm extends State<CreateForm>
               ],
             ),
           ),
-          body: TabBarView(
-            controller: _formTabPageController,
-            children: <Widget>[_learn(creationForm), _teach(creationForm)],
-          ),
+          body: SingleChildScrollView(child: _learn(creationForm),),
           floatingActionButton: FloatingActionButton(
             onPressed: _createMentoring(context),
             child: Icon(Icons.save),
