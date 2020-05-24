@@ -80,10 +80,10 @@ class DetalleState extends State<Detalle> {
     return Column(
       children: <Widget>[
         ListTile(
-          leading: Icon(
-            Icons.person,
-            color: LightColor.purple,
-          ),
+        leading: CircleAvatar(
+             backgroundColor: Colors.grey.shade300,
+            backgroundImage: NetworkImage("https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
+        ),
           title: Text(
             this._mentoring.user.name,
             style: TextStyle(color: LightColor.purple),

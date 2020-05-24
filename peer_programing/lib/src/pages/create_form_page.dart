@@ -27,6 +27,19 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
   Function _requiredField({String subject = "Este campo"}) =>  (String value) => 
     value.isEmpty ? "$subject no puede estar vacío.": null;
 
+
+  Function _requiredField2({String subject = "Este campo"}) =>  (String value){
+    if(value==""){
+    return value.isEmpty ? "$subject no puede estar vacío.": null;
+    }
+    try {
+    int.parse(value);
+    } catch (e) {
+      return "Digite un numero valido porfavor";
+    }
+  };
+
+
   Widget _form() =>
     Form(
         key: _formKey,
@@ -61,7 +74,7 @@ class _CreateForm extends State<CreateForm> with SingleTickerProviderStateMixin 
                 icon: Icon(Icons.monetization_on),
                 hintText: 'Tarifa',
               ),
-              validator: this._requiredField(subject: "La tarifa"),
+              validator: this._requiredField2(subject: "La tarifa"),
               onSaved: (String value) => this._tarifa = int.parse(value),
               keyboardType: TextInputType.number,
             ),
