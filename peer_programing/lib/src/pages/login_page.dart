@@ -49,6 +49,7 @@ class _LoginPage extends State<LoginPage> {
     auth
       .signIn(email, pass)
       .then((loginResult){
+        _singInError = null;
         _getOut();
         _LoginForm(this._loginFormKey).clearSignInFields();
       })
@@ -60,6 +61,7 @@ class _LoginPage extends State<LoginPage> {
             _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
           }
           _loginFormKey.currentState.validate();
+          _singInError = null;
         });
   }
 
@@ -83,6 +85,7 @@ class _LoginPage extends State<LoginPage> {
         else 
           _singUpError = "Error inesperado en el registro";
         _signUpKey.currentState.validate();
+        _singUpError = null;
       });
   }
 
@@ -165,7 +168,7 @@ class _LoginPage extends State<LoginPage> {
           child: _formLayout(
               form: this._signUpMode
                   ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
-                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError,),
+                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
