@@ -6,7 +6,7 @@ import 'package:peer_programing/src/widgets/navigation/main_navigation_bar.dart'
 class MainLayout extends StatelessWidget {
   final routeMap = ['/', '/recomended', '/list_selected', '/login'];
   final Widget body;
-  final FloatingActionButton floatingActionButton;
+  final Widget floatingActionButton;
 
   final String title;
   final Widget headerChild;

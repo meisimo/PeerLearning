@@ -13,13 +13,14 @@ const USER_COLLECTION_NAME = 'user';
 
 class UserModel{
   final int id;
-  final String name;
-  final String imgPath;
   final DocumentReference reference;
   final List<dynamic> califications;
   final int createdMentorings;
-  final List categoriesReference;
   static final BasicAuth auth = Routes.auth;
+
+  List categoriesReference;
+  String name;
+  String imgPath;
   List<MentoringCategory> categories;
   FirebaseUser _userAuth;
   
@@ -87,6 +88,14 @@ class UserModel{
     ]);
   }
 
+  Future updateUser(){
+    this.categoriesReference = categories == null ? [] : categories.map<DocumentReference>((cat) => cat.reference).toList();
+    return Future.wait(<Future>[
+      reference.updateData({'categories': this.categoriesReference}),
+      reference.updateData({'name': name}),
+    ]);
+  }
+
   Future<UserModel> populate() async{
     categories = <MentoringCategory>[];
     for (DocumentReference category in categoriesReference){
@@ -101,7 +110,7 @@ class UserModel{
     ]);
   }
 
-    Future<void> removeMentoring() {
+  Future<void> removeMentoring() {
     return Future.wait(<Future>[
       reference.updateData({'createdMentorings': createdMentorings-1}),
     ]);

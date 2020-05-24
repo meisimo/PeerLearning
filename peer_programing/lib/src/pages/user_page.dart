@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/utils/dev.dart';
+import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
@@ -18,13 +18,20 @@ class UserPage extends StatefulWidget {
 
 class UserPageState extends State<StatefulWidget> {
   final int COMENT_MAX_LENGTH = 50;
+  final _keyForm = GlobalKey<FormState>();
+
+  SelectorTematicas _selectorTematicas;
   UserModel _usuarioR;
   bool _loading = true;
+  bool _editMode = false;
+  TextEditingController _nameField = TextEditingController();
 
   @override
   void initState() {
     UserModel.getCurrentUser()
         .then((usuario) => usuario.populate().then((usuario) {
+              _selectorTematicas = new SelectorTematicas(title: "Temática de interes", selectedCategories: usuario.categories);
+              _nameField.text = usuario.name;
               setState(() {
                 this._usuarioR = usuario;
                 _loading = false;
@@ -35,10 +42,9 @@ class UserPageState extends State<StatefulWidget> {
   Widget _paginaUsuario() => Container(
       constraints: new BoxConstraints(
         minHeight: 500,
-        maxHeight: 700,
+        maxHeight: 800,
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           //Image of profile
           Row(
@@ -90,24 +96,96 @@ class UserPageState extends State<StatefulWidget> {
         ],
       ));
 
+  Widget _formEdicionUsuario() => Container(
+      constraints: new BoxConstraints(
+        minHeight: 500,
+        maxHeight: 800,
+      ),
+      child: Column(
+        children: <Widget>[
+          //Image of profile
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ImagenPerfil(
+                user: _usuarioR,
+              )
+            ],
+          ),
+
+          SizedBox(
+            height: 20.0,
+          ),
+          //Puntuacion tutoria, estudiante
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // estrellaPuntuacion(_usuarioR.points.toString())
+                  StartsPoints(5, _usuarioR.points)
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  _editForm()
+                ],
+              )
+            ],
+          ),
+        ],
+      ));
+
+  Widget _editForm() => Form(
+      key: _keyForm,
+      child:Container(
+        width: 310.0,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            InputLogin(
+          Key('input-nombre'),
+          Icon(
+            Icons.person,
+            color: Colors.white,
+          ),
+          "Nombre",
+          pasword: false,
+          requiredField: true,
+          controller: _nameField,
+          inputType: TextInputType.text,
+        ),
+        _selectorTematicas,
+        ],
+        ),
+      )
+    );
+
   Widget _userCategories() {
-    if (_usuarioR.categories == null || _usuarioR.categories.isEmpty){
+    if (_usuarioR.categories == null || _usuarioR.categories.isEmpty) {
       return Card(
         child: ListTile(
-          title: Text('No tiene categorías seleccionadas aún',
-            style: TextStyle(
-              fontSize: 15
-            ),
+          title: Text(
+            'No tiene categorías seleccionadas aún',
+            style: TextStyle(fontSize: 15),
           ),
         ),
-      );  
+      );
     }
     return Card(
       child: ListTile(
-        title: Text('Categorías',
-          style: TextStyle(
-            fontSize: 15
-          ),
+        title: Text(
+          'Categorías',
+          style: TextStyle(fontSize: 15),
         ),
         subtitle: CategoryList(
           categories: _usuarioR.categories,
@@ -166,10 +244,54 @@ class UserPageState extends State<StatefulWidget> {
     );
   }
 
+  void _saveChanges(){
+    if(_keyForm.currentState.validate()){
+      setState(() => _loading = true);
+      _usuarioR.name = _nameField.text.trim();
+      _usuarioR.categories = _selectorTematicas.selectedCategories;
+      _selectorTematicas = new SelectorTematicas(title: "Temática de interes", selectedCategories: _usuarioR.categories);
+      _usuarioR
+        .updateUser()
+        .then( (response) => setState((){ _editMode = false; _loading = false;}))
+        .catchError((error) => print(error));
+    }
+  }
+
+  Widget _saveButton() => Stack(
+        children: <Widget>[
+          Align(
+            heightFactor: 11,
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () => setState(() => _editMode = false),
+              child: Icon(Icons.cancel),
+              backgroundColor: Colors.redAccent,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: _saveChanges,
+              child: Icon(Icons.save),
+            ),
+          ),
+        ],
+      );
+
+  Widget _editButton() => FloatingActionButton(
+        onPressed: () => setState(() => _editMode = true),
+        child: Icon(Icons.edit),
+        backgroundColor: LightColor.orange,
+      );
+
   Widget build(BuildContext context) {
     return MainLayout(
       title: 'Perfil',
-      body: Container(child: _loading ? Loading() : _paginaUsuario()),
+      body: Container(
+          child: _loading
+              ? Loading()
+              : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
+      floatingActionButton: _editMode ? _saveButton() : _editButton(),
     );
   }
 }
@@ -199,47 +321,6 @@ class ImagenPerfil extends StatelessWidget {
         ),
       ),
     ));
-  }
-}
-
-class nombrePuntuacion extends StatelessWidget {
-  String nombre;
-
-  nombrePuntuacion(nombre) {
-    this.nombre = nombre;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.centerRight,
-        child: Text(nombre,
-            style: TextStyle(color: Colors.blueGrey, fontSize: 12.0)));
-  }
-}
-
-class estrellaPuntuacion extends StatelessWidget {
-  String estrellaP;
-
-  estrellaPuntuacion(estrellaP) {
-    this.estrellaP = estrellaP;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-        //numero Estrella
-        children: <Widget>[
-          Container(
-              child: Align(
-            alignment: Alignment.center,
-            child: Text(estrellaP),
-          )),
-
-          //Estrella
-          Container(
-              child: const Align(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.stars, color: Color(0xfffbbd5c))))
-        ]);
   }
 }
 
@@ -284,36 +365,80 @@ class _ContenedorEditState extends State<ContenedorEdit> {
   Widget build(BuildContext context) => _paginaUsuario();
 }
 
-class edit extends StatelessWidget {
-  Icon iconos;
-  String nombreIconos;
-  //String nombreInput;
-  edit(iconos, nombreIconos) {
-    this.iconos = iconos;
-    this.nombreIconos = nombreIconos;
+class InputLogin extends StatelessWidget {
+  final Key key;
+  final Icon fieldIcon;
+  final String hintText;
+  final Function validator;
+  final bool requiredField;
+  final bool pasword;
+  final TextEditingController controller;
+  final TextInputType inputType;
+
+  InputLogin(this.key, this.fieldIcon, this.hintText,
+      {this.validator,
+      this.requiredField = false,
+      this.pasword,
+      this.controller,
+      this.inputType})
+      : super();
+
+  String _innerValidator(value) {
+    if (this.requiredField && value.isEmpty)
+      return 'Este campo no puede ir vacío';
+
+    if (this.validator != null) {
+      String errorMessage = this.validator(value);
+      return errorMessage;
+    }
+
+    return null;
   }
+
+  InputDecoration _innerTextFieldDecorationA() => InputDecoration(
+        border: InputBorder.none,
+        hintText: hintText,
+        fillColor: Colors.white,
+        filled: true,
+      );
+
+  Widget _input() => TextFormField(
+        obscureText: pasword,
+        key: this.key,
+        validator: _innerValidator,
+        decoration: _innerTextFieldDecorationA(),
+        style: TextStyle(fontSize: 20, color: Colors.black),
+        controller: this.controller,
+        keyboardType: this.inputType,
+      );
+
+  BoxDecoration _inputContainerDecoration() => BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.horizontal(right: Radius.circular(8)));
+
+  Widget _inputLayout({child}) => Container(
+        child: Material(
+            elevation: 10,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.deepOrange,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                fieldIcon,
+                Container(
+                  decoration: _inputContainerDecoration(),
+                  constraints: BoxConstraints(
+                    maxWidth: 280,
+                    minWidth: 200,
+                    maxHeight: 58
+                  ),
+                  child:
+                      Padding(padding: const EdgeInsets.all(3), child: child),
+                ),
+              ],
+            )),
+      );
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[iconosEdit(iconos), Text(nombreIconos)],
-    );
-  }
-}
-
-class iconosEdit extends StatelessWidget {
-  Icon iconos;
-
-  iconosEdit(iconos) {
-    this.iconos = iconos;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Icon(
-      iconos.icon,
-      color: Color(0xff7a81dd),
-      size: 24.0,
-    ));
-  }
+  Widget build(BuildContext context) => _inputLayout(child: _input());
 }
