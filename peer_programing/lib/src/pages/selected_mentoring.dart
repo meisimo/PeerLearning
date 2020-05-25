@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/detalle.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/tarjetas/mentoring_feedback.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 class SelectedMentorings extends StatefulWidget {
   @override
@@ -17,6 +19,9 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   bool _loading = true, _sendingFeedback=false, _logged=false;
   UserModel _user;
   MentoringListView _mentoringListView;
+  bool _checkConnection = true;
+  bool _connected = false;
+  
 
   @override
   void initState(){
@@ -48,8 +53,16 @@ class _SelectedMentorings extends State<SelectedMentorings> {
       textAlign: TextAlign.center,
     );
 
-  @override
-  Widget build(BuildContext context) {
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MainLayout(
+  //     title: "Ofertas seleccionadas",
+  //     body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage(),
+  //     defaultVerticalScroll: false,
+  //   );
+  // }
+
+    Widget _showPage() {
     return MainLayout(
       title: "Ofertas seleccionadas",
       body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage(),
@@ -60,14 +73,22 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Widget _cancelButton(Mentoring mentoring) => new RaisedButton(
                 child: Text('Cancelar'),
                 color: Colors.red,
-                onPressed: _unselectMentoring(mentoring, context)
-              );
+                onPressed: ()=> handleConnectivity(onSuccess: (){
+                 _unselectMentoring(mentoring, context);
+                }, onError: () {
+                  _showNotConnectedDialog(context);
+                }
+              ));
 
   Widget _doneButton(Mentoring mentoring) => new RaisedButton(
                 child: Text('Realizada'),
                 color: Colors.green,
-                onPressed: _mentoringDone(mentoring, context)
-              );
+                onPressed: ()=>_handleConnectivity(onSuccess:  (){
+                 _mentoringDone(mentoring, context);
+                },onError: (){
+                   _showNotConnectedDialog(context);
+                })
+  );
 
   Widget _mentoringDetail(Mentoring mentoring) => Detalle(
     mentoring,
@@ -137,5 +158,61 @@ class _SelectedMentorings extends State<SelectedMentorings> {
         )
       )
       .catchError( (error)=> print(error) );
+
+
+
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
+    void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+
+  Widget _showNotConnectedPage() {
+    return MainLayout(
+      title: "Ofertas seleccionadas",
+      body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+      defaultVerticalScroll: false,
+    );
+  }
+
+
+  void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
+
+       @override
+  Widget build(BuildContext context) {
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
+  }
 
 }
