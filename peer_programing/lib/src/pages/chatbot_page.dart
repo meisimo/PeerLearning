@@ -1,6 +1,9 @@
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/home_page.dart';
+import 'package:peer_programing/src/pages/login_page.dart';
+import 'package:peer_programing/src/pages/user_page.dart';
 import 'package:peer_programing/src/widgets/layouts/chatMessages.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 
@@ -26,7 +29,7 @@ class ChatbotState extends State<Chatbot> {
           child: Column(
             children: <Widget>[
               Container(
-                height: MediaQuery.of(context).size.height-245,
+                height: MediaQuery.of(context).size.height - 245,
                 child: ListView.builder(
                   padding: EdgeInsets.all(8.0),
                   reverse: true,
@@ -101,6 +104,28 @@ class ChatbotState extends State<Chatbot> {
         );
       }
     }
+    if (params.containsKey('Perfil')) {
+      if (params.values.first == "mostrar") {
+        UserModel user = await UserModel.getCurrentUser();
+        if (user == null) {
+          message.extra = GestureDetector(
+            child: Text('Pulsa aqui para iniciar sesion',
+                style: TextStyle(
+                    color: Colors.blue, decoration: TextDecoration.underline)),
+            onTap: () => Navigator.push(context,
+                new MaterialPageRoute(builder: (context) => new LoginPage())),
+          );
+        } else {
+           message.extra = GestureDetector(
+            child: Text('Pulsa aqui para acceder a tu perfil',
+                style: TextStyle(
+                    color: Colors.blue, decoration: TextDecoration.underline)),
+            onTap: () => Navigator.push(context,
+                new MaterialPageRoute(builder: (context) => new UserPage())),
+          );
+        }
+      }
+    }
     setState(() {
       _messages.insert(0, message);
     });
@@ -121,4 +146,3 @@ class ChatbotState extends State<Chatbot> {
     response(text);
   }
 }
-
