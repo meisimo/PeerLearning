@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/utils/connection.dart';
-
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -51,19 +51,23 @@ class _LoginPage extends State<LoginPage> {
     _singInError = null;
     String email = _LoginForm(this._loginFormKey).getEmailField();
     String pass = _LoginForm(this._loginFormKey).getPasswordField();
-    auth.signIn(email, pass).then((loginResult) {
-      _getOut();
-      _LoginForm(this._loginFormKey).clearSignInFields();
-    }).catchError((error) {
-      if (error.code == "ERROR_USER_NOT_FOUND" ||
-          error.code == "ERROR_WRONG_PASSWORD") {
-        _singInError = "El email y/o contraseña no es válida.";
-      } else {
-        _singInError =
-            "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
-      }
-      _loginFormKey.currentState.validate();
-    });
+    auth
+      .signIn(email, pass)
+      .then((loginResult){
+        _singInError = null;
+        _getOut();
+        _LoginForm(this._loginFormKey).clearSignInFields();
+      })
+      .catchError(
+        (error){
+          if(error.code == "ERROR_USER_NOT_FOUND" || error.code == "ERROR_WRONG_PASSWORD"){
+            _singInError = "El email y/o contraseña no es válida.";
+          } else{
+            _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
+          }
+          _loginFormKey.currentState.validate();
+          _singInError = null;
+        });
   }
 
   void _sendSignUp() {
@@ -71,23 +75,24 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
-    List<DocumentReference> categories = _signupFormWidget
-        .getTematicas()
-        .map<DocumentReference>(
-            (MentoringCategory category) => category.reference)
-        .toList();
-    auth.signUp(name, email, pass, categories).then((signUpResult) {
-      _getOut();
-      _SignupForm(this._signUpKey).clearSignUpFields();
-    }).catchError((error) {
-      if (error.code == "ERROR_WEAK_PASSWORD")
-        _singUpError = "La contraseña es demasiado debil.";
-      else if (error.code == "ERROR_EMAIL_ALREADY_IN_USE")
-        _singUpError = "Este correo ya se encuentra registrado.";
-      else
-        _singUpError = "Error inesperado en el registro";
-      _signUpKey.currentState.validate();
-    });
+    String imgPath = generateRandomGravatarUrl();
+    List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
+    auth
+      .signUp(name, email, pass, categories, imgPath)
+      .then((signUpResult){
+        _getOut();
+        _SignupForm(this._signUpKey).clearSignUpFields();
+      })
+      .catchError((error){
+        if (error.code == "ERROR_WEAK_PASSWORD")
+          _singUpError = "La contraseña es demasiado debil.";
+        else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE")
+          _singUpError = "Este correo ya se encuentra registrado.";
+        else 
+          _singUpError = "Error inesperado en el registro";
+        _signUpKey.currentState.validate();
+        _singUpError = null;
+      });
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -164,9 +169,9 @@ class _LoginPage extends State<LoginPage> {
       Container(
           child: Center(
               child: Container(
-                  width: 600,
-                  child: Column(
-                    children: <Widget>[form, submitButton, toggleButton],
+                  child:
+                  Column(
+                    children: <Widget>[ form, submitButton, toggleButton],
                   ))));
 
   // @override
@@ -181,14 +186,8 @@ class _LoginPage extends State<LoginPage> {
         child: Center(
           child: _formLayout(
               form: this._signUpMode
-                  ? _signupFormWidget = SignupForm(
-                      this._signUpKey,
-                      showError: (String _) => _singUpError,
-                    )
-                  : LoginForm(
-                      this._loginFormKey,
-                      showError: (String _) => _singInError,
-                    ),
+                  ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
+                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
@@ -448,9 +447,7 @@ class _SignupForm extends State<SignupForm> {
   Widget build(BuildContext context) => Form(
       key: _formKey,
       child: Container(
-        height: 490,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: _signupInputs(),
         ),
       ));
@@ -505,28 +502,37 @@ class InputLogin extends StatelessWidget {
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.only(topRight: Radius.circular(10)));
+      borderRadius: BorderRadius.horizontal(right: Radius.circular(10)));
 
   Widget _inputLayout({child}) => Container(
-        width: 240,
+        width: 290,
         child: Material(
-            elevation: 10,
+            elevation: 3,
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.deepOrange,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                fieldIcon,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 3),
+                  child: fieldIcon,
+                ),
                 Container(
                   decoration: _inputContainerDecoration(),
-                  width: 200,
+                  width: 260,
                   child:
-                      Padding(padding: const EdgeInsets.all(8), child: child),
+                      Padding(padding: const EdgeInsets.all(2), child: child),
                 ),
               ],
             )),
       );
 
   @override
-  Widget build(BuildContext context) => _inputLayout(child: _input());
+  Widget build(BuildContext context) => 
+  Padding(
+    padding: EdgeInsets.symmetric(vertical: 5),
+    child: _inputLayout(child: _input())
+  )
+    
+  ;
 }

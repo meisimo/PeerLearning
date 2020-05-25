@@ -137,13 +137,6 @@ class _CreateForm extends State<CreateForm>
     );
   }
 
-  Widget _teach(Form form) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: form
-    );
-  }
-
   void _setMentoringTypes(AsyncSnapshot<QuerySnapshot> snapshot) => 
     this._mentoringTypes = MentoringType.mapMentoringTypes(MentoringType.listFromSnapshot(snapshot.data.documents));
 
@@ -176,10 +169,7 @@ class _CreateForm extends State<CreateForm>
               ],
             ),
           ),
-          body: TabBarView(
-            controller: _formTabPageController,
-            children: <Widget>[_learn(creationForm), _teach(creationForm)],
-          ),
+          body: SingleChildScrollView(child: _learn(creationForm),),
           floatingActionButton: FloatingActionButton(
             onPressed: _createMentoring(context),
             child: Icon(Icons.save),

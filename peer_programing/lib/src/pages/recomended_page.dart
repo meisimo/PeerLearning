@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/tarjetas/mini_card.dart';
@@ -101,7 +102,7 @@ class _RecomendedMentorByCategoryList
                       isPrimaryCard: true,
                       imgPath: user.imgPath != null
                           ? user.imgPath
-                          : "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg")
+                          : generateRandomGravatarUrl())
                   : Text('');
             }).toList()),
       ),
