@@ -3,6 +3,7 @@ import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/pages/create_form_page.dart';
 
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
@@ -49,24 +50,28 @@ class _HomePage extends State<HomePage> {
   void _setTitle() => setState(
       () => _title = _selectedType() == 'teach' ? 'Tutorías' : 'Solicitudes');
 
-  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) => 
-      () => _logged ? 
-        showDialog(
-          context: context,
-          child: Detalle(mentoring,
-              actionButton: mentoring.user.reference.documentID == _user.reference.documentID ?
-                null:
-                new RaisedButton(
-                  child: Text('aceptar'),
-                  color: LightColor.purple,
-                  onPressed: () => _handleConnectivity(onSuccess: () {
-                        _logged
-                            ? _selectMentoring(mentoring, context)
-                            : Navigator.pushNamed(context, '/login/action');
-                      }, onError: () {
-                        Navigator.of(context).pop();
-                        _showNotConnectedDialog(context);
-                      }))))
+  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
+      () => _logged
+          ? showDialog(
+              context: context,
+              child: Detalle(
+                mentoring,
+                actionButton: mentoring.user.reference.documentID ==
+                        _user.reference.documentID
+                    ? null
+                    : new RaisedButton(
+                        child: Text('aceptar'),
+                        color: LightColor.purple,
+                        onPressed: () => _handleConnectivity(onSuccess: () {
+                              _logged
+                                  ? _selectMentoring(mentoring, context)
+                                  : Navigator.pushNamed(
+                                      context, '/login/action');
+                            }, onError: () {
+                              Navigator.of(context).pop();
+                              _showNotConnectedDialog(context);
+                            })),
+              ))
           : Navigator.pushNamed(context, '/login/action');
 
   void _selectMentoring(Mentoring mentoring, BuildContext context) =>
@@ -122,7 +127,8 @@ class _HomePage extends State<HomePage> {
 
   Function _unFilterByCategories(MentoringCategory category) => () {
         this._categories.add(category);
-        this._selectedCaterogies
+        this
+            ._selectedCaterogies
             .removeWhere(MentoringCategory.compareWith(category));
         _filterMentorings();
         _setCategoriesLists();
@@ -153,23 +159,23 @@ class _HomePage extends State<HomePage> {
           onError: onError,
           onResponse: () => this._checkConnection = false);
 
-  Function _filter(MentoringType mentoringType, UserModel user) =>
-      ({String title, List<MentoringCategory> categories}) =>
-        _handleConnectivity(onSuccess: () async {
-          if (title != null && categories != null) {
-            return await Mentoring.filterByTitleAndCategory(mentoringType, user,
-                title: title, categories: categories);
-          } else if (title != null)
-            return await Mentoring.filterByTitle(mentoringType, user, title);
-          else if (categories != null)
-            return await Mentoring.filterByCategory(
-                mentoringType, user, categories);
-          else
-            return await Mentoring.getAvilables(mentoringType, user);
-        }, onError: () {
-          _showNotConnectedDialog(context);
-          setState(() => this._connected = false);
-        });
+  Function _filter(MentoringType mentoringType, UserModel user) => (
+          {String title, List<MentoringCategory> categories}) =>
+      _handleConnectivity(onSuccess: () async {
+        if (title != null && categories != null) {
+          return await Mentoring.filterByTitleAndCategory(mentoringType, user,
+              title: title, categories: categories);
+        } else if (title != null)
+          return await Mentoring.filterByTitle(mentoringType, user, title);
+        else if (categories != null)
+          return await Mentoring.filterByCategory(
+              mentoringType, user, categories);
+        else
+          return await Mentoring.getAvilables(mentoringType, user);
+      }, onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      });
 
   Widget _homeInfo(BuildContext context) {
     return Container(
@@ -202,7 +208,11 @@ class _HomePage extends State<HomePage> {
       onSuccess: () => setState(() => this._connected = true));
 
   Function _checkConnectivity(context) => () => _handleConnectivity(
-      onSuccess: () => Navigator.pushNamed(context, '/create_mentoring'),
+      onSuccess: () => Navigator.push(
+          context,
+          new MaterialPageRoute(
+              builder: (context) =>
+                  new CreateForm(afterSave: _refreshMentorings))),
       onError: () => _showNotConnectedDialog(context));
 
   Widget _showPage() {
@@ -213,6 +223,7 @@ class _HomePage extends State<HomePage> {
       floatingActionButton: _loading
           ? null
           : FloatingActionButton(
+              heroTag: 'create-mentoring-btn',
               onPressed: _checkConnectivity(context),
               child: Icon(Icons.add),
               backgroundColor: LightColor.orange,
@@ -261,27 +272,28 @@ class _HomePage extends State<HomePage> {
       UserModel.getCurrentUser(populate: true)
     ]).then((result) {
       _mentoringTypes = MentoringType.mapMentoringTypes(result[0]);
-        _categories = result[1];
-        _user = result[2];
-        _mentoringListView = MentoringListView(
-          onResumeTap: _showMentoringDetail,
-          mentorigQuery:
-              Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user),
-          filter: _filter(_mentoringTypes['teach'], _user),
-        );
-        _requestListView = MentoringListView(
-          onResumeTap: _showMentoringDetail,
-          mentorigQuery:
-              Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
-          filter: _filter(_mentoringTypes['learn'], _user),
-        );
-        if (_user != null && _user.categories != null){
-          _user.categories.forEach((userCategory) { 
-            this._selectedCaterogies.add(userCategory);
-            this._categories
+      _categories = result[1];
+      _user = result[2];
+      _mentoringListView = MentoringListView(
+        onResumeTap: _showMentoringDetail,
+        mentorigQuery:
+            Mentoring.whereOfAvilable(_mentoringTypes['teach'], _user),
+        filter: _filter(_mentoringTypes['teach'], _user),
+      );
+      _requestListView = MentoringListView(
+        onResumeTap: _showMentoringDetail,
+        mentorigQuery:
+            Mentoring.whereOfAvilable(_mentoringTypes['learn'], _user),
+        filter: _filter(_mentoringTypes['learn'], _user),
+      );
+      if (_user != null && _user.categories != null) {
+        _user.categories.forEach((userCategory) {
+          this._selectedCaterogies.add(userCategory);
+          this
+              ._categories
               .removeWhere(MentoringCategory.compareWith(userCategory));
-          });
-        }
+        });
+      }
       setState(() {
         _logged = _user != null;
         _loading = false;
