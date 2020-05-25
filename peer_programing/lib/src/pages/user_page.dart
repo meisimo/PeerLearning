@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
@@ -9,6 +10,7 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 const int NAME_MAX_LENGTH = 200;
 const int EMAIL_MAX_LENGTH = 200;
@@ -22,6 +24,8 @@ class UserPage extends StatefulWidget {
 class UserPageState extends State<StatefulWidget> {
   final int COMENT_MAX_LENGTH = 50;
   final _keyForm = GlobalKey<FormState>();
+  bool _checkConnection=true;
+  bool _connected = false;
 
   SelectorTematicas _selectorTematicas;
   UserModel _usuarioR;
@@ -267,7 +271,11 @@ class UserPageState extends State<StatefulWidget> {
             heightFactor: 11,
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              onPressed: () => setState(() => _editMode = false),
+              onPressed: ()=> _handleConnectivity(onSuccess: (){
+              setState(() => _editMode = false);
+              },onError: (){
+                _showNotConnectedDialog(context);
+              }),
               child: Icon(Icons.cancel),
               backgroundColor: Colors.redAccent,
             ),
@@ -275,7 +283,11 @@ class UserPageState extends State<StatefulWidget> {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              onPressed: _saveChanges,
+              onPressed: ()=> _handleConnectivity(onSuccess: (){
+                _saveChanges();
+              }, onError: (){
+                _showNotConnectedDialog(context);
+              }),
               child: Icon(Icons.save),
             ),
           ),
@@ -283,20 +295,90 @@ class UserPageState extends State<StatefulWidget> {
       );
 
   Widget _editButton() => FloatingActionButton(
-        onPressed: () => setState(() => _editMode = true),
+        onPressed: () => _handleConnectivity(onSuccess: (){
+          setState(() => _editMode = true);
+        },onError: (){
+          _showNotConnectedDialog(context);
+        }),
         child: Icon(Icons.edit),
         backgroundColor: LightColor.orange,
       );
 
-  Widget build(BuildContext context) {
+  // Widget build(BuildContext context) {
+  //   return MainLayout(
+  //     title: 'Perfil',
+  //     body: Container(
+  //         child: _loading
+  //             ? Loading()
+  //             : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
+  //     floatingActionButton: _editMode ? _saveButton() : _editButton(),
+  //   );
+  // }
+
+    Widget _showPage() {
     return MainLayout(
-      title: 'Perfil',
+    title: 'Perfil',
       body: Container(
           child: _loading
               ? Loading()
               : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
       floatingActionButton: _editMode ? _saveButton() : _editButton(),
     );
+  }
+
+
+
+    Widget _showNotConnectedPage() {
+    return MainLayout(
+      title: "Perfil",
+      body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+      defaultVerticalScroll: false,
+    );
+  }
+
+    void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
+
+    void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
+
+      void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+        @override
+  Widget build(BuildContext context) {
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
   }
 }
 

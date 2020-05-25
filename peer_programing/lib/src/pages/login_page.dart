@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 import 'package:peer_programing/src/widgets/utils/validations/contraRepetidaValidations.dart';
 import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.dart';
 
@@ -21,6 +23,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPage extends State<LoginPage> {
   String _title, _singInError, _singUpError;
+  bool _checkConnection = true;
+  bool _connected = false;
   bool _signUpMode;
   SignupForm _signupFormWidget;
   final bool _betweenAction;
@@ -101,21 +105,24 @@ class _LoginPage extends State<LoginPage> {
 
   Widget _loginButton() => _submitFormButton(
         text: 'Ingresar',
-        onPressed: () {
+        onPressed: () => _handleConnectivity(onSuccess: () {
           if (_loginFormKey.currentState.validate()) {
             _sendLogin();
-          }
-        },
+        }}, onError: () {
+             _showNotConnectedDialog(context);
+        }),
       );
 
   Widget _signupButton() => _submitFormButton(
         text: 'Registrate',
-        onPressed: () {
+        onPressed: () => _handleConnectivity(onSuccess: () {
           if (_signUpKey.currentState.validate()) {
             _sendSignUp();
           }
-        },
-      );
+        },onError: () {
+            _showNotConnectedDialog(context);
+        }
+      ));
 
   Widget _toggleButton({String text, VoidCallback onPressed}) => Container(
         width: 150,
@@ -132,21 +139,27 @@ class _LoginPage extends State<LoginPage> {
 
   Widget _showSignUpButton() => _toggleButton(
       text: "Registrate",
-      onPressed: () {
+      onPressed: ()  => _handleConnectivity(onSuccess: () {
         setState(() {
           this._title = "Registro";
           this._signUpMode = true;
-        });
       });
+      },onError: () {
+      //  Navigator.of(context).pop();
+      _showNotConnectedDialog(context);
+      }));
+    
 
   Widget _showLoginButton() => _toggleButton(
       text: "Cancelar",
-      onPressed: () {
+      onPressed: () => _handleConnectivity(onSuccess: () {
         setState(() {
           this._title = "Login";
           this._signUpMode = false;
         });
-      });
+      },onError: (){
+          _showNotConnectedDialog(context);
+      }));
 
   Widget _formLayout({Widget form, Widget submitButton, Widget toggleButton}) =>
       Container(
@@ -157,9 +170,16 @@ class _LoginPage extends State<LoginPage> {
                     children: <Widget>[form, submitButton, toggleButton],
                   ))));
 
-  @override
-  Widget build(BuildContext context) => MainLayout(
-      title: _title,
+  // @override
+  // Widget build(BuildContext context) => MainLayout(
+      
+      
+  //     );
+
+
+  Widget _showPage() {
+    return MainLayout(
+     title: _title,
       body: Container(
         child: Center(
           child: _formLayout(
@@ -172,7 +192,64 @@ class _LoginPage extends State<LoginPage> {
           ),
         ),
       withBottomNavBar: !this._betweenAction,
-      );
+    );
+  }
+
+
+
+        void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
+
+      void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+   Widget _showNotConnectedPage() {
+    return MainLayout(
+      title: _title,
+      body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+      defaultVerticalScroll: false,
+    );
+  }
+
+    void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
+
+    @override
+  Widget build(BuildContext context) {
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
+  }
+
 }
 
 class LoginForm extends StatefulWidget {
