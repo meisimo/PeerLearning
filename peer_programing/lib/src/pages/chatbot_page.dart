@@ -7,6 +7,7 @@ import 'package:peer_programing/src/pages/user_page.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/chatMessages.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 
 class Chatbot extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class Chatbot extends StatefulWidget {
 }
 
 class ChatbotState extends State<Chatbot> {
+  static final String CHAT_BOT_NAME = "Peer chat";
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
 
@@ -91,7 +93,7 @@ class ChatbotState extends State<Chatbot> {
     ChatMessage message = ChatMessage(
       text: response.getMessage() ??
           CardDialogflow(response.getListMessage()[0]).title,
-      name: "ChatBot",
+      name: CHAT_BOT_NAME,
       type: false,
       extra: null,
     );
@@ -102,7 +104,7 @@ class ChatbotState extends State<Chatbot> {
           child: Text('Pulsa aqui para ver las tutorias',
               style: TextStyle(
                   color: Colors.blue, decoration: TextDecoration.underline)),
-          onTap: () => Navigator.push(context,
+          onTap: () => Navigator.pushReplacement(context,
               new MaterialPageRoute(builder: (context) => new HomePage())),
         );
       }
@@ -115,7 +117,7 @@ class ChatbotState extends State<Chatbot> {
             child: Text('Pulsa aqui para iniciar sesion',
                 style: TextStyle(
                     color: Colors.blue, decoration: TextDecoration.underline)),
-            onTap: () => Navigator.push(context,
+            onTap: () => Navigator.pushReplacement(context,
                 new MaterialPageRoute(builder: (context) => new LoginPage())),
           );
         } else {
@@ -123,14 +125,25 @@ class ChatbotState extends State<Chatbot> {
             child: Text('Pulsa aqui para acceder a tu perfil',
                 style: TextStyle(
                     color: Colors.blue, decoration: TextDecoration.underline)),
-            onTap: () => Navigator.push(context,
+            onTap: () => Navigator.pushReplacement(context,
                 new MaterialPageRoute(builder: (context) => new UserPage())),
           );
         }
       }
     }
+
     setState(() {
       _messages.insert(0, message);
+    });
+  }
+
+  void responseNoConection(){
+    setState(() {
+      _messages.insert(0, ChatMessage(
+        text: "Lo siento, parece que en este momento no tienes conexión a internet :( Revisa tu conexión e intentalo más tarde.",
+        name: CHAT_BOT_NAME,
+        type: false,
+      ));
     });
   }
 
@@ -145,6 +158,9 @@ class ChatbotState extends State<Chatbot> {
     setState(() {
       _messages.insert(0, message);
     });
-    response(text);
+    handleConnectivity(
+      onSuccess: () => response(text),
+      onError: () => responseNoConection()
+    );
   }
 }
