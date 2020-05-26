@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/pages/own_mentorings.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -29,11 +30,15 @@ class UserPageState extends State<StatefulWidget> {
   bool _editMode = false;
   TextEditingController _nameField = TextEditingController();
 
+  
   @override
   void initState() {
+    super.initState();  
     UserModel.getCurrentUser()
         .then((usuario) => usuario.populate().then((usuario) {
-              _selectorTematicas = new SelectorTematicas(title: "Temática de interes", selectedCategories: usuario.categories);
+              _selectorTematicas = new SelectorTematicas(
+                  title: "Temática de interes",
+                  selectedCategories: usuario.categories);
               _nameField.text = usuario.name;
               setState(() {
                 this._usuarioR = usuario;
@@ -139,9 +144,7 @@ class UserPageState extends State<StatefulWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Column(
-                children: <Widget>[
-                  _editForm()
-                ],
+                children: <Widget>[_editForm()],
               )
             ],
           ),
@@ -150,28 +153,27 @@ class UserPageState extends State<StatefulWidget> {
 
   Widget _editForm() => Form(
       key: _keyForm,
-      child:Container(
+      child: Container(
         width: 310.0,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             InputLogin(
-          Key('input-nombre'),
-          Icon(
-            Icons.person,
-            color: Colors.white,
-          ),
-          "Nombre",
-          pasword: false,
-          requiredField: true,
-          controller: _nameField,
-          inputType: TextInputType.text,
+              Key('input-nombre'),
+              Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              "Nombre",
+              pasword: false,
+              requiredField: true,
+              controller: _nameField,
+              inputType: TextInputType.text,
+            ),
+            _selectorTematicas,
+          ],
         ),
-        _selectorTematicas,
-        ],
-        ),
-      )
-    );
+      ));
 
   Widget _userCategories() {
     if (_usuarioR.categories == null || _usuarioR.categories.isEmpty) {
@@ -248,25 +250,30 @@ class UserPageState extends State<StatefulWidget> {
     );
   }
 
-  void _saveChanges(){
-    if(_keyForm.currentState.validate()){
+  void _saveChanges() {
+    if (_keyForm.currentState.validate()) {
       setState(() => _loading = true);
       _usuarioR.name = _nameField.text.trim();
       _usuarioR.categories = _selectorTematicas.selectedCategories;
-      _selectorTematicas = new SelectorTematicas(title: "Temática de interes", selectedCategories: _usuarioR.categories);
+      _selectorTematicas = new SelectorTematicas(
+          title: "Temática de interes",
+          selectedCategories: _usuarioR.categories);
       _usuarioR
-        .updateUser()
-        .then( (response) => setState((){ _editMode = false; _loading = false;}))
-        .catchError((error) => print(error));
+          .updateUser()
+          .then((response) => setState(() {
+                _editMode = false;
+                _loading = false;
+              }))
+          .catchError((error) => print(error));
     }
   }
 
   Widget _saveButton() => Stack(
         children: <Widget>[
           Align(
-            heightFactor: 11,
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.lerp(Alignment.bottomRight, Alignment.centerRight, 0.17),
             child: FloatingActionButton(
+              heroTag: 'cancel-edit-user-btn',
               onPressed: () => setState(() => _editMode = false),
               child: Icon(Icons.cancel),
               backgroundColor: Colors.redAccent,
@@ -275,17 +282,36 @@ class UserPageState extends State<StatefulWidget> {
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
+              heroTag: 'save-edit-user-btn',
               onPressed: _saveChanges,
+              backgroundColor: LightColor.purple,
               child: Icon(Icons.save),
             ),
           ),
         ],
       );
 
-  Widget _editButton() => FloatingActionButton(
-        onPressed: () => setState(() => _editMode = true),
-        child: Icon(Icons.edit),
-        backgroundColor: LightColor.orange,
+  Widget _editButton() => Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.lerp(Alignment.bottomRight, Alignment.centerRight, 0.17),
+            child: FloatingActionButton(
+              heroTag: 'user-mentorings-btn',
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => new OwnMentorings())),
+              child: Icon(Icons.dns),
+              backgroundColor: LightColor.purple,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              heroTag: 'edit-user-btn',
+              onPressed: () => setState(() => _editMode = true),
+              child: Icon(Icons.edit),
+              backgroundColor: LightColor.orange,
+            ),
+          ),
+        ],
       );
 
   Widget build(BuildContext context) {
@@ -294,7 +320,8 @@ class UserPageState extends State<StatefulWidget> {
       body: Container(
           child: _loading
               ? Loading()
-              : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
+              : _editMode ? _formEdicionUsuario() : 
+              _paginaUsuario()),
       floatingActionButton: _editMode ? _saveButton() : _editButton(),
     );
   }
@@ -432,10 +459,7 @@ class InputLogin extends StatelessWidget {
                 Container(
                   decoration: _inputContainerDecoration(),
                   constraints: BoxConstraints(
-                    maxWidth: 280,
-                    minWidth: 200,
-                    maxHeight: 58
-                  ),
+                      maxWidth: 280, minWidth: 200, maxHeight: 58),
                   child:
                       Padding(padding: const EdgeInsets.all(3), child: child),
                 ),
