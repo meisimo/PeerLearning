@@ -8,7 +8,7 @@ class MainNavigationBar extends StatefulWidget {
 }
 
 class _MainNavigationBar extends State<MainNavigationBar> {
-  final _routeMap = ['/', '/recomended', '/list_selected', '/login'];
+  final _routeMap = ['/', '/recomended', '/list_selected', '/login', '/chat'];
 
   BottomNavigationBarItem _bottomIcons(IconData icon) =>
       BottomNavigationBarItem(icon: Icon(icon), title: Text(""));
@@ -38,6 +38,7 @@ class _MainNavigationBar extends State<MainNavigationBar> {
           _bottomIcons(Icons.star_border),
           _bottomIcons(Icons.dns),
           _bottomIcons(Icons.account_circle),
+          _bottomIcons(Icons.chat)
         ],
         onTap: _navigate(context));
   }

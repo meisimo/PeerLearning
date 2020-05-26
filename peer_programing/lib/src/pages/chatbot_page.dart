@@ -4,6 +4,7 @@ import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/pages/login_page.dart';
 import 'package:peer_programing/src/pages/user_page.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/widgets/layouts/chatMessages.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 
@@ -69,7 +70,10 @@ class ChatbotState extends State<Chatbot> {
               margin: EdgeInsets.symmetric(horizontal: 4.0),
               child: IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: () => _handleSubmitted(_textController.text)),
+                  color: LightColor.purple,
+                  onPressed: () => _textController.text != ""
+                      ? _handleSubmitted(_textController.text)
+                      : null),
             ),
           ],
         ),
@@ -84,7 +88,6 @@ class ChatbotState extends State<Chatbot> {
     Dialogflow dialogflow =
         Dialogflow(authGoogle: authGoogle, language: Language.spanish);
     AIResponse response = await dialogflow.detectIntent(query);
-    print(response.getMessage());
     ChatMessage message = ChatMessage(
       text: response.getMessage() ??
           CardDialogflow(response.getListMessage()[0]).title,
@@ -116,7 +119,7 @@ class ChatbotState extends State<Chatbot> {
                 new MaterialPageRoute(builder: (context) => new LoginPage())),
           );
         } else {
-           message.extra = GestureDetector(
+          message.extra = GestureDetector(
             child: Text('Pulsa aqui para acceder a tu perfil',
                 style: TextStyle(
                     color: Colors.blue, decoration: TextDecoration.underline)),
@@ -142,7 +145,6 @@ class ChatbotState extends State<Chatbot> {
     setState(() {
       _messages.insert(0, message);
     });
-    print(text);
     response(text);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:peer_programing/src/theme/color/light_color.dart';
 
 class ChatMessage extends StatelessWidget {
   ChatMessage({this.text, this.name, this.type, this.extra});
@@ -12,7 +13,13 @@ class ChatMessage extends StatelessWidget {
     return <Widget>[
       Container(
         margin: const EdgeInsets.only(right: 16.0),
-        child: CircleAvatar(child: Text('B')),
+        child: CircleAvatar(
+          child: Text(
+            'B',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          backgroundColor: Colors.deepOrange,
+        ),
       ),
       Expanded(
         child: Column(
@@ -21,12 +28,14 @@ class ChatMessage extends StatelessWidget {
             Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
               margin: const EdgeInsets.only(top: 5.0),
-              child: Text(text),
+              width: MediaQuery.of(context).size.width - 150,
+              child: Text(text, softWrap: true,),
             ),
             extra != null
                 ? extra
                 : Divider(
                     height: 0,
+                    color: Colors.white,
                   ),
           ],
         ),
@@ -40,10 +49,15 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Text(this.name, style: Theme.of(context).textTheme.subhead),
+            Text(
+              this.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Container(
               margin: const EdgeInsets.only(top: 5.0),
-              child: Text(text),
+              child: Text(text, softWrap: true,),
             ),
           ],
         ),
@@ -51,10 +65,12 @@ class ChatMessage extends StatelessWidget {
       Container(
         margin: const EdgeInsets.only(left: 16.0),
         child: CircleAvatar(
-            child: Text(
-          this.name[0],
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
+          backgroundColor: LightColor.purple,
+          child: Text(
+            this.name[0],
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
       ),
     ];
   }
