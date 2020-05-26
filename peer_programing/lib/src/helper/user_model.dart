@@ -81,8 +81,8 @@ class UserModel{
   static Stream<QuerySnapshot> recomendenMentorsSnapshot() =>
     Firestore.instance.collection(USER_COLLECTION_NAME).orderBy('points', descending:true).snapshots();
 
-  static listFromSnapshot(List<DocumentSnapshot> snapshots) =>
-    snapshots.map((snap) async =>  ( (new UserModel.fromSnapshot(snap)) ) ).toList();
+  static listFromSnapshot(List<DocumentSnapshot> snapshots) => 
+    snapshots.map<UserModel>((snap) =>  ( (new UserModel.fromSnapshot(snap)) ) ).toList();
     
 
   Future<void> addFeedback({String coment, double calification}) {

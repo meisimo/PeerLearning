@@ -11,6 +11,7 @@ class CardLayout extends StatelessWidget{
   final String imgPath;
   final Widget backWidget;
   final Widget cardInfo;
+  final Widget sideInfo;
 
   double width;
   double radius;
@@ -21,6 +22,7 @@ class CardLayout extends StatelessWidget{
     this.primary = Colors.redAccent,
     this.imgPath,
     this.backWidget,
+    this.sideInfo = null,
   }){
     this.width = this.rate*this.height;
     this.radius = max(this.height*this.radiusRate, 20);
@@ -61,6 +63,12 @@ class CardLayout extends StatelessWidget{
                     radius: this.radius,
                   )
                 ),
+                this.sideInfo != null ? 
+                Positioned(
+                  top: 20,
+                  right: 5,
+                  child: this.sideInfo
+                ): Text(''),
                 Positioned(
                   bottom: 15,
                   child: cardInfo,

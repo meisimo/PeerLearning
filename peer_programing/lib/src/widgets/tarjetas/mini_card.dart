@@ -12,6 +12,7 @@ class MiniCard extends StatelessWidget {
   final String imgPath;
   final String chipText1;
   final String chipText2;
+  final String chipText3;
   final Widget backWidget;
   final Color chipColor;
   final UserModel tutor;
@@ -23,10 +24,12 @@ class MiniCard extends StatelessWidget {
       this.imgPath,
       this.chipText1 = '',
       this.chipText2 = '',
+      this.chipText3 = '',
       this.backWidget,
       this.chipColor = LightColor.orange,
       this.tutor,
-      this.isPrimaryCard = false});
+      this.isPrimaryCard = false
+  });
 
   Widget _cardInfo(String title, String courses, Color textColor, Color primary,
       {bool isPrimaryCard = false}) {
@@ -42,8 +45,7 @@ class MiniCard extends StatelessWidget {
             margin: EdgeInsets.only(left: 10),
             width: width * .36,
             alignment: Alignment.topCenter,
-            child: Text(
-              truncateText(title, 15),
+            child: Text( truncateText(title, 15),
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -84,6 +86,7 @@ class MiniCard extends StatelessWidget {
             chipText1, chipText2, LightColor.titleTextColor, chipColor,
             isPrimaryCard: isPrimaryCard
         ),
+        sideInfo: TagChip( chipText3, Colors.blueGrey, height: 7, isPrimaryCard: true,),
       ),
       onTap: (() => Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: this.tutor)))),
     );
