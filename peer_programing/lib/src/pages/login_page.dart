@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/utils/connection.dart';
-
+import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/dummy/users.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
@@ -16,7 +16,7 @@ import '../../routes.dart';
 class LoginPage extends StatefulWidget {
   final bool _betweenAction;
 
-  LoginPage({bool betweenAction=false}):_betweenAction=betweenAction;
+  LoginPage({bool betweenAction = false}) : _betweenAction = betweenAction;
 
   @override
   _LoginPage createState() => _LoginPage(betweenAction: _betweenAction);
@@ -34,11 +34,11 @@ class _LoginPage extends State<LoginPage> {
 
   BasicAuth auth = Routes.auth;
 
-  _LoginPage({bool betweenAction}):
-    _title = 'Login',
-    _signUpMode = false,
-    _betweenAction = betweenAction,
-    super();
+  _LoginPage({bool betweenAction})
+      : _title = 'Login',
+        _signUpMode = false,
+        _betweenAction = betweenAction,
+        super();
 
   void _getOut() {
     if (_betweenAction)
@@ -54,6 +54,7 @@ class _LoginPage extends State<LoginPage> {
     auth
       .signIn(email, pass)
       .then((loginResult){
+        _singInError = null;
         _getOut();
         _LoginForm(this._loginFormKey).clearSignInFields();
       })
@@ -65,6 +66,7 @@ class _LoginPage extends State<LoginPage> {
             _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
           }
           _loginFormKey.currentState.validate();
+          _singInError = null;
         });
   }
 
@@ -73,9 +75,10 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
+    String imgPath = generateRandomGravatarUrl();
     List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
     auth
-      .signUp(name, email, pass, categories)
+      .signUp(name, email, pass, categories, imgPath)
       .then((signUpResult){
         _getOut();
         _SignupForm(this._signUpKey).clearSignUpFields();
@@ -88,6 +91,7 @@ class _LoginPage extends State<LoginPage> {
         else 
           _singUpError = "Error inesperado en el registro";
         _signUpKey.currentState.validate();
+        _singUpError = null;
       });
   }
 
@@ -109,21 +113,21 @@ class _LoginPage extends State<LoginPage> {
         onPressed: () => _handleConnectivity(onSuccess: () {
           if (_loginFormKey.currentState.validate()) {
             _sendLogin();
-        }}, onError: () {
-             _showNotConnectedDialog(context);
+          }
+        }, onError: () {
+          _showNotConnectedDialog(context);
         }),
       );
 
   Widget _signupButton() => _submitFormButton(
-        text: 'Registrate',
-        onPressed: () => _handleConnectivity(onSuccess: () {
-          if (_signUpKey.currentState.validate()) {
-            _sendSignUp();
-          }
-        },onError: () {
+      text: 'Registrate',
+      onPressed: () => _handleConnectivity(onSuccess: () {
+            if (_signUpKey.currentState.validate()) {
+              _sendSignUp();
+            }
+          }, onError: () {
             _showNotConnectedDialog(context);
-        }
-      ));
+          }));
 
   Widget _toggleButton({String text, VoidCallback onPressed}) => Container(
         width: 150,
@@ -140,72 +144,66 @@ class _LoginPage extends State<LoginPage> {
 
   Widget _showSignUpButton() => _toggleButton(
       text: "Registrate",
-      onPressed: ()  => _handleConnectivity(onSuccess: () {
-        setState(() {
-          this._title = "Registro";
-          this._signUpMode = true;
-      });
-      },onError: () {
-      //  Navigator.of(context).pop();
-      _showNotConnectedDialog(context);
-      }));
-    
+      onPressed: () => _handleConnectivity(onSuccess: () {
+            setState(() {
+              this._title = "Registro";
+              this._signUpMode = true;
+            });
+          }, onError: () {
+            //  Navigator.of(context).pop();
+            _showNotConnectedDialog(context);
+          }));
 
   Widget _showLoginButton() => _toggleButton(
       text: "Cancelar",
       onPressed: () => _handleConnectivity(onSuccess: () {
-        setState(() {
-          this._title = "Login";
-          this._signUpMode = false;
-        });
-      },onError: (){
-          _showNotConnectedDialog(context);
-      }));
+            setState(() {
+              this._title = "Login";
+              this._signUpMode = false;
+            });
+          }, onError: () {
+            _showNotConnectedDialog(context);
+          }));
 
   Widget _formLayout({Widget form, Widget submitButton, Widget toggleButton}) =>
       Container(
           child: Center(
               child: Container(
-                  width: 600,
-                  child: Column(
-                    children: <Widget>[form, submitButton, toggleButton],
+                  child:
+                  Column(
+                    children: <Widget>[ form, submitButton, toggleButton],
                   ))));
 
   // @override
   // Widget build(BuildContext context) => MainLayout(
-      
-      
-  //     );
 
+  //     );
 
   Widget _showPage() {
     return MainLayout(
-     title: _title,
+      title: _title,
       body: Container(
         child: Center(
           child: _formLayout(
               form: this._signUpMode
                   ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
-                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError,),
+                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
-          ),
         ),
+      ),
       withBottomNavBar: !this._betweenAction,
     );
   }
 
-
-
-        void _handleConnectivity({Function onSuccess, Function onError}) =>
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
       handleConnectivity(
           onSuccess: onSuccess,
           onError: onError,
           onResponse: () => this._checkConnection = false);
 
-
-      void _showNotConnectedDialog(context) => showDialog(
+  void _showNotConnectedDialog(context) => showDialog(
       context: context,
       child: NotConnectedCard(tryToReconnect: () {
         Navigator.of(context).pop();
@@ -214,7 +212,7 @@ class _LoginPage extends State<LoginPage> {
         });
       }));
 
-   Widget _showNotConnectedPage() {
+  Widget _showNotConnectedPage() {
     return MainLayout(
       title: _title,
       body: Padding(
@@ -230,15 +228,14 @@ class _LoginPage extends State<LoginPage> {
     );
   }
 
-    void _initCheckConnection(context) => _handleConnectivity(
+  void _initCheckConnection(context) => _handleConnectivity(
       onError: () {
         _showNotConnectedDialog(context);
         setState(() => this._connected = false);
       },
       onSuccess: () => setState(() => this._connected = true));
 
-
-    @override
+  @override
   Widget build(BuildContext context) {
     if (_checkConnection) {
       _initCheckConnection(context);
@@ -250,7 +247,6 @@ class _LoginPage extends State<LoginPage> {
       return _showNotConnectedPage();
     }
   }
-
 }
 
 class LoginForm extends StatefulWidget {
@@ -259,7 +255,8 @@ class LoginForm extends StatefulWidget {
   final Function showError;
   LoginForm(this._formKey, {this.showError});
   @override
-  _LoginForm createState() => _signInDataWrapper[0] = new _LoginForm(_formKey, showError: showError);
+  _LoginForm createState() =>
+      _signInDataWrapper[0] = new _LoginForm(_formKey, showError: showError);
 }
 
 TextEditingController _emailSignInField = TextEditingController();
@@ -273,6 +270,7 @@ class _LoginForm extends State<LoginForm> {
     _emailSignInField.clear();
     _passwordSignInField.clear();
   }
+
   final _formKey;
 
   _LoginForm(this._formKey, {Function this.showError}) : super();
@@ -345,9 +343,7 @@ class _LoginForm extends State<LoginForm> {
           children: [_loginIcon()]..addAll(_loginInputs()),
         ),
       ));
-
 }
-
 
 TextEditingController _emailSignUpField = TextEditingController();
 TextEditingController _passwordSignUpField = TextEditingController();
@@ -358,20 +354,20 @@ class SignupForm extends StatefulWidget {
   final _signUpDataWrapper = <_SignupForm>[null];
   final Function showError;
 
-  SignupForm(this._formKey,{this.showError}) : super();
+  SignupForm(this._formKey, {this.showError}) : super();
 
   @override
-  _SignupForm createState() =>
-      _signUpDataWrapper[0] = new _SignupForm(this._formKey, showError: showError);
+  _SignupForm createState() => _signUpDataWrapper[0] =
+      new _SignupForm(this._formKey, showError: showError);
 
   getTematicas() => _signUpDataWrapper[0].getTematicas();
-  
 }
 
 class _SignupForm extends State<SignupForm> {
   Function showError;
   final _formKey;
-  final SelectorTematicas _selectorTematicas = new SelectorTematicas(title: "Temática de interes");
+  final SelectorTematicas _selectorTematicas =
+      new SelectorTematicas(title: "Temática de interes");
 
   getTematicas() => _selectorTematicas.selectedCategories;
   getEmailField() => _emailSignUpField.text;
@@ -451,9 +447,7 @@ class _SignupForm extends State<SignupForm> {
   Widget build(BuildContext context) => Form(
       key: _formKey,
       child: Container(
-        height: 490,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: _signupInputs(),
         ),
       ));
@@ -508,28 +502,37 @@ class InputLogin extends StatelessWidget {
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.only(topRight: Radius.circular(10)));
+      borderRadius: BorderRadius.horizontal(right: Radius.circular(10)));
 
   Widget _inputLayout({child}) => Container(
-        width: 240,
+        width: 290,
         child: Material(
-            elevation: 10,
+            elevation: 3,
             borderRadius: BorderRadius.all(Radius.circular(10)),
             color: Colors.deepOrange,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                fieldIcon,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 3),
+                  child: fieldIcon,
+                ),
                 Container(
                   decoration: _inputContainerDecoration(),
-                  width: 200,
+                  width: 260,
                   child:
-                      Padding(padding: const EdgeInsets.all(8), child: child),
+                      Padding(padding: const EdgeInsets.all(2), child: child),
                 ),
               ],
             )),
       );
 
   @override
-  Widget build(BuildContext context) => _inputLayout(child: _input());
+  Widget build(BuildContext context) => 
+  Padding(
+    padding: EdgeInsets.symmetric(vertical: 5),
+    child: _inputLayout(child: _input())
+  )
+    
+  ;
 }
