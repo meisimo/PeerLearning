@@ -4,8 +4,10 @@ import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/widgets/dropdown.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 class CreateForm extends StatefulWidget {
   final bool editMode;
@@ -37,6 +39,7 @@ class _CreateForm extends State<CreateForm>
   List<MentoringCategory> _selectedCategories = [];
   String _name, _description, _lugar, _precio;
   int _tarifa;
+  bool _checkConnection = true, _connected = false;
 
   _CreateForm({this.editMode = false, this.mentoringToEdit, this.afterSave}):super(){
     if (this.editMode){
@@ -188,7 +191,6 @@ class _CreateForm extends State<CreateForm>
       }
     };
 
-
   Widget _learn(Form form) {
     return Padding(padding: EdgeInsets.symmetric(horizontal: 40), child: form);
   }
@@ -204,13 +206,12 @@ class _CreateForm extends State<CreateForm>
                 this._categoriesMap[category.reference.path] = category);
           }));
 
-  @override
-  Widget build(BuildContext context) => StreamBuilder(
+  Widget _showPage() => StreamBuilder(
         stream: MentoringType.snapshot(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+          if (snapshot.hasError) return _showNotConnectedPage();
           if (snapshot.connectionState == ConnectionState.waiting)
-            return Loading();
+            return _showLoadingPage();
 
           if (this._mentoringTypes == null || this._mentoringTypes.isEmpty)
             _setMentoringTypes(snapshot);
@@ -236,10 +237,78 @@ class _CreateForm extends State<CreateForm>
             ),
             floatingActionButton: FloatingActionButton(
               heroTag: 'save-mentoring-btn',
-              onPressed: this.editMode ?  _editMentoring(context): _createMentoring(context),
+              onPressed: () =>_handleConnectivity(
+                onSuccess: this.editMode ?  _editMentoring(context): _createMentoring(context),
+                onError: () {_showNotConnectedDialog(context); setState(() => this._connected = false);}
+              ),
               child: Icon(Icons.save),
             ),
           );
         },
       );
+  
+  
+  Widget _showNotConnectedPage() =>
+    Scaffold(
+            appBar: AppBar(
+            title: Text('Crear publicación'),
+            ),
+            body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+
+  Widget _showLoadingPage() =>
+    Scaffold(
+            appBar: AppBar(
+            title: Text('Crear publicación'),
+            ),
+            body: Padding(
+        padding: EdgeInsets.all(100),
+        child: Loading(),
+      ),
+    );
+
+
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
+  void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+  void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
+
+  @override
+  Widget build(BuildContext context){
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
+  }
+
 }

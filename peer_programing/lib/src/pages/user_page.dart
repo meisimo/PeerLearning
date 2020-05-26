@@ -320,7 +320,8 @@ class UserPageState extends State<StatefulWidget> {
       body: Container(
           child: _loading
               ? Loading()
-              : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
+              : _editMode ? _formEdicionUsuario() : 
+              _paginaUsuario()),
       floatingActionButton: _editMode ? _saveButton() : _editButton(),
     );
   }

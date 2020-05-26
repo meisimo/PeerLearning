@@ -259,6 +259,7 @@ class _HomePage extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
     _loading = true;
     _pageController = PageController(initialPage: 0);
     _pageController.addListener(() {
