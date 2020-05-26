@@ -25,7 +25,7 @@ class UserPage extends StatefulWidget {
 class UserPageState extends State<StatefulWidget> {
   final int COMENT_MAX_LENGTH = 50;
   final _keyForm = GlobalKey<FormState>();
-  bool _checkConnection=true;
+  bool _checkConnection = true;
   bool _connected = false;
 
   SelectorTematicas _selectorTematicas;
@@ -34,10 +34,9 @@ class UserPageState extends State<StatefulWidget> {
   bool _editMode = false;
   TextEditingController _nameField = TextEditingController();
 
-  
   @override
   void initState() {
-    super.initState();  
+    super.initState();
     UserModel.getCurrentUser()
         .then((usuario) => usuario.populate().then((usuario) {
               _selectorTematicas = new SelectorTematicas(
@@ -275,12 +274,13 @@ class UserPageState extends State<StatefulWidget> {
   Widget _saveButton() => Stack(
         children: <Widget>[
           Align(
-            alignment: Alignment.lerp(Alignment.bottomRight, Alignment.centerRight, 0.17),
+            alignment: Alignment.lerp(
+                Alignment.bottomRight, Alignment.centerRight, 0.17),
             child: FloatingActionButton(
               heroTag: 'cancel-edit-user-btn',
-              onPressed: ()=> _handleConnectivity(onSuccess: (){
-              setState(() => _editMode = false);
-              },onError: (){
+              onPressed: () => _handleConnectivity(onSuccess: () {
+                setState(() => _editMode = false);
+              }, onError: () {
                 _showNotConnectedDialog(context);
               }),
               child: Icon(Icons.cancel),
@@ -292,9 +292,9 @@ class UserPageState extends State<StatefulWidget> {
             child: FloatingActionButton(
               heroTag: 'save-edit-user-btn',
               backgroundColor: LightColor.purple,
-              onPressed: ()=> _handleConnectivity(onSuccess: (){
+              onPressed: () => _handleConnectivity(onSuccess: () {
                 _saveChanges();
-              }, onError: (){
+              }, onError: () {
                 _showNotConnectedDialog(context);
               }),
               child: Icon(Icons.save),
@@ -303,14 +303,15 @@ class UserPageState extends State<StatefulWidget> {
         ],
       );
 
-
   Widget _editButton() => Stack(
         children: <Widget>[
           Align(
-            alignment: Alignment.lerp(Alignment.bottomRight, Alignment.centerRight, 0.17),
+            alignment: Alignment.lerp(
+                Alignment.bottomRight, Alignment.centerRight, 0.17),
             child: FloatingActionButton(
               heroTag: 'user-mentorings-btn',
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => new OwnMentorings())),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => new OwnMentorings())),
               child: Icon(Icons.dns),
               backgroundColor: LightColor.purple,
             ),
@@ -319,12 +320,11 @@ class UserPageState extends State<StatefulWidget> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               heroTag: 'edit-user-btn',
-              onPressed:() => _handleConnectivity(
-                onSuccess: (){
-          setState(() => _editMode = true);
-        },onError: (){
-          _showNotConnectedDialog(context);
-        }),
+              onPressed: () => _handleConnectivity(onSuccess: () {
+                setState(() => _editMode = true);
+              }, onError: () {
+                _showNotConnectedDialog(context);
+              }),
               child: Icon(Icons.edit),
               backgroundColor: LightColor.orange,
             ),
@@ -343,21 +343,18 @@ class UserPageState extends State<StatefulWidget> {
   //   );
   // }
 
-    Widget _showPage() {
+  Widget _showPage() {
     return MainLayout(
-    title: 'Perfil',
+      title: 'Perfil',
       body: Container(
           child: _loading
               ? Loading()
-              : _editMode ? _formEdicionUsuario() : 
-              _paginaUsuario()),
+              : _editMode ? _formEdicionUsuario() : _paginaUsuario()),
       floatingActionButton: _editMode ? _saveButton() : _editButton(),
     );
   }
 
-
-
-    Widget _showNotConnectedPage() {
+  Widget _showNotConnectedPage() {
     return MainLayout(
       title: "Perfil",
       body: Padding(
@@ -373,22 +370,20 @@ class UserPageState extends State<StatefulWidget> {
     );
   }
 
-    void _initCheckConnection(context) => _handleConnectivity(
+  void _initCheckConnection(context) => _handleConnectivity(
       onError: () {
         _showNotConnectedDialog(context);
         setState(() => this._connected = false);
       },
       onSuccess: () => setState(() => this._connected = true));
 
-
-    void _handleConnectivity({Function onSuccess, Function onError}) =>
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
       handleConnectivity(
           onSuccess: onSuccess,
           onError: onError,
           onResponse: () => this._checkConnection = false);
 
-
-      void _showNotConnectedDialog(context) => showDialog(
+  void _showNotConnectedDialog(context) => showDialog(
       context: context,
       child: NotConnectedCard(tryToReconnect: () {
         Navigator.of(context).pop();
@@ -397,7 +392,7 @@ class UserPageState extends State<StatefulWidget> {
         });
       }));
 
-        @override
+  @override
   Widget build(BuildContext context) {
     if (_checkConnection) {
       _initCheckConnection(context);

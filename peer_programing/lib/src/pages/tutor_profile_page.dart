@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 const int NAME_MAX_LENGTH = 200;
 
@@ -23,6 +25,7 @@ class TutorProfileState extends State<StatefulWidget> {
   final UserModel tutor;
   bool _loading;
   TutorProfileState({this.tutor});
+  bool _checkConnection = true, _connected = false;
 
   Widget _paginaUsuario() => Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -79,13 +82,50 @@ class TutorProfileState extends State<StatefulWidget> {
     this.tutor.populate().then((_) => setState(() => _loading = false));
   }
 
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
+  void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+  void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
   @override
   Widget build(BuildContext context) {
+    Widget body;
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+    if (this._connected) {
+       body = _paginaUsuario();
+    } else {
+      body = Text(
+          "No hay internet :(",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        );
+    }
+
     return MainLayout(
         title: 'Perfil del Tutor',
         withBottomNavBar: false,
         body: Container(
-          child: _loading ? Loading(): _paginaUsuario()
+          child: _loading ? Loading(): body
         )
       );
   }
@@ -108,55 +148,12 @@ class ImagenPerfil extends StatelessWidget {
           width: 110.0,
           height: 110.0,
           child: Image.network(
-            _user.imgPath != null && _user.imgPath.isNotEmpty
-                ? _user.imgPath
-                : "http://icons.iconarchive.com/icons/papirus-team/papirus-status/128/avatar-default-icon.png",
+            "https://www.gravatar.com/avatar/4eec3eb6ccf144cde9adf5f01f0524d1?s=128&d=identicon&r=PG",
             fit: BoxFit.fill,
           ),
         ),
       ),
     ));
-  }
-}
-
-class nombrePuntuacion extends StatelessWidget {
-  String nombre;
-
-  nombrePuntuacion(nombre) {
-    this.nombre = nombre;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.centerRight,
-        child: Text(nombre,
-            style: TextStyle(color: Colors.blueGrey, fontSize: 12.0)));
-  }
-}
-
-class estrellaPuntuacion extends StatelessWidget {
-  String estrellaP;
-
-  estrellaPuntuacion(estrellaP) {
-    this.estrellaP = estrellaP;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-        //numero Estrella
-        children: <Widget>[
-          Container(
-              child: Align(
-            alignment: Alignment.center,
-            child: Text(estrellaP),
-          )),
-
-          //Estrella
-          Container(
-              child: const Align(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.stars, color: Color(0xfffbbd5c))))
-        ]);
   }
 }
 

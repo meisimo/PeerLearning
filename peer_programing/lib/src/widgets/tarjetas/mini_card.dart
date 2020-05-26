@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/tutor_profile_page.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
-import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/utils/dev.dart';
+import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/layouts/card_layout.dart';
-import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
-class MiniCard extends StatefulWidget {
+class MiniCard extends StatelessWidget {
   final bool isPrimaryCard;
   final Color primary;
   final String imgPath;
@@ -17,6 +16,8 @@ class MiniCard extends StatefulWidget {
   final Widget backWidget;
   final Color chipColor;
   final UserModel tutor;
+
+  double width;
 
   MiniCard(
       {this.primary = Colors.redAccent,
@@ -30,14 +31,6 @@ class MiniCard extends StatefulWidget {
       this.isPrimaryCard = false
   });
 
-  @override
-  MiniCardState createState() => MiniCardState();
-}
-
-class MiniCardState extends State<MiniCard> {
-  double width;
-  double lol;
-  bool _checkConnection = true;
   Widget _cardInfo(String title, String courses, Color textColor, Color primary,
       {bool isPrimaryCard = false}) {
     return Column(
@@ -85,36 +78,17 @@ class MiniCardState extends State<MiniCard> {
     width = MediaQuery.of(context).size.width;
     return GestureDetector(
       child: CardLayout(
-        height: widget.isPrimaryCard ? 190 : 180,
-        imgPath: this.widget.imgPath,
-        primary: this.widget.primary,
-        backWidget: this.widget.backWidget,
+        height: isPrimaryCard ? 190 : 180,
+        imgPath: this.imgPath,
+        primary: this.primary,
+        backWidget: this.backWidget,
         cardInfo: _cardInfo(
-            widget.chipText1, widget.chipText2, LightColor.titleTextColor, widget.chipColor,
-            isPrimaryCard: widget.isPrimaryCard
+            chipText1, chipText2, LightColor.titleTextColor, chipColor,
+            isPrimaryCard: isPrimaryCard
         ),
         sideInfo: TagChip( chipText3, Colors.blueGrey, height: 7, isPrimaryCard: true,),
       ),
-      onTap: ()=> _handleConnectivity(onSuccess: (){
-        Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: this.widget.tutor))); 
-      },onError: (){
-          _showNotConnectedDialog(context);
-      })
+      onTap: (() => Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: this.tutor)))),
     );
   }
-
-    void _showNotConnectedDialog(context) => showDialog(
-      context: context,
-      child: NotConnectedCard(tryToReconnect: () {
-        Navigator.of(context).pop();
-        setState(() {
-          this._checkConnection = true;
-        });
-      }));
-
-  void _handleConnectivity({Function onSuccess, Function onError}) =>
-      handleConnectivity(
-          onSuccess: onSuccess,
-          onError: onError,
-          onResponse: () => this._checkConnection = false);
 }
