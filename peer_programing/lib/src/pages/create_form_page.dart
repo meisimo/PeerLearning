@@ -247,7 +247,6 @@ class _CreateForm extends State<CreateForm>
         },
       );
   
-  
   Widget _showNotConnectedPage() =>
     Scaffold(
             appBar: AppBar(
@@ -275,7 +274,6 @@ class _CreateForm extends State<CreateForm>
       ),
     );
 
-
   void _handleConnectivity({Function onSuccess, Function onError}) =>
       handleConnectivity(
           onSuccess: onSuccess,
@@ -297,7 +295,6 @@ class _CreateForm extends State<CreateForm>
         setState(() => this._connected = false);
       },
       onSuccess: () => setState(() => this._connected = true));
-
 
   @override
   Widget build(BuildContext context){

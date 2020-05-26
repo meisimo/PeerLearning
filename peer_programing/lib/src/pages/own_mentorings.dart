@@ -4,9 +4,11 @@ import 'package:peer_programing/src/helper/user_model.dart';
 import 'package:peer_programing/src/pages/create_form_page.dart';
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
+import 'package:peer_programing/src/utils/connection.dart';
 import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
+import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
 
 class OwnMentorings extends StatefulWidget {
   @override
@@ -18,6 +20,7 @@ class _SelectedMentorings extends State<OwnMentorings> {
   bool _loading = true, _logged = false;
   UserModel _user;
   MentoringListView _mentoringListView;
+  bool _checkConnection = true, _connected = false;
 
   _SelectedMentorings();
 
@@ -47,9 +50,15 @@ class _SelectedMentorings extends State<OwnMentorings> {
       );
 
   Widget _cancelMentoring(Mentoring mentoring) => new RaisedButton(
-      child: Text('Cancelar'),
-      color: Colors.red,
-      onPressed: _disableMentoring(mentoring, context));
+        child: Text('Cancelar'),
+        color: Colors.red,
+        onPressed: () => _handleConnectivity(
+            onSuccess: () => _disableMentoring(mentoring, context),
+            onError: () {
+              Navigator.of(context).pop();
+              _showNotConnectedDialog(context);
+            }),
+      );
 
   Widget _editMentoring(Mentoring mentoring) => new RaisedButton(
       child: Text('Editar'),
@@ -82,7 +91,7 @@ class _SelectedMentorings extends State<OwnMentorings> {
         });
       };
 
-  void _afterEdit(){
+  void _afterEdit() {
     Navigator.of(context).pop();
     _refreshMentorings();
   }
@@ -99,21 +108,68 @@ class _SelectedMentorings extends State<OwnMentorings> {
 
   Widget _showMentorings() => this._mentoringListView;
 
+  void _handleConnectivity({Function onSuccess, Function onError}) =>
+      handleConnectivity(
+          onSuccess: onSuccess,
+          onError: onError,
+          onResponse: () => this._checkConnection = false);
+
   void _refreshMentorings() => Mentoring.filterByCreatedBy(_user)
       .then((List<Mentoring> mentorings) =>
           setState(() => this._mentoringListView.refreshList(mentorings)))
       .catchError((error) => print(error));
 
+  void _showNotConnectedDialog(context) => showDialog(
+      context: context,
+      child: NotConnectedCard(tryToReconnect: () {
+        Navigator.of(context).pop();
+        setState(() {
+          this._checkConnection = true;
+        });
+      }));
+
+  Widget _showNotConnectedPage() => MainLayout(
+        title: "Tus ofertas activas",
+        body: Padding(
+          padding: EdgeInsets.all(100),
+          child: Text(
+            "No hay internet :(",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+        ),
+        defaultVerticalScroll: false,
+        withBottomNavBar: false,
+        goBack: true,
+      );
+
+  Widget _showPage() => MainLayout(
+        title: "Tus ofertas activas",
+        body: this._loading
+            ? _showLoading()
+            : _logged ? _showMentorings() : _notLoggedMessage(),
+        defaultVerticalScroll: false,
+        withBottomNavBar: false,
+        goBack: true,
+      );
+
+  void _initCheckConnection(context) => _handleConnectivity(
+      onError: () {
+        _showNotConnectedDialog(context);
+        setState(() => this._connected = false);
+      },
+      onSuccess: () => setState(() => this._connected = true));
+
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: "Tus ofertas activas",
-      body: this._loading
-          ? _showLoading()
-          : _logged ? _showMentorings() : _notLoggedMessage(),
-      defaultVerticalScroll: false,
-      withBottomNavBar: false,
-      goBack: true,
-    );
+    if (_checkConnection) {
+      _initCheckConnection(context);
+    }
+    if (this._connected) {
+      return _showPage();
+    } else {
+      return _showNotConnectedPage();
+    }
   }
 }

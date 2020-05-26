@@ -126,7 +126,8 @@ class TutorProfileState extends State<StatefulWidget> {
         withBottomNavBar: false,
         body: Container(
           child: _loading ? Loading(): body
-        )
+        ),
+        goBack: true,
       );
   }
 }

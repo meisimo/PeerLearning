@@ -82,7 +82,6 @@ class _RecomendedMentorByCategoryList
             crossAxisAlignment: CrossAxisAlignment.end,
             children: _recomendedUsers.map<Widget>((user) {
               final int nCalificaciones = user.califications == null ? 0 : user.califications.length;
-              print(user.imgPath);
               return nCalificaciones != 0
                   ? MiniCard(
                       tutor: user,
