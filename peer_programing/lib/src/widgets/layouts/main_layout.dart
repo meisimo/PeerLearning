@@ -12,13 +12,15 @@ class MainLayout extends StatelessWidget {
   final Widget headerChild;
   final bool defaultVerticalScroll;
   final bool withBottomNavBar;
+  final bool goBack;
 
   MainLayout({this.body,
       this.title,
       this.headerChild,
       this.defaultVerticalScroll = true,
       this.floatingActionButton,
-      this.withBottomNavBar = true
+      this.withBottomNavBar = true,
+      this.goBack = false
   });
 
   BottomNavigationBarItem _bottomIcons(IconData icon) =>
@@ -31,6 +33,7 @@ class MainLayout extends StatelessWidget {
               title: this.title,
               child: this.headerChild,
               height: (this.headerChild == null ? 120 : 150),
+              goBack: this.goBack,
             ),
             SizedBox(height: 20),
             flex

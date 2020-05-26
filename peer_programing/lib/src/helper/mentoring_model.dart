@@ -10,23 +10,23 @@ import 'package:peer_programing/src/utils/dev.dart';
 const MENTORING_COLLECTION_NAME = "mentoring";
 
 class Mentoring{
-  //TODO: load the categories to store it in cache
   final id = 0;
-  final String name;
-  final String description;
+  final DocumentReference reference;
+  String name;
+  String description;
   double points;
-  final List<dynamic> categoriesReference;
+  List<dynamic> categoriesReference;
   List<MentoringCategory> categories;
-  final DocumentReference mentoringTypeReference;
+  DocumentReference mentoringTypeReference;
   MentoringType mentoringType;
-  final DocumentReference userReference;
+  DocumentReference userReference;
   UserModel user;
   DocumentReference selectedByReference;
   UserModel selectedBy;
   String lugar;
   int precio;
   bool closed;
-  final DocumentReference reference;
+  
 
   Mentoring({
     this.name,
@@ -58,6 +58,7 @@ class Mentoring{
       categoriesReference = map['categories'].map( (cat) => cast<DocumentReference>(cat)).toList(),
       mentoringTypeReference = map['mentoringType'],
       userReference = map['user'],
+      selectedByReference = map['selectedBy'],
       precio = map['precio'],
       lugar = map['lugar'];
 
@@ -77,6 +78,9 @@ class Mentoring{
   static Future<QuerySnapshot> whereOfSelectedBy(UserModel user, {bool closed=false}) async => 
     await collection().where('selectedBy', isEqualTo: user.reference).where('closed',isEqualTo: closed).getDocuments();
 
+  static Future<QuerySnapshot> whereOfCreatedBy(UserModel user, {bool closed=false}) async => 
+    await collection().where('user', isEqualTo: user.reference).where('closed', isEqualTo: closed).getDocuments();
+
   static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
     await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
 
@@ -95,6 +99,10 @@ class Mentoring{
 
   static Future<List<Mentoring>> filterBySelectedBy(UserModel user) async =>
     await Future.wait( listFromSnapshot((await whereOfSelectedBy(user)).documents));
+
+  static Future<List<Mentoring>> filterByCreatedBy(UserModel user) async =>
+    await Future.wait( listFromSnapshot((await whereOfCreatedBy(user)).documents));
+
 
   Future<Mentoring> populate() async{
     this.mentoringType = MentoringType.fromSnapshot(await mentoringTypeReference.get());
@@ -117,6 +125,20 @@ class Mentoring{
 
   Future<void> unselect() async => 
     await this.reference.updateData({'selectedBy': null});
+
+  Future<void> disable() async => 
+    await this.reference.updateData({'closed': true});
+
+  Future<void> update() async{
+    await this.reference.updateData({
+      'name':this.name,
+      'description':this.description,
+      'precio':this.precio,
+      'lugar':this.lugar,
+      'mentoringType':this.mentoringTypeReference,
+      'categories':this.categoriesReference,
+    });
+  }
 
   Future<void> sendFeedBack({double calification, String comments}) async {
     return await Future.wait(<Future>[
@@ -142,114 +164,4 @@ class Mentoring{
   String toString() =>
     "\n{\n\t'name': '$name', \n\t'description': '$description', \n\t'points': '$points', \n\t'categories': '$categories', \n\t'mentoringType': '$mentoringType', \n\t'user': $user, \n\t'precio': $precio, \n\t'lugar': $lugar \n}";
 
-}
-class MentoringList {
-  static Random rnd = Random();
-/*   static List<Mentoring> all() => [
-        Mentoring(
-          id: 1,
-          name: "Data Science",
-          description:
-              "Launch your career in data science. A sweet-cource introduction to data science, develop and taught by leading professors.",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 2,
-          name: "Data Science",
-          description:
-              "Launch your career in data science. A sweet-cource introduction to data science, develop and taught by leading professors.",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 3,
-          name: "Machine Learning",
-          description:
-              "Drive better bussiness decision with an overview OF how big data is organised  and intepreted. Apply insight to real-world problems and question",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 4,
-          name: "Big Data",
-          description:
-              "Drive better bussiness decision with an overview OF how big data is organised  and intepreted. Apply insight to real-world problems and question",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 5,
-          name: "Data Science",
-          description:
-              "Launch your career in data science. A sweet-cource introduction to data science, develop and taught by leading professors.",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 6,
-          name: "Machine Learning",
-          description:
-              "Launch your career in data science. A sweet-cource introduction to data science, develop and taught by leading professors.",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 7,
-          name: "Big Data",
-          description:
-              "Drive better bussiness decision with an overview OF how big data is organised  and intepreted. Apply insight to real-world problems and question",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 8,
-          name: "Data Science",
-          description:
-              "Launch your career in data science. A sweet-cource introduction to data science, develop and taught by leading professors.",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 9,
-          name: "Machine Learning",
-          description:
-              "Drive better bussiness decision with an overview OF how big data is organised  and intepreted. Apply insight to real-world problems and question",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-        Mentoring(
-          id: 10,
-          name: "Big Data",
-          description:
-              "Drive better bussiness decision with an overview OF how big data is organised  and intepreted. Apply insight to real-world problems and question",
-          points: rnd.nextInt(10) * 0.5,
-          categories: MentoringCategoryList.randGenerate(rnd.nextInt(4) + 1),
-          mentoringType: MentoringTypeList.randGenerate(),
-          user: UserModelList.randGenerate(),
-        ),
-      ];
- */
-  static List<Mentoring> all() => [];
-
-  static Mentoring getById({int id}) =>
-      MentoringList.all().where((Mentoring m) => m.id == id).toList()[0];
 }

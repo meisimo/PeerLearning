@@ -13,6 +13,7 @@ class MiniCard extends StatefulWidget {
   final String imgPath;
   final String chipText1;
   final String chipText2;
+  final String chipText3;
   final Widget backWidget;
   final Color chipColor;
   final UserModel tutor;
@@ -22,10 +23,12 @@ class MiniCard extends StatefulWidget {
       this.imgPath,
       this.chipText1 = '',
       this.chipText2 = '',
+      this.chipText3 = '',
       this.backWidget,
       this.chipColor = LightColor.orange,
       this.tutor,
-      this.isPrimaryCard = false});
+      this.isPrimaryCard = false
+  });
 
   @override
   MiniCardState createState() => MiniCardState();
@@ -49,8 +52,7 @@ class MiniCardState extends State<MiniCard> {
             margin: EdgeInsets.only(left: 10),
             width: width * .36,
             alignment: Alignment.topCenter,
-            child: Text(
-              truncateText(title, 15),
+            child: Text( truncateText(title, 15),
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -91,6 +93,7 @@ class MiniCardState extends State<MiniCard> {
             widget.chipText1, widget.chipText2, LightColor.titleTextColor, widget.chipColor,
             isPrimaryCard: widget.isPrimaryCard
         ),
+        sideInfo: TagChip( chipText3, Colors.blueGrey, height: 7, isPrimaryCard: true,),
       ),
       onTap: ()=> _handleConnectivity(onSuccess: (){
         Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: this.widget.tutor))); 

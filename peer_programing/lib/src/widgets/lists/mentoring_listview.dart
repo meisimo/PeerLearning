@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
+import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/theme/decorator_containers/decorator.dart';
 import 'package:peer_programing/src/theme/theme.dart';
+import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/tarjetas/micro_card.dart';
@@ -46,15 +48,15 @@ class MentoringListView extends StatefulWidget {
       {String title, List<MentoringCategory> categories, bool build = false}) {
     _filters['title'] = title;
     _filters['categories'] = categories;
-    if (_entoringListViewWrapper[0]!=null)
+    if (_entoringListViewWrapper[0] != null)
       _entoringListViewWrapper[0]
-        .filter(title: title, categories: categories, build: build);
+          .filter(title: title, categories: categories, build: build);
   }
 }
 
 class _MentoringListView extends State<MentoringListView> {
   static final int DESCRIPTION_MAX_LENGTH = 90;
-  static final int TITLE_MAX_LENGTH = 30;
+  static final int TITLE_MAX_LENGTH = 25;
   final Function onResumeTap;
   final Stream<QuerySnapshot> mentoringSnapshot;
   final Function _filter;
@@ -81,7 +83,7 @@ class _MentoringListView extends State<MentoringListView> {
   void filter(
       {String title = '',
       List<MentoringCategory> categories = const [],
-      bool build = true}) async  {
+      bool build = true}) async {
     _filters['title'] = title;
     _filters['categories'] = categories;
     if (build) {
@@ -89,10 +91,9 @@ class _MentoringListView extends State<MentoringListView> {
         _searching = true;
       });
       List<Mentoring> mentorings = await _filter(
-              title: (title == null || title.length < 3) ? null : title,
-              categories: (categories == null || categories.isEmpty
-                  ? null
-                  : categories));
+          title: (title == null || title.length < 3) ? null : title,
+          categories:
+              (categories == null || categories.isEmpty ? null : categories));
       setState(() {
         this._mentorings = mentorings;
         _searching = false;
@@ -156,66 +157,74 @@ class _MentoringListView extends State<MentoringListView> {
       BuildContext context, Mentoring mentoring, Widget decoration,
       {Color background}) {
     return GestureDetector(
-      onTap: onResumeTap != null
-          ? this.onResumeTap(context, mentoring)
-          : null,
-      child:Container(
-        height: 130,
-        width: width,
-        child: Row(
-          children: <Widget>[
-            AspectRatio(
-              aspectRatio: .7,
-              child: MicroCard(
-                primary: background,
-                backWidget: decoration,
-                imgPath: mentoring.user.imgPath,
-              ),
-            ),
-            Expanded(
-                child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(height: 15),
-                        Container(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  truncateText(mentoring.name, TITLE_MAX_LENGTH),
-                                    style: TextStyle(
-                                        color: LightColor.purple,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                              (mentoring.points < 0.5
-                                  ? _newUserPointsMark()
-                                  : MentoringPoints(
-                                      mentoring.points, background)),
-                            ],
+        onTap:
+            onResumeTap != null ? this.onResumeTap(context, mentoring) : null,
+        child: Container(
+            height: 120,
+            width: width,
+            child: Row(
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: .7,
+                  child: MicroCard(
+                    primary: background,
+                    backWidget: decoration,
+                    imgPath: mentoring.user.imgPath,
+                  ),
+                ),
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 15),
+                    Container(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Padding(
+                            child: TagChip(
+                            mentoring.mentoringType.name == MentoringType.SOLICITUD  ? "solicitud" : "tutoría",
+                            mentoring.mentoringType.name == MentoringType.SOLICITUD  ? LightColor.purple : LightColor.lightOrange,
+                            height: 0,
+                            isPrimaryCard: true,
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(truncateText(mentoring.description, DESCRIPTION_MAX_LENGTH),
-                            style: AppTheme.h6Style.copyWith(
-                                fontSize: 12,
-                                color: LightColor.extraDarkPurple)),
-                        SizedBox(height: 10),
-                        Container(
-                          width: width,
-                          height: 21,
-                          child: CategoryList(
-                              dividerWidth: 1,
-                              categories: mentoring.categories,
-                              usePadding: false,
-                              title: "",
+                            padding: EdgeInsets.only(right: 5)
                           ),
-                        )
-                      ],
-                    ))
-          ],
-        )));
+                          Expanded(
+                            child: Text(
+                                truncateText(mentoring.name, TITLE_MAX_LENGTH),
+                                style: TextStyle(
+                                    color: LightColor.purple,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          (mentoring.points < 0.5
+                              ? _newUserPointsMark()
+                              : MentoringPoints(mentoring.points, background)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                        truncateText(
+                            mentoring.description, DESCRIPTION_MAX_LENGTH),
+                        style: AppTheme.h6Style.copyWith(
+                            fontSize: 12, color: LightColor.extraDarkPurple)),
+                    SizedBox(height: 10),
+                    Container(
+                      width: width,
+                      height: 21,
+                      child: CategoryList(
+                        dividerWidth: 1,
+                        categories: mentoring.categories,
+                        usePadding: false,
+                        title: "",
+                      ),
+                    )
+                  ],
+                ))
+              ],
+            )));
   }
 
   Future<void> _initialGetMentorings(AsyncSnapshot<QuerySnapshot> snapshot) =>

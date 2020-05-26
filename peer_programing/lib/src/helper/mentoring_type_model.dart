@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 const MENTORING_TYPE_COLLECTION_NAME = "mentoring-type";
 
 class MentoringType {
+  static final String SOLICITUD = "solicitud";
+  static final String TUTORIA = "tutoría";
   final String _name;
   final DocumentReference reference;
 
@@ -35,8 +37,8 @@ class MentoringType {
 
   static Map<String, MentoringType> mapMentoringTypes(List<MentoringType> mentoringTypes) => 
     {
-      'learn': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == 'solicitud')],
-      'teach': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == 'tutoría')],
+      'learn': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == SOLICITUD)],
+      'teach': mentoringTypes[mentoringTypes.indexWhere((MentoringType mentoring) => mentoring.name == TUTORIA)],
     };
 
   static all() async =>

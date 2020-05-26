@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peer_programing/src/helper/auth_module.dart';
+import 'package:peer_programing/src/pages/chatbot_page.dart';
 
 import 'package:peer_programing/src/pages/home_page.dart';
 import 'package:peer_programing/src/pages/recomended_page.dart';
@@ -19,7 +20,8 @@ class Routes{
     '/create_mentoring': (BuildContext context) => new CreateForm(),
     '/user': (BuildContext context) => new UserPage(),
     '/login': (BuildContext context) => new LoginPage(),
-    '/login/action': (BuildContext context) => new LoginPage(betweenAction: true,)
+    '/login/action': (BuildContext context) => new LoginPage(betweenAction: true,),
+    '/chat': (BuildContext context) => new Chatbot()
   };
   static final BasicAuth auth = Auth();
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
+import 'package:peer_programing/src/utils/dev.dart';
 import 'package:peer_programing/src/utils/generate_random_gravatar.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
@@ -51,11 +52,7 @@ class _RecomendedMentorByCategoryList
         if (snapshot.connectionState == ConnectionState.waiting)
           return Loading();
         if (_recomendedUsers == null) {
-          Future.wait(UserModel.listFromSnapshot(snapshot.data.documents))
-              .then((users) => setState(() {
-                    _recomendedUsers = users.map<UserModel>((u) => u).toList();
-                  }));
-          return Loading();
+          _recomendedUsers = UserModel.listFromSnapshot(snapshot.data.documents);
         }
 
         return _recomendedUsers == null ? Loading() : _recomendedList();
@@ -90,15 +87,16 @@ class _RecomendedMentorByCategoryList
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: _recomendedUsers.map<Widget>((user) {
-              return user.createdMentorings != 0
+              final int nCalificaciones = user.califications == null ? 0 : user.califications.length;
+              return nCalificaciones != 0
                   ? MiniCard(
                       tutor: user,
                       primary: LightColor.rand(),
                       backWidget: Decorator.generateDecoration(),
                       chipColor: LightColor.rand(),
                       chipText1: user.name,
-                      chipText2:
-                          user.createdMentorings.toString() + " Tutorias",
+                      chipText2: nCalificaciones.toString() + ( nCalificaciones == 1 ? " Calificación" : " Calificaciones"),
+                      chipText3: truncateDouble(user.points, 1).toString() + " puntos",
                       isPrimaryCard: true,
                       imgPath: user.imgPath != null
                           ? user.imgPath
