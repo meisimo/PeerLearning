@@ -12,6 +12,7 @@ import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/points/points_resume.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
 import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
+import 'package:peer_programing/src/widgets/utils/validations/email-validatiom.dart';
 
 const int NAME_MAX_LENGTH = 200;
 const int EMAIL_MAX_LENGTH = 200;
@@ -33,6 +34,7 @@ class UserPageState extends State<StatefulWidget> {
   bool _loading = true;
   bool _editMode = false;
   TextEditingController _nameField = TextEditingController();
+  TextEditingController _phoneField = TextEditingController();
 
   @override
   void initState() {
@@ -43,6 +45,7 @@ class UserPageState extends State<StatefulWidget> {
                   title: "Temática de interes",
                   selectedCategories: usuario.categories);
               _nameField.text = usuario.name;
+              _phoneField.text = usuario.telefono;
               setState(() {
                 this._usuarioR = usuario;
                 _loading = false;
@@ -161,18 +164,35 @@ class UserPageState extends State<StatefulWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            InputLogin(
-              Key('input-nombre'),
-              Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-              "Nombre",
-              pasword: false,
-              requiredField: true,
-              controller: _nameField,
-              inputType: TextInputType.text,
-            ),
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                child: InputLogin(
+                  Key('input-nombre'),
+                  Icon(
+                    Icons.person,
+                    color: Colors.white,
+                  ),
+                  "Nombre",
+                  pasword: false,
+                  requiredField: true,
+                  controller: _nameField,
+                  inputType: TextInputType.text,
+                )),
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                child: InputLogin(
+                  Key('input-telefono'),
+                  Icon(
+                    Icons.phone,
+                    color: Colors.white,
+                  ),
+                  "Teléfono",
+                  pasword: false,
+                  requiredField: true,
+                  validator: PhoneValidations.phoneValidation,
+                  controller: _phoneField,
+                  inputType: TextInputType.number,
+                )),
             _selectorTematicas,
           ],
         ),
@@ -257,6 +277,7 @@ class UserPageState extends State<StatefulWidget> {
     if (_keyForm.currentState.validate()) {
       setState(() => _loading = true);
       _usuarioR.name = _nameField.text.trim();
+      _usuarioR.telefono = _phoneField.text;
       _usuarioR.categories = _selectorTematicas.selectedCategories;
       _selectorTematicas = new SelectorTematicas(
           title: "Temática de interes",
@@ -462,9 +483,10 @@ class _ContenedorEditState extends State<ContenedorEdit> {
             ),
             Card(
               child: ListTile(
-                leading: Icon(Icons.email),
-                title: Text("Email"),
-                subtitle: Text(truncateText(_usuarioR.email, EMAIL_MAX_LENGTH)),
+                leading: Icon(Icons.phone),
+                title: Text("Teléfono"),
+                subtitle:
+                    Text(truncateText(_usuarioR.telefono, EMAIL_MAX_LENGTH)),
               ),
             )
           ],

@@ -17,10 +17,12 @@ class LoginPage extends StatefulWidget {
   final bool _betweenAction;
   final Function afterSave;
 
-  LoginPage({bool betweenAction = false, this.afterSave}) : _betweenAction = betweenAction;
+  LoginPage({bool betweenAction = false, this.afterSave})
+      : _betweenAction = betweenAction;
 
   @override
-  _LoginPage createState() => _LoginPage(betweenAction: _betweenAction, afterSave: this.afterSave);
+  _LoginPage createState() =>
+      _LoginPage(betweenAction: _betweenAction, afterSave: this.afterSave);
 }
 
 class _LoginPage extends State<LoginPage> {
@@ -43,13 +45,12 @@ class _LoginPage extends State<LoginPage> {
         super();
 
   void _getOut() {
-    if (_betweenAction){
-      if ( this.afterSave  != null){
+    if (_betweenAction) {
+      if (this.afterSave != null) {
         this.afterSave();
       }
       Navigator.pop(context);
-    }
-    else
+    } else
       Navigator.pushReplacementNamed(context, '/');
   }
 
@@ -57,23 +58,21 @@ class _LoginPage extends State<LoginPage> {
     _singInError = null;
     String email = _LoginForm(this._loginFormKey).getEmailField();
     String pass = _LoginForm(this._loginFormKey).getPasswordField();
-    auth
-      .signIn(email, pass)
-      .then((loginResult){
-        _singInError = null;
-        _getOut();
-        _LoginForm(this._loginFormKey).clearSignInFields();
-      })
-      .catchError(
-        (error){
-          if(error.code == "ERROR_USER_NOT_FOUND" || error.code == "ERROR_WRONG_PASSWORD"){
-            _singInError = "El email y/o contraseña no es válida.";
-          } else{
-            _singInError = "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
-          }
-          _loginFormKey.currentState.validate();
-          _singInError = null;
-        });
+    auth.signIn(email, pass).then((loginResult) {
+      _singInError = null;
+      _getOut();
+      _LoginForm(this._loginFormKey).clearSignInFields();
+    }).catchError((error) {
+      if (error.code == "ERROR_USER_NOT_FOUND" ||
+          error.code == "ERROR_WRONG_PASSWORD") {
+        _singInError = "El email y/o contraseña no es válida.";
+      } else {
+        _singInError =
+            "Ha ocurrido un error inesperado, porfavor intentelo más tarde.";
+      }
+      _loginFormKey.currentState.validate();
+      _singInError = null;
+    });
   }
 
   void _sendSignUp() {
@@ -81,24 +80,28 @@ class _LoginPage extends State<LoginPage> {
     String email = _SignupForm(this._signUpKey).getEmailField();
     String pass = _SignupForm(this._signUpKey).getPasswordField();
     String name = _SignupForm(this._signUpKey).getNameField();
+    String telefono = _SignupForm(this._signUpKey).getPhoneField();
     String imgPath = generateRandomGravatarUrl();
-    List<DocumentReference> categories = _signupFormWidget.getTematicas().map<DocumentReference>((MentoringCategory category) => category.reference).toList();
+    List<DocumentReference> categories = _signupFormWidget
+        .getTematicas()
+        .map<DocumentReference>(
+            (MentoringCategory category) => category.reference)
+        .toList();
     auth
-      .signUp(name, email, pass, categories, imgPath)
-      .then((signUpResult){
-        _getOut();
-        _SignupForm(this._signUpKey).clearSignUpFields();
-      })
-      .catchError((error){
-        if (error.code == "ERROR_WEAK_PASSWORD")
-          _singUpError = "La contraseña es demasiado debil.";
-        else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE")
-          _singUpError = "Este correo ya se encuentra registrado.";
-        else 
-          _singUpError = "Error inesperado en el registro";
-        _signUpKey.currentState.validate();
-        _singUpError = null;
-      });
+        .signUp(name, email, pass, categories, imgPath, telefono)
+        .then((signUpResult) {
+      _getOut();
+      _SignupForm(this._signUpKey).clearSignUpFields();
+    }).catchError((error) {
+      if (error.code == "ERROR_WEAK_PASSWORD")
+        _singUpError = "La contraseña es demasiado debil.";
+      else if (error.code == "ERROR_EMAIL_ALREADY_IN_USE")
+        _singUpError = "Este correo ya se encuentra registrado.";
+      else
+        _singUpError = "Error inesperado en el registro";
+      _signUpKey.currentState.validate();
+      _singUpError = null;
+    });
   }
 
   Widget _submitFormButton({String text, VoidCallback onPressed}) => Container(
@@ -174,10 +177,9 @@ class _LoginPage extends State<LoginPage> {
       Container(
           child: Center(
               child: Container(
-                  child:
-                  Column(
-                    children: <Widget>[ form, submitButton, toggleButton],
-                  ))));
+                  child: Column(
+        children: <Widget>[form, submitButton, toggleButton],
+      ))));
 
   // @override
   // Widget build(BuildContext context) => MainLayout(
@@ -191,8 +193,12 @@ class _LoginPage extends State<LoginPage> {
         child: Center(
           child: _formLayout(
               form: this._signUpMode
-                  ? _signupFormWidget = SignupForm(this._signUpKey, showError: (String _) => _singUpError,)
-                  : LoginForm(this._loginFormKey, showError: (String _) => _singInError),
+                  ? _signupFormWidget = SignupForm(
+                      this._signUpKey,
+                      showError: (String _) => _singUpError,
+                    )
+                  : LoginForm(this._loginFormKey,
+                      showError: (String _) => _singInError),
               submitButton: this._signUpMode ? _signupButton() : _loginButton(),
               toggleButton:
                   this._signUpMode ? _showLoginButton() : _showSignUpButton()),
@@ -353,6 +359,7 @@ class _LoginForm extends State<LoginForm> {
 TextEditingController _emailSignUpField = TextEditingController();
 TextEditingController _passwordSignUpField = TextEditingController();
 TextEditingController _nameField = TextEditingController();
+TextEditingController _phoneField = TextEditingController();
 
 class SignupForm extends StatefulWidget {
   final _formKey;
@@ -378,10 +385,13 @@ class _SignupForm extends State<SignupForm> {
   getEmailField() => _emailSignUpField.text;
   getPasswordField() => _passwordSignUpField.text;
   getNameField() => _nameField.text;
+  getPhoneField() => _phoneField.text;
+
   clearSignUpFields() {
     _emailSignUpField.clear();
     _passwordSignUpField.clear();
     _nameField.clear();
+    _phoneField.clear();
   }
 
   _SignupForm(this._formKey, {this.showError}) : super();
@@ -419,6 +429,19 @@ class _SignupForm extends State<SignupForm> {
           validator: EmailValidations.emailValidation,
           controller: _emailSignUpField,
           inputType: TextInputType.emailAddress,
+        ),
+        InputLogin(
+          Key('input-telefono'),
+          Icon(
+            Icons.phone,
+            color: Colors.white,
+          ),
+          "Teléfono",
+          pasword: false,
+          requiredField: true,
+          validator: PhoneValidations.phoneValidation,
+          controller: _phoneField,
+          inputType: TextInputType.number,
         ),
         InputLogin(
           Key('input-contraseña'),
@@ -467,13 +490,15 @@ class InputLogin extends StatelessWidget {
   final bool pasword;
   final TextEditingController controller;
   final TextInputType inputType;
+  final int maxLength;
 
   InputLogin(this.key, this.fieldIcon, this.hintText,
       {this.validator,
       this.requiredField = false,
       this.pasword,
       this.controller,
-      this.inputType})
+      this.inputType,
+      this.maxLength})
       : super();
 
   String _innerValidator(value) {
@@ -503,6 +528,7 @@ class InputLogin extends StatelessWidget {
         style: TextStyle(fontSize: 20, color: Colors.black),
         controller: this.controller,
         keyboardType: this.inputType,
+        maxLength: this.maxLength,
       );
 
   BoxDecoration _inputContainerDecoration() => BoxDecoration(
@@ -533,11 +559,7 @@ class InputLogin extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => 
-  Padding(
-    padding: EdgeInsets.symmetric(vertical: 5),
-    child: _inputLayout(child: _input())
-  )
-    
-  ;
+  Widget build(BuildContext context) => Padding(
+      padding: EdgeInsets.symmetric(vertical: 5),
+      child: _inputLayout(child: _input()));
 }

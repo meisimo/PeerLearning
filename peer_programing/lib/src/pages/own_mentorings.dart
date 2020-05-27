@@ -5,10 +5,10 @@ import 'package:peer_programing/src/pages/create_form_page.dart';
 import 'package:peer_programing/src/pages/detalle.dart';
 import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/utils/connection.dart';
-import 'package:peer_programing/src/widgets/inputs/tag_chip.dart';
 import 'package:peer_programing/src/widgets/layouts/main_layout.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
+import 'package:peer_programing/src/pages/tutor_profile_page.dart';
 
 class OwnMentorings extends StatefulWidget {
   @override
@@ -49,36 +49,10 @@ class _SelectedMentorings extends State<OwnMentorings> {
         textAlign: TextAlign.center,
       );
 
-  Widget _cancelMentoring(Mentoring mentoring) => new RaisedButton(
-        child: Text('Cancelar'),
-        color: Colors.red,
-        onPressed: () => _handleConnectivity(
-            onSuccess: () => _disableMentoring(mentoring, context),
-            onError: () {
-              Navigator.of(context).pop();
-              _showNotConnectedDialog(context);
-            }),
-      );
-
-  Widget _editMentoring(Mentoring mentoring) => new RaisedButton(
-      child: Text('Editar'),
-      color: LightColor.purple,
-      onPressed: _goToEdit(mentoring, context));
-
-  Widget _mentoringDetail(Mentoring mentoring) {
-    return Detalle(mentoring,
-        actionButton: Container(
-          child: mentoring.selectedByReference == null
-              ? Column(children: <Widget>[
-                  _editMentoring(mentoring),
-                  _cancelMentoring(mentoring),
-                ])
-              : TagChip("No editable", LightColor.grey, height: 30),
-        ));
+  void _afterEdit() {
+    Navigator.of(context).pop();
+    _refreshMentorings();
   }
-
-  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
-      () => showDialog(context: context, child: _mentoringDetail(mentoring));
 
   Function _disableMentoring(Mentoring mentoring, BuildContext context) => () {
         mentoring.disable().then((_) {
@@ -91,10 +65,25 @@ class _SelectedMentorings extends State<OwnMentorings> {
         });
       };
 
-  void _afterEdit() {
-    Navigator.of(context).pop();
-    _refreshMentorings();
-  }
+  Function _unselectMentoring(Mentoring mentoring, BuildContext context) => () {
+        mentoring.unselect().then((_) {
+          _refreshMentorings();
+          Navigator.pop(context);
+        }).catchError((error) {
+          Navigator.pop(context);
+          print(error);
+        });
+      };
+
+  Function _successfullMentoring(Mentoring mentoring, BuildContext context) => () {
+        mentoring.markAsSuccessful().then((_) {
+          _refreshMentorings();
+          Navigator.pop(context);
+        }).catchError((error) {
+          Navigator.pop(context);
+          print(error);
+        });
+      };
 
   Function _goToEdit(Mentoring mentoring, BuildContext context) =>
       () => Navigator.of(context).push(MaterialPageRoute(
@@ -103,6 +92,70 @@ class _SelectedMentorings extends State<OwnMentorings> {
                 mentoringToEdit: mentoring,
                 afterSave: _afterEdit,
               )));
+
+  Widget _cancelMentoring(Mentoring mentoring) => new RaisedButton(
+        child: Text('Cancelar'),
+        color: Colors.red,
+        onPressed: () => _handleConnectivity(
+            onSuccess: _disableMentoring(mentoring, context),
+            onError: () {
+              Navigator.of(context).pop();
+              _showNotConnectedDialog(context);
+            }),
+      );
+
+  Widget _editMentoring(Mentoring mentoring) => new RaisedButton(
+      child: Text('Editar'),
+      color: LightColor.purple,
+      onPressed: _goToEdit(mentoring, context));
+
+  Widget _rejectMentoring(Mentoring mentoring) => new RaisedButton(
+        child: Text('Rechazar'),
+        color: Colors.red,
+        onPressed: () => _handleConnectivity(
+            onSuccess: _unselectMentoring(mentoring, context),
+            onError: () {
+              Navigator.of(context).pop();
+              _showNotConnectedDialog(context);
+            }),
+      );
+
+  Widget _markSuccessfullMentoring(Mentoring mentoring) => new RaisedButton(
+      child: Text('Realizada'),
+      color: Colors.green,
+      onPressed:() =>  _handleConnectivity(
+            onSuccess: _successfullMentoring(mentoring, context),
+            onError: () {
+              Navigator.of(context).pop();
+              _showNotConnectedDialog(context);
+            }));
+
+  List<Widget> _freeMentoringButonSet(mentoring) => <Widget>[
+        _editMentoring(mentoring),
+        _cancelMentoring(mentoring),
+      ];
+
+  List<Widget> _selectedMentoringButonSet(mentoring) => <Widget>[
+        _markSuccessfullMentoring(mentoring),
+        _rejectMentoring(mentoring),
+      ];
+
+  Widget _mentoringDetail(Mentoring mentoring) {
+    return Detalle(
+      mentoring,
+      mentoring.selectedBy == null ? mentoring.user : mentoring.selectedBy,
+        actionButton: Container(
+          child: Column(
+              children: mentoring.selectedByReference == null
+                  ? _freeMentoringButonSet(mentoring)
+                  : _selectedMentoringButonSet(mentoring)),
+        ),
+      onUserTap: mentoring.selectedBy == null ? null : (() => Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: mentoring.selectedBy)))),
+    );
+  }
+
+  Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
+      () => showDialog(context: context, child: _mentoringDetail(mentoring));
 
   Widget _showLoading() => new CircularProgressIndicator();
 

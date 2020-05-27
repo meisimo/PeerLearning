@@ -74,6 +74,7 @@ class _HomePage extends State<HomePage> {
               context: context,
               child: Detalle(
                 mentoring,
+                mentoring.user,
                 actionButton: mentoring.user.reference.documentID ==
                         _user.reference.documentID
                     ? null

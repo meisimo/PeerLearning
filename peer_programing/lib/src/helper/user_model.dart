@@ -23,6 +23,7 @@ class UserModel{
   String name;
   String imgPath;
   List<MentoringCategory> categories;
+  String telefono;
   FirebaseUser _userAuth;
   
   String get email => _userAuth.email;
@@ -57,7 +58,8 @@ class UserModel{
       _userAuth = userAuth,
       createdMentorings = map['createdMentorings'] == null ? 0 : map['createdMentorings'],
       califications = map['califications'] == null ? []: map['califications'],
-      categoriesReference = map['categories'] == null ? []: map['categories'];
+      categoriesReference = map['categories'] == null ? []: map['categories'],
+      telefono = map['telefono'] == null ? '': map['telefono'];
 
   UserModel.fromSnapshot(DocumentSnapshot snapshot, {FirebaseUser userAuth})
     : this.fromMap(snapshot.data, reference:snapshot.reference, userAuth: userAuth);
@@ -97,7 +99,7 @@ class UserModel{
     this.categoriesReference = categories == null ? [] : categories.map<DocumentReference>((cat) => cat.reference).toList();
     return Future.wait(<Future>[
       reference.updateData({'categories': this.categoriesReference}),
-      reference.updateData({'name': name}),
+      reference.updateData({'name': name, 'telefono': telefono}),
     ]);
   }
 

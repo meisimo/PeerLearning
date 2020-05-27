@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
 import 'package:peer_programing/src/helper/mentoring_category_model.dart';
 import 'package:peer_programing/src/helper/mentoring_type_model.dart';
 import 'package:peer_programing/src/helper/user_model.dart';
@@ -12,6 +9,7 @@ const MENTORING_COLLECTION_NAME = "mentoring";
 class Mentoring{
   final id = 0;
   final DocumentReference reference;
+
   String name;
   String description;
   double points;
@@ -25,7 +23,7 @@ class Mentoring{
   UserModel selectedBy;
   String lugar;
   int precio;
-  bool closed;
+  bool closed, successfull;
   
 
   Mentoring({
@@ -60,7 +58,8 @@ class Mentoring{
       userReference = map['user'],
       selectedByReference = map['selectedBy'],
       precio = map['precio'],
-      lugar = map['lugar'];
+      lugar = map['lugar'],
+      successfull = map['successfull'];
 
   Mentoring.fromSnapshot(DocumentSnapshot snapshot)
     :this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -78,8 +77,8 @@ class Mentoring{
   static Future<QuerySnapshot> whereOfSelectedBy(UserModel user, {bool closed=false}) async => 
     await collection().where('selectedBy', isEqualTo: user.reference).where('closed',isEqualTo: closed).getDocuments();
 
-  static Future<QuerySnapshot> whereOfCreatedBy(UserModel user, {bool closed=false}) async => 
-    await collection().where('user', isEqualTo: user.reference).where('closed', isEqualTo: closed).getDocuments();
+  static Future<QuerySnapshot> whereOfCreatedBy(UserModel user, {bool closed = false, bool successfull = false}) async => 
+    await collection().where('user', isEqualTo: user.reference).where('closed', isEqualTo: closed).where('successfull', isEqualTo: successfull).getDocuments();
 
   static Future<List<Mentoring>> getAvilables(MentoringType mentoringType, UserModel user) async => 
     await Future.wait( listFromSnapshot((await whereOfAvilable(mentoringType, user)).documents));
@@ -103,12 +102,12 @@ class Mentoring{
   static Future<List<Mentoring>> filterByCreatedBy(UserModel user) async =>
     await Future.wait( listFromSnapshot((await whereOfCreatedBy(user)).documents));
 
-
   Future<Mentoring> populate() async{
     this.mentoringType = MentoringType.fromSnapshot(await mentoringTypeReference.get());
     this.user = UserModel.fromSnapshot(await userReference.get() );
     this.points = this.user.points;
     this.categories = [];
+    this.selectedBy = this.selectedByReference ==  null ? null : UserModel.fromSnapshot(await selectedByReference.get() );
     for (DocumentReference category in categoriesReference){
       categories.add(new MentoringCategory.fromSnapshot(await category.get()));
     }
@@ -123,11 +122,16 @@ class Mentoring{
   Future<void> selectBy(UserModel user) async  =>
     await this.reference.updateData({'selectedBy': user.reference});
 
-  Future<void> unselect() async => 
+  Future<void> unselect() async{
+    this.selectedBy = null;
     await this.reference.updateData({'selectedBy': null});
+  }
 
-  Future<void> disable() async => 
+  Future<void> disable() async =>
     await this.reference.updateData({'closed': true});
+
+  Future<void> markAsSuccessful() async =>
+    await this.reference.updateData({'successfull': true});
 
   Future<void> update() async{
     await this.reference.updateData({
@@ -157,7 +161,8 @@ class Mentoring{
       "precio": this.precio,
       "user": this.userReference,
       "selectedBy": null,
-      "closed": false
+      "closed": false,
+      "successfull": false
     };
 
   @override

@@ -8,6 +8,7 @@ import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/tarjetas/mentoring_feedback.dart';
 import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
+import 'package:peer_programing/src/pages/tutor_profile_page.dart';
 
 class SelectedMentorings extends StatefulWidget {
   @override
@@ -64,15 +65,13 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Widget _cancelButton(Mentoring mentoring) => new RaisedButton(
                 child: Text('Cancelar'),
                 color: Colors.red,
-                onPressed: ()=> handleConnectivity(onSuccess: (){
-                 _unselectMentoring(mentoring, context);
-                }, onError: () {
-                  _showNotConnectedDialog(context);
-                }
+                onPressed: ()=> handleConnectivity(onSuccess: _unselectMentoring(mentoring, context), 
+                onError: () =>
+                  _showNotConnectedDialog(context)
               ));
 
   Widget _doneButton(Mentoring mentoring) => new RaisedButton(
-                child: Text('Realizada'),
+                child: Text('Calificar'),
                 color: Colors.green,
                 onPressed: ()=>_handleConnectivity(onSuccess:  _mentoringDone(mentoring, context)
                 ,onError: (){
@@ -82,21 +81,24 @@ class _SelectedMentorings extends State<SelectedMentorings> {
 
   Widget _mentoringDetail(Mentoring mentoring) => Detalle(
     mentoring,
+    mentoring.user,
     actionButton: Container(
       child: Column(
         children: <Widget>[
-          _doneButton(mentoring),
-          _cancelButton(mentoring),
+          mentoring.successfull ? 
+            _doneButton(mentoring):
+            _cancelButton(mentoring),
         ]
       ),
-    )
+    ),
+    onUserTap: (() => Navigator.push(context, new MaterialPageRoute(builder: (context) => new TutorProfilePage(tutor: mentoring.user)))),
   );
 
   Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
       () => showDialog(
           context: context,
           child: PageView(
-            physics:new NeverScrollableScrollPhysics(),
+            physics: new NeverScrollableScrollPhysics(),
             controller: _detailDialogPageController,
             children: <Widget>[
               _mentoringDetail(mentoring),

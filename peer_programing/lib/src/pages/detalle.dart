@@ -3,16 +3,19 @@ import 'package:peer_programing/src/theme/color/light_color.dart';
 import 'package:peer_programing/src/helper/mentoring_model.dart';
 import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/stars_points.dart';
+import 'package:peer_programing/src/helper/user_model.dart';
 
 class Detalle extends StatefulWidget {
   final Mentoring _mentoring;
   final Widget actionButton;
+  final UserModel user;
+  final Function onUserTap;
 
-  Detalle(this._mentoring, {this.actionButton}) : super();
+  Detalle(this._mentoring, this.user, {this.actionButton, this.onUserTap}) : super();
 
   @override
   State<StatefulWidget> createState() =>
-      DetalleState(this._mentoring, this.actionButton);
+      DetalleState(this._mentoring, this.user, this.actionButton, this.onUserTap);
 }
 
 class DetalleState extends State<Detalle> {
@@ -20,9 +23,12 @@ class DetalleState extends State<Detalle> {
   // final int detalleId;
   final Mentoring _mentoring;
   final Widget actionButton;
+  final UserModel _user;
+  final Function onUserTap;
+
   var offers;
 
-  DetalleState(this._mentoring, this.actionButton) : super();
+  DetalleState(this._mentoring, this._user, this.actionButton, this.onUserTap) : super();
 
   _buildDialog(context) {
     return Container(
@@ -59,7 +65,7 @@ class DetalleState extends State<Detalle> {
             _textContainer(this._mentoring.lugar, false),
             Divider(
               height: 2,
-            ),
+            )
           ],
         ),
       ),
@@ -68,6 +74,7 @@ class DetalleState extends State<Detalle> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -80,12 +87,13 @@ class DetalleState extends State<Detalle> {
     return Column(
       children: <Widget>[
         ListTile(
+        onTap: this.onUserTap,
         leading: CircleAvatar(
              backgroundColor: Colors.grey.shade300,
-            backgroundImage: NetworkImage(this._mentoring.user.imgPath),
+            backgroundImage: NetworkImage(_user.imgPath),
         ),
           title: Text(
-            this._mentoring.user.name,
+            _user.name,
             style: TextStyle(color: LightColor.purple),
           ),
         ),

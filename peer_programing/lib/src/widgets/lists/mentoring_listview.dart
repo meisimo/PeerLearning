@@ -252,6 +252,7 @@ class _MentoringListView extends State<MentoringListView> {
               _initialGetMentorings(snapshot);
             return Loading();
           }
+          // print(this._mentorings.map((e) => [e.successfull, e.selectedBy]).toList());
           return this._mentorings.isEmpty
               ? _notMentoringToShow()
               : this._mentoringList(context);
