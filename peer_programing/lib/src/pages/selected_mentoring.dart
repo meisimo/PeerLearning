@@ -53,15 +53,6 @@ class _SelectedMentorings extends State<SelectedMentorings> {
       textAlign: TextAlign.center,
     );
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MainLayout(
-  //     title: "Ofertas seleccionadas",
-  //     body: this._loading ? _showLoading() : _logged ? _showMentorings() : _notLoggedMessage(),
-  //     defaultVerticalScroll: false,
-  //   );
-  // }
-
     Widget _showPage() {
     return MainLayout(
       title: "Ofertas seleccionadas",
@@ -83,9 +74,8 @@ class _SelectedMentorings extends State<SelectedMentorings> {
   Widget _doneButton(Mentoring mentoring) => new RaisedButton(
                 child: Text('Realizada'),
                 color: Colors.green,
-                onPressed: ()=>_handleConnectivity(onSuccess:  (){
-                 _mentoringDone(mentoring, context);
-                },onError: (){
+                onPressed: ()=>_handleConnectivity(onSuccess:  _mentoringDone(mentoring, context)
+                ,onError: (){
                    _showNotConnectedDialog(context);
                 })
   );
@@ -141,8 +131,9 @@ class _SelectedMentorings extends State<SelectedMentorings> {
         .catchError( (error)=> print(error) );
 
   Function _mentoringDone(Mentoring mentoring, BuildContext context) => 
-    () =>
+    () => 
       _detailDialogPageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+    
 
   Widget _showLoading() => new CircularProgressIndicator();
 

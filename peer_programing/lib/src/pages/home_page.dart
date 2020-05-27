@@ -13,6 +13,7 @@ import 'package:peer_programing/src/widgets/lists/category_list.dart';
 import 'package:peer_programing/src/widgets/lists/mentoring_listview.dart';
 import 'package:peer_programing/src/widgets/loading.dart';
 import 'package:peer_programing/src/widgets/tarjetas/not_connected.dart';
+import 'package:peer_programing/src/pages/login_page.dart';
 
 import '../utils/connection.dart';
 
@@ -50,6 +51,23 @@ class _HomePage extends State<HomePage> {
   void _setTitle() => setState(
       () => _title = _selectedType() == 'teach' ? 'Tutorías' : 'Solicitudes');
 
+  void _getCurrentUser (){
+    setState(() {_loading = true;});
+    UserModel.getCurrentUser(populate: true).then((user){
+      _logged = user != null;
+      _user = user;
+      _loading = false;
+      if (_user != null && _user.categories != null) {
+      _user.categories.forEach((userCategory) {
+          this._selectedCaterogies.add(userCategory);
+          this._categories
+              .removeWhere(MentoringCategory.compareWith(userCategory));
+        });
+      }
+      setState(() {});
+    });  
+  }
+
   Function _showMentoringDetail(BuildContext context, Mentoring mentoring) =>
       () => _logged
           ? showDialog(
@@ -65,14 +83,15 @@ class _HomePage extends State<HomePage> {
                         onPressed: () => _handleConnectivity(onSuccess: () {
                               _logged
                                   ? _selectMentoring(mentoring, context)
-                                  : Navigator.pushNamed(
-                                      context, '/login/action');
+                                  : Navigator.push( context, new MaterialPageRoute(
+                                      builder: (context) => new LoginPage(betweenAction: true, afterSave: () => _getCurrentUser()) ));
                             }, onError: () {
                               Navigator.of(context).pop();
                               _showNotConnectedDialog(context);
                             })),
               ))
-          : Navigator.pushNamed(context, '/login/action');
+          : Navigator.push( context, new MaterialPageRoute(
+                                      builder: (context) => new LoginPage(betweenAction: true, afterSave: () => _getCurrentUser()) ));
 
   void _selectMentoring(Mentoring mentoring, BuildContext context) =>
       mentoring.selectBy(_user).then((_) {

@@ -15,11 +15,12 @@ import '../../routes.dart';
 
 class LoginPage extends StatefulWidget {
   final bool _betweenAction;
+  final Function afterSave;
 
-  LoginPage({bool betweenAction = false}) : _betweenAction = betweenAction;
+  LoginPage({bool betweenAction = false, this.afterSave}) : _betweenAction = betweenAction;
 
   @override
-  _LoginPage createState() => _LoginPage(betweenAction: _betweenAction);
+  _LoginPage createState() => _LoginPage(betweenAction: _betweenAction, afterSave: this.afterSave);
 }
 
 class _LoginPage extends State<LoginPage> {
@@ -31,18 +32,23 @@ class _LoginPage extends State<LoginPage> {
   final bool _betweenAction;
   final _loginFormKey = GlobalKey<FormState>();
   final _signUpKey = GlobalKey<FormState>();
+  final Function afterSave;
 
   BasicAuth auth = Routes.auth;
 
-  _LoginPage({bool betweenAction})
+  _LoginPage({bool betweenAction, this.afterSave})
       : _title = 'Login',
         _signUpMode = false,
         _betweenAction = betweenAction,
         super();
 
   void _getOut() {
-    if (_betweenAction)
+    if (_betweenAction){
+      if ( this.afterSave  != null){
+        this.afterSave();
+      }
       Navigator.pop(context);
+    }
     else
       Navigator.pushReplacementNamed(context, '/');
   }
@@ -150,7 +156,6 @@ class _LoginPage extends State<LoginPage> {
               this._signUpMode = true;
             });
           }, onError: () {
-            //  Navigator.of(context).pop();
             _showNotConnectedDialog(context);
           }));
 

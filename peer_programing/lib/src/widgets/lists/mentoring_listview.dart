@@ -91,7 +91,7 @@ class _MentoringListView extends State<MentoringListView> {
         _searching = true;
       });
       List<Mentoring> mentorings = await _filter(
-          title: (title == null || title.length < 3) ? null : title,
+          title: (title == null || title.length < 1) ? null : title,
           categories:
               (categories == null || categories.isEmpty ? null : categories));
       setState(() {

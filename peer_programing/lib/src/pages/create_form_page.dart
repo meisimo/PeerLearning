@@ -56,8 +56,7 @@ class _CreateForm extends State<CreateForm>
       }
     } else {
       _selectorTematicas = new SelectorTematicas(title: "Temática");
-    }
-      
+    }      
   }
 
   Function _requiredField({String subject = "Este campo"}) =>
